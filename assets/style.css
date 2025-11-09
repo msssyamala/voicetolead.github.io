@@ -260,5 +260,15 @@ button, .btn-submit {
   section.section.alt-bg {
     display: block !important;
   }
+  /* Fix spacing for buttons on the Get Involved page */
+  .get-involved-buttons .btn-primary,
+  .get-involved-buttons .btn-secondary,
+  #get-involved-page .card a.btn-primary,
+  #get-involved-page .card a.btn-secondary,
+  section.section .card a.btn-primary,
+  section.section .card a.btn-secondary {
+    display: inline-block;
+    margin-top: 1.5rem !important;  /* adds spacing below paragraphs */
+  }
 
 }
