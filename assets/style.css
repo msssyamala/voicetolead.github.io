@@ -238,4 +238,8 @@ button, .btn-submit {
   .nav-toggle {
     display: block;
   }
+  .nav-links a.active {
+  color: var(--gold);
+}
+
 }
