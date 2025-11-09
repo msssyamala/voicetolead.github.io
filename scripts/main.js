@@ -1,8 +1,10 @@
-const toggle = document.querySelector('.nav-toggle');
-const links = document.querySelector('.nav-links');
+document.addEventListener('DOMContentLoaded', function () {
+  const toggle = document.querySelector('.nav-toggle');
+  const links = document.querySelector('.nav-links');
 
-if (toggle) {
-  toggle.addEventListener('click', () => {
-    links.classList.toggle('show');
-  });
-}
+  if (toggle && links) {
+    toggle.addEventListener('click', () => {
+      links.classList.toggle('show');
+    });
+  }
+});
