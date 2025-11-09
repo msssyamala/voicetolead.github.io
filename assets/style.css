@@ -252,5 +252,10 @@ button, .btn-submit {
     display: inline-block;
     margin-top: 0;           /* just to be explicit */
   }
+  /* FORCE spacing under "Want to Host a Workshop?" on programs page */
+  section.section.alt-bg a.btn-primary[href="contact.html"] {
+    display: inline-block;
+    margin-top: 2rem !important;
+  }
 
 }
