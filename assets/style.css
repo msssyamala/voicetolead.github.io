@@ -270,5 +270,13 @@ button, .btn-submit {
     display: inline-block;
     margin-top: 1.5rem !important;  /* adds spacing below paragraphs */
   }
+  /* Ensure buttons in Get Involved cards don't overlap text */
+  #get-involved-page .card p {
+    margin-bottom: 1.7rem !important;
+  }
+  #get-involved-page .card a.btn-primary,
+  #get-involved-page .card a.btn-secondary {
+    display: inline-block;
+  }
 
 }
