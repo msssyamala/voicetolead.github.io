@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact | VoiceToLead</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="index.html"><img src="assets/logo.png" alt="logo" /></a>
+      <div class="nav-title">VoiceToLead</div>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="programs.html">Programs</a>
+      <a href="get-involved.html">Get Involved</a>
+      <a href="team.html">Our Team</a>
+      <a href="contact.html" class="active">Contact</a>
+      <a class="nav-cta" href="get-involved.html#donate">Donate</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <h1 class="section-title">Contact Us</h1>
+      <p>Have a question, want to host a workshop, or want to volunteer? Send us a note.</p>
+      <!-- For now this is a static form. You can swap action="" with a Formspree/Google Form embed -->
+      <form action="#" method="post">
+        <label>
+          Name
+          <input type="text" name="name" required />
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" required />
+        </label>
+        <label>
+          Message
+          <textarea name="message" rows="4" required></textarea>
+        </label>
+        <button type="submit" class="btn-submit">Send Message</button>
+      </form>
+      <p style="margin-top:1rem;">Or email us at: <strong>hello@voicetolead.org</strong></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).<br/>
+    © <span id="year"></span> VoiceToLead.
+  </footer>
+  <script src="scripts/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
