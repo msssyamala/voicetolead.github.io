@@ -240,6 +240,10 @@ button, .btn-submit {
   }
   .nav-links a.active {
   color: var(--gold);
-}
+  }
+  .section.alt-bg .btn-primary {
+  display: inline-block;
+  margin-top: 1.5rem;   /* adds space between paragraph and button */
+  }
 
 }
