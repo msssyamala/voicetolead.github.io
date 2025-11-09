@@ -257,5 +257,8 @@ button, .btn-submit {
     display: inline-block;
     margin-top: 2rem !important;
   }
+  section.section.alt-bg {
+    display: block !important;
+  }
 
 }
