@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Programs & Workshops | VoiceToLead</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="index.html"><img src="assets/logo.png" alt="logo" /></a>
+      <div class="nav-title">VoiceToLead</div>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="programs.html" class="active">Programs</a>
+      <a href="get-involved.html">Get Involved</a>
+      <a href="team.html">Our Team</a>
+      <a href="contact.html">Contact</a>
+      <a class="nav-cta" href="get-involved.html#donate">Donate</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <h1 class="section-title">Programs & Workshops</h1>
+      <p>We run structured public speaking and leadership sessions tailored for grades 5–12. Below are our core formats.</p>
+      <div class="columns-3" style="margin-top:1.2rem;">
+        <div class="card">
+          <h3>Intro to Public Speaking</h3>
+          <p>60–90 min workshop covering posture, projection, impromptu prompts, and confidence drills.</p>
+        </div>
+        <div class="card">
+          <h3>Speech & Debate Skills</h3>
+          <p>For students already in NSDA / TFA circuits: delivery polishing, case structure, and feedback loops.</p>
+        </div>
+        <div class="card">
+          <h3>Mentor-Led Small Groups</h3>
+          <p>Breakout-style sessions led by trained mentors, focused on peer feedback and stage readiness.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt-bg">
+      <h2 class="section-title">Want to Host a Workshop?</h2>
+      <p>Schools, clubs, or community groups can request a workshop. We can tailor sessions for skill-building, competition prep, or leadership development.</p>
+      <a class="btn-primary" href="contact.html">Request a Workshop</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).<br/>
+    © <span id="year"></span> VoiceToLead.
+  </footer>
+  <script src="scripts/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
