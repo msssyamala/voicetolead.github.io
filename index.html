@@ -2,106 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VoiceToLead | Empowering Voices, Inspiring Leaders</title>
-  <style>
-    :root {
-      --navy: #001f3f;
-      --navy-light: #004080;
-      --gold: #ffd700;
-      --text: #ffffff;
-    }
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      background: linear-gradient(180deg, var(--navy) 0%, var(--navy-light) 100%);
-      color: var(--text);
-      min-height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    .card {
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 1.25rem;
-      padding: clamp(1.5rem, 2vw, 2.25rem);
-      max-width: 740px;
-      width: 100%;
-      backdrop-filter: blur(6px);
-    }
-    .logo {
-      width: 110px;
-      height: auto;
-      margin: 0 auto 1rem;
-      display: block;
-    }
-    h1 {
-      font-size: clamp(2.2rem, 4vw, 2.8rem);
-      margin-bottom: 0.4rem;
-      color: var(--gold);
-      letter-spacing: 0.02em;
-    }
-    h2 {
-      font-weight: 400;
-      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
-      margin-bottom: 1.2rem;
-    }
-    p {
-      line-height: 1.55;
-      font-size: 1rem;
-      margin-bottom: 1.6rem;
-    }
-    .contact {
-      display: inline-block;
-      background-color: var(--gold);
-      color: var(--navy);
-      padding: 0.75rem 1.35rem;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-    .contact:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-    }
-    footer {
-      margin-top: 1.25rem;
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.7);
-    }
-    @media (max-width: 540px) {
-      .card {
-        padding: 1.35rem 1rem;
-      }
-      p {
-        font-size: 0.95rem;
-      }
-    }
-  </style>
+  <title>VoiceToLead | Empowering Young Voices</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <main class="card">
-    <!-- Replace the src below with your actual logo file path, e.g. /assets/voicetolead-logo.png -->
-    <img src="logo.png" alt="VoiceToLead Logo" class="logo" />
-    <h1>VoiceToLead</h1>
-    <h2>Empowering Young Voices, Inspiring Future Leaders</h2>
-    <p>
-      Our website is currently under development.
-      VoiceToLead is a student-led initiative dedicated to building confidence, teaching foundational communication skills, and introducing students to competitive speaking opportunities through the National Speech & Debate Association (NSDA). Our mission is to help students discover their unique voice, overcome fear, and express themselves with purpose and impact.
-    </p>
-    <a href="mailto:nidhimaddi9@gmail.com" class="contact">Contact Us</a>
-    <footer>
-      &copy; 2025 VoiceToLead. All rights reserved.
-    </footer>
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="index.html">
+        <img src="assets/logo.png" alt="VoiceToLead logo" />
+      </a>
+      <div class="nav-title">VoiceToLead</div>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="programs.html">Programs</a>
+      <a href="get-involved.html">Get Involved</a>
+      <a href="team.html">Our Team</a>
+      <a href="contact.html">Contact</a>
+      <a class="nav-cta" href="get-involved.html#donate">Donate</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <h1>Empowering Young Voices, Inspiring Future Leaders.</h1>
+        <p>VoiceToLead delivers student-centered public speaking and leadership workshops for middle and high school students — building confidence, clarity, and community.</p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="get-involved.html#volunteer">Become a Mentor</a>
+          <a class="btn-secondary" href="programs.html">View Workshops</a>
+        </div>
+      </div>
+      <div class="stat-strip">
+        <div class="stat">
+          <h3>50+</h3>
+          <p>Students Reached</p>
+        </div>
+        <div class="stat">
+          <h3>10+</h3>
+          <p>Workshops Hosted</p>
+        </div>
+        <div class="stat">
+          <h3>501(c)(3)</h3>
+          <p>Fiscally Sponsored</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section class="section">
+      <h2 class="section-title">What We Do</h2>
+      <div class="columns-3">
+        <div class="card">
+          <h3>Public Speaking Labs</h3>
+          <p>Hands-on, youth-friendly sessions that build delivery, storytelling, and stage confidence.</p>
+        </div>
+        <div class="card">
+          <h3>Leadership Training</h3>
+          <p>Workshops focused on mentorship, initiative, and real-world communication.</p>
+        </div>
+        <div class="card">
+          <h3>Competition Prep</h3>
+          <p>Support for speech & debate competitors to refine cases, intros, and delivery.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt-bg">
+      <h2 class="section-title">How You Can Help</h2>
+      <p>We partner with student mentors, parents, educators, and sponsors to deliver high-quality sessions to young speakers.</p>
+      <div class="hero-actions" style="margin-top:1.2rem;">
+        <a class="btn-primary" href="get-involved.html#volunteer">Volunteer / Mentor</a>
+        <a class="btn-secondary" href="get-involved.html#donate">Donate</a>
+      </div>
+    </section>
   </main>
+
+  <footer class="footer">
+    VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).<br/>
+    © <span id="year"></span> VoiceToLead. All rights reserved.
+  </footer>
+
+  <script src="scripts/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
 </body>
 </html>
