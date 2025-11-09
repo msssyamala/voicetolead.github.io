@@ -246,7 +246,7 @@ button, .btn-submit {
     margin-top: 1.5rem;   /* adds space between paragraph and button */
   }
   section.section.alt-bg p {
-    margin-bottom: 1.7rem;   /* pushes anything after the paragraph down */
+    margin-bottom: 2rem;   /* pushes anything after the paragraph down */
   }
   section.section.alt-bg a.btn-primary {
     display: inline-block;
