@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Get Involved | VoiceToLead</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="index.html"><img src="assets/logo.png" alt="logo" /></a>
+      <div class="nav-title">VoiceToLead</div>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="programs.html">Programs</a>
+      <a href="get-involved.html" class="active">Get Involved</a>
+      <a href="team.html">Our Team</a>
+      <a href="contact.html">Contact</a>
+      <a class="nav-cta" href="#donate">Donate</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <h1 class="section-title">Get Involved</h1>
+      <p>There are three main ways to support VoiceToLead: volunteer as a mentor, help with operations/events, or sponsor a workshop.</p>
+      <div class="columns-3" style="margin-top:1.2rem;">
+        <div class="card" id="volunteer">
+          <h3>Volunteer / Mentor</h3>
+          <p>Work directly with students. We provide curriculum and speaking activities.</p>
+          <a class="btn-primary" href="https://docs.google.com" target="_blank" rel="noreferrer">Mentor Application</a>
+        </div>
+        <div class="card">
+          <h3>Operations Support</h3>
+          <p>Help with admin, design, website, or communications. Great for student volunteers.</p>
+          <a class="btn-secondary" href="contact.html">Contact Us</a>
+        </div>
+        <div class="card" id="donate">
+          <h3>Donate</h3>
+          <p>Your gift helps us run more workshops and provide free materials to students.</p>
+          <a class="btn-primary" href="#" target="_blank" rel="noreferrer">Donate via HCB</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).<br/>
+    © <span id="year"></span> VoiceToLead.
+  </footer>
+  <script src="scripts/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
