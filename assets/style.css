@@ -239,11 +239,18 @@ button, .btn-submit {
     display: block;
   }
   .nav-links a.active {
-  color: var(--gold);
+    color: var(--gold);
   }
   .section.alt-bg .btn-primary {
-  display: inline-block;
-  margin-top: 1.5rem;   /* adds space between paragraph and button */
+    display: inline-block;
+    margin-top: 1.5rem;   /* adds space between paragraph and button */
+  }
+  section.section.alt-bg p {
+    margin-bottom: 1.7rem;   /* pushes anything after the paragraph down */
+  }
+  section.section.alt-bg a.btn-primary {
+    display: inline-block;
+    margin-top: 0;           /* just to be explicit */
   }
 
 }
