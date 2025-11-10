@@ -279,17 +279,24 @@ button, .btn-submit {
     display: inline-block;
   }
 /* ===== Banner Styling ===== */
-/* Top mission banner */
+/* Full-width top banner like ToysForTexans */
 .banner {
-  width: 100%;
+  position: relative;
+  width: 100vw;                           /* make it as wide as the viewport */
+  margin-left: calc(50% - 50vw);          /* pull it out of the centered layout */
   overflow: hidden;
 }
 
 .banner img {
   width: 100%;
-  height: 120px;      /* adjust to taste: 280–360 */
-  object-fit: cover;  /* makes it fill horizontally, no white on right */
+  height: 320px;                          /* adjust: 280–360 works well */
+  object-fit: cover;                      /* crop to fill, no white space */
   display: block;
+}
+
+/* prevent horizontal scroll bar from the 100vw trick */
+html, body {
+  overflow-x: hidden;
 }
 
 /* overlay-style text */
