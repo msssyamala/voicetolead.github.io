@@ -301,27 +301,62 @@ html, body {
 .hero {
   padding-top: 3rem;
 }
-/* overlay-style text */
-/*
-.banner.overlay .banner-text {
+  
+/* ===== Mission Banner Overlay ===== */
+.banner {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  overflow: hidden;
+}
+
+.banner img {
+  width: 100%;
+  height: 340px; /* adjust to 300–360 if you want taller/shorter */
+  object-fit: cover;
+  object-position: center 35%;
+  display: block;
+}
+
+.mission-overlay {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0, 32, 91, 0.58);
+  background: rgba(0, 32, 91, 0.65); /* navy transparent overlay */
   color: #fff;
-  max-width: 900px;
   text-align: center;
-  padding: 1.2rem 1.6rem;
-  border-radius: 12px;
+  max-width: 900px;
+  padding: 1.8rem 2rem;
+  border-radius: 14px;
+  line-height: 1.5;
 }
 
-.banner.overlay .banner-text h2 {
-  color: #FFBF00;
-  margin-bottom: 0.4rem;
+.mission-overlay h2 {
+  color: #FFBF00; /* gold accent */
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
 }
-*/
-/* give hero some breathing room after banner if needed */
 
+.mission-overlay p {
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .banner img {
+    height: 280px;
+    object-position: center 45%;
+  }
+  .mission-overlay {
+    max-width: 90%;
+    padding: 1.2rem;
+  }
+  .mission-overlay h2 {
+    font-size: 1.5rem;
+  }
+  .mission-overlay p {
+    font-size: 0.95rem;
+  }
   
 }
