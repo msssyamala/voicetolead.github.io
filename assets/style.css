@@ -317,5 +317,10 @@ button, .btn-submit {
   line-height: 1.6;
 }
 
+  /* Adjust banner height (Step 3) */
+.banner img {
+  height: 320px;  /* or 400px if you want it taller */
+}
+
   
 }
