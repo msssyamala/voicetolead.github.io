@@ -41,13 +41,13 @@ body {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  margin-left: 30rem;
+  margin-left: 25rem;
 }
 
 .nav-left img {
   height: 100px;
   position: relative;
-  top: 4px; 
+  top: 10px; 
 }
 
 .nav-title {
