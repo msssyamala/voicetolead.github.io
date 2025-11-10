@@ -287,39 +287,32 @@ button, .btn-submit {
 
 .banner img {
   width: 100%;
-  height: 400px;
+  height: 320px;
   object-fit: cover;
   display: block;
 }
 
-/* For overlay version */
 .banner.overlay .banner-text {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: white;
-  text-align: center;
-  max-width: 900px;
-  padding: 1rem 2rem;
-  background: rgba(0, 32, 91, 0.65);
+  background: rgba(0, 32, 91, 0.6);
+  color: #fff;
+  padding: 1.2rem 1.6rem;
   border-radius: 12px;
+  max-width: 900px;
+  text-align: center;
 }
 
 .banner.overlay .banner-text h2 {
-  font-size: 2rem;
   color: #FFBF00;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.4rem;
 }
 
-.banner.overlay .banner-text p {
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-  /* Adjust banner height (Step 3) */
-.banner img {
-  height: 320px;  /* or 400px if you want it taller */
+/* give hero some breathing room after banner if needed */
+.hero {
+  padding-top: 3rem;
 }
 
   
