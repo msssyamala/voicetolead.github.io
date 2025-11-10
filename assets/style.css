@@ -278,27 +278,29 @@ button, .btn-submit {
   #get-involved-page .card a.btn-secondary {
     display: inline-block;
   }
-/* ===== Banner Styling ===== */
-/* Full-width top banner like ToysForTexans */
+/* ===== Banner Styling (apply to all screens) ===== */
 .banner {
   position: relative;
-  width: 100vw;                           /* make it as wide as the viewport */
-  margin-left: calc(50% - 50vw);          /* pull it out of the centered layout */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
   overflow: hidden;
 }
 
 .banner img {
   width: 100%;
-  height: 320px;                          /* adjust: 280–360 works well */
-  object-fit: cover;                      /* crop to fill, no white space */
+  height: 280px;              /* adjust to taste */
+  object-fit: cover;
+  object-position: left center;
   display: block;
 }
 
-/* prevent horizontal scroll bar from the 100vw trick */
 html, body {
   overflow-x: hidden;
 }
 
+.hero {
+  padding-top: 3rem;
+}
 /* overlay-style text */
 /*
 .banner.overlay .banner-text {
@@ -320,9 +322,6 @@ html, body {
 }
 */
 /* give hero some breathing room after banner if needed */
-.hero {
-  padding-top: 3rem;
-}
 
   
 }
