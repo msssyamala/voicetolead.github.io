@@ -23,37 +23,63 @@
      display: block;
    }
 
-  html, body {
-    overflow-x: hidden;
-    margin: 0;
-  }
+     .mission-overlay {
+      position: absolute;                /* THIS is what makes it overlay */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 32, 91, 0.65);
+      color: #fff;
+      max-width: 900px;
+      text-align: center;
+      padding: 1.8rem 2rem;
+      border-radius: 14px;
+      line-height: 1.5;
+    }
+
+    .mission-overlay h2 {
+      color: #FFBF00;
+      margin-bottom: 0.6rem;
+      font-size: 2rem;
+    }
+
+    .mission-overlay p {
+      margin-bottom: 0.4rem;
+      font-size: 1.02rem;
+    }
+
+    html, body {
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .banner img {
+        height: 280px;
+        object-position: center 45%;
+      }
+      .mission-overlay {
+        max-width: 92%;
+        padding: 1.1rem 1.2rem;
+      }
+      .mission-overlay h2 {
+        font-size: 1.5rem;
+      }
+      .mission-overlay p {
+        font-size: 0.9rem;
+      }
+    }
 </style>
 </head>
 <body>
   <!-- NAVBAR -->
   <header class="navbar">
-    <div class="nav-left">
-      <a href="index.html">
-        <img src="assets/logo.png" alt="VoiceToLead logo" />
-      </a>
-      <div class="nav-title">VoiceToLead</div>
-    </div>
-    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="programs.html">Programs</a>
-      <a href="get-involved.html">Get Involved</a>
-      <a href="team.html">Our Team</a>
-      <a href="contact.html">Contact</a>
-      <a class="nav-cta" href="get-involved.html#donate">Donate</a>
-    </nav>
+    <!-- your navbar stays the same -->
   </header>
 
-  <!-- FULL-WIDTH BANNER -->
- <!-- Banner with mission overlay -->
-  <section class="banner overlay">
-   <img src="assets/mission-banner.png" alt="VoiceToLead mission banner" />
+  <!-- put this right after the navbar -->
+  <section class="banner">
+    <img src="assets/mission-banner.png" alt="VoiceToLead mission banner" />
     <div class="mission-overlay">
       <h2>Our Mission</h2>
       <p>At VoiceToLead, our mission is to empower every student to find their voice, overcome fear, and communicate with purpose and impact.</p>
