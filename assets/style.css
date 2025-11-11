@@ -413,46 +413,47 @@ html, body {
   font-size: 0.8rem;
   opacity: 0.8;
 }
+  
 .footer {
-  background: #0d1738;              /* your navy tone */
+  background: #0d1738;
   color: #fff;
-  padding: 2rem 1rem 2.5rem;
   text-align: center;
-  margin-top: auto;
+  padding: 2rem 1rem;
   font-size: 0.9rem;
 }
 
-.footer a {
-  color: #FFBF00;                   /* your gold */
-  text-decoration: none;
-}
-
-.footer a:hover {
-  text-decoration: underline;
-}
-
-.footer-top p {
+.footer-content p {
   margin-bottom: 0.6rem;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .footer-social {
-  margin: 1rem 0 1.4rem;
+  margin: 1rem 0;
   display: flex;
-  gap: 1.2rem;
   justify-content: center;
-  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.footer-social a {
-  font-weight: 500;
+.footer-social img {
+  width: 32px;
+  height: 32px;
+  filter: brightness(0) invert(1); /* makes icons white if they're black */
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.footer-bottom {
-  font-size: 0.78rem;
+.footer-social img:hover {
+  transform: scale(1.1);
   opacity: 0.8;
 }
+
+.footer-location {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.footer-copy {
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
 
 }
