@@ -415,7 +415,8 @@ html, body {
 }
   
 /* ===== footer like toysfortexans ===== */
-.vtl-footer {
+/* ===== Footer (light, centered, like toysfortexans) ===== */
+.footer {
   background: #ffffff;
   padding: 2.5rem 1rem 3rem;
   text-align: center;
@@ -424,20 +425,25 @@ html, body {
   font-size: 0.9rem;
 }
 
-.vtl-footer-social {
+.footer p {
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+}
+
+.footer .footer-social {
   display: flex;
   justify-content: center;
   gap: 0.75rem;
   margin-bottom: 1.2rem;
 }
 
-.vtl-footer-social img {
+.footer .footer-social img {
   width: 30px;
   height: 30px;
   display: block;
 }
 
-.vtl-footer-links {
+.footer .footer-links {
   display: flex;
   justify-content: center;
   gap: 0.4rem;
@@ -445,32 +451,22 @@ html, body {
   flex-wrap: wrap;
 }
 
-.vtl-footer-links a {
+.footer .footer-links a {
   color: #222;
   text-decoration: none;
   font-size: 0.75rem;
   letter-spacing: 0.03em;
 }
 
-.vtl-footer-links a:hover {
+.footer .footer-links a:hover {
   text-decoration: underline;
 }
 
-.vtl-footer-meta p {
-  margin-bottom: 0.35rem;
-  line-height: 1.4;
-  font-size: 0.8rem;
-  color: #444;
+.footer .footer-copy {
+  font-size: 0.78rem;
+  opacity: 0.7;
 }
 
-@media (max-width: 600px) {
-  .vtl-footer {
-    padding: 2rem 1rem 2.5rem;
-  }
-  .vtl-footer-links {
-    gap: 0.25rem;
-  }
-}
 
 
 
