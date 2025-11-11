@@ -358,6 +358,7 @@ html, body {
   margin-bottom: 0.5rem;
 }
 
+/* ===== Responsive ===== */  
 @media (max-width: 768px) {
   .banner img {
     height: 280px;
@@ -374,7 +375,8 @@ html, body {
     font-size: 0.95rem;
   }
 
-}
+  }
+}  /* <-- close the 820px media query here */
   /* ===== Stats Section ===== */
 .stats-grid {
   display: grid;
