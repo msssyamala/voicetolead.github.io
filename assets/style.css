@@ -190,7 +190,7 @@ body {
   background: var(--gray);
 }
 
-.footer {
+/* .footer {
   background: #0d1738;
   color: #fff;
   padding: 2rem 1rem 2.5rem;
@@ -202,7 +202,7 @@ body {
 .footer a {
   color: var(--gold);
   text-decoration: none;
-}
+} */
 
 /* FORMS */
 form {
@@ -414,46 +414,64 @@ html, body {
   opacity: 0.8;
 }
   
-.footer {
-  background: #0d1738;
-  color: #fff;
+/* ===== footer like toysfortexans ===== */
+.vtl-footer {
+  background: #ffffff;
+  padding: 2.5rem 1rem 3rem;
   text-align: center;
-  padding: 2rem 1rem;
+  border-top: 1px solid #eee;
+  color: #333;
   font-size: 0.9rem;
 }
 
-.footer-content p {
-  margin-bottom: 0.6rem;
-}
-
-.footer-social {
-  margin: 1rem 0;
+.vtl-footer-social {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 1.2rem;
 }
 
-.footer-social img {
-  width: 32px;
-  height: 32px;
-  filter: brightness(0) invert(1); /* makes icons white if they're black */
-  transition: transform 0.2s ease, opacity 0.2s ease;
+.vtl-footer-social img {
+  width: 30px;
+  height: 30px;
+  display: block;
 }
 
-.footer-social img:hover {
-  transform: scale(1.1);
-  opacity: 0.8;
+.vtl-footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
-.footer-location {
-  font-size: 0.85rem;
-  opacity: 0.8;
+.vtl-footer-links a {
+  color: #222;
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
 }
 
-.footer-copy {
-  font-size: 0.78rem;
-  opacity: 0.7;
+.vtl-footer-links a:hover {
+  text-decoration: underline;
 }
+
+.vtl-footer-meta p {
+  margin-bottom: 0.35rem;
+  line-height: 1.4;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+@media (max-width: 600px) {
+  .vtl-footer {
+    padding: 2rem 1rem 2.5rem;
+  }
+  .vtl-footer-links {
+    gap: 0.25rem;
+  }
+}
+
 
 
 }
