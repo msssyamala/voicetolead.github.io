@@ -402,6 +402,71 @@ button, .btn-submit {
   opacity: 0.8;
 }
 
+/* ===== Meet the Founder ===== */
+.founder-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1rem 3.5rem;
+  display: grid;
+  grid-template-columns: 1.1fr 0.6fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.founder-text h2 {
+  color: var(--navy);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.founder-text p {
+  line-height: 1.6;
+  margin-bottom: 0.8rem;
+}
+
+.founder-quote {
+  margin-top: 1.4rem;
+  font-style: italic;
+  color: #222;
+  border-left: 4px solid var(--gold);
+  padding-left: 0.9rem;
+}
+
+.founder-photo {
+  text-align: center;
+}
+
+.founder-photo img {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+}
+
+.founder-photo h3 {
+  margin-top: 0.75rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.founder-photo p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* mobile */
+@media (max-width: 900px) {
+  .founder-section {
+    grid-template-columns: 1fr;
+  }
+  .founder-photo {
+    text-align: left;
+  }
+  .founder-photo img {
+    max-width: 240px;
+  }
+}
+
 /* ===== Footer (light, centered) ===== */
 .footer {
   background: #ffffff;
