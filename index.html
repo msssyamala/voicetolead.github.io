@@ -17,9 +17,9 @@
 
    .banner img {
      width: 100%;
-     height: 450px;              /* you can try 340 if you want even more */
+     height: 450px;
      object-fit: cover;
-     object-position: center 40%; /* 0% = top, 50% = middle — 35% shows a bit lower */
+     object-position: center 40%;
      display: block;
    }
 
@@ -28,7 +28,6 @@
       top: 30%;
       left: 50%;
       transform: translate(-50%, -50%);
-      /* background: rgba(0, 32, 91, 0.65); */
       color: #fff;
       text-align: center;
       max-width: 900px;
@@ -93,25 +92,16 @@
       <a href="contact.html">Contact</a>
       <a class="nav-cta" href="get-involved.html#donate">Donate</a>
     </nav>
-    <!-- your navbar stays the same -->
   </header>
 
   <!-- BANNER -->
   <section class="banner">
     <img src="assets/mission-banner.png" alt="VoiceToLead mission banner" />
-    <!--
-    <div class="mission-overlay">
-      <h2>Our Mission</h2>
-      <p>At VoiceToLead, our mission is to empower every student to</p>
-      <p>find their voice, overcome fear, and communicate with purpose</p>
-      <p>and impact. Through student-led mentorship and hands-on</p>
-      <p>workshops, we build confidence, teach essential communication skills,</p>
-      <p>and open doors to public speaking and debate opportunities.</p>
-    </div>
-    -->
+    <!-- mission overlay is commented out on purpose -->
   </section> 
 
   <main>
+    <!-- WHAT WE DO -->
     <section class="section">
       <h2 class="section-title">What We Do</h2>
       <div class="columns-3">
@@ -150,29 +140,25 @@
       </div>
     </section>
 
-    <section class="section alt-bg">
-      <h2 class="section-title">How You Can Help</h2>
-      <p>We partner with student mentors, parents, educators, and sponsors to deliver high-quality sessions to young speakers.</p>
-      <div class="hero-actions" style="margin-top:1.2rem;">
-        <a class="btn-primary" href="get-involved.html#volunteer">Volunteer / Mentor</a>
-        <a class="btn-secondary" href="get-involved.html#donate">Donate</a>
-      </div>
-    </section>
-
-    <!-- NEW: Meet the Founder -->
+    <!-- MEET THE FOUNDER (now ABOVE How You Can Help) -->
     <section class="section founder-section" id="founder">
-      <div class="founder-text">
+      <div class="founder-inner">
+        <img src="assets/founder-nidhi.jpg" alt="Photo of founder Nidhi Maddi" class="founder-image" />
         <h2>Meet the Founder</h2>
         <p>For students like <strong>Nidhi Maddi</strong>, finding a voice wasn’t always easy. Once a quiet and introverted student through elementary and junior high, Nidhi discovered the power of public speaking — and how confidence and communication can transform a person’s future.</p>
         <p>What began as a personal challenge soon became a purpose. Nidhi founded <strong>VoiceToLead</strong> to help other young people step beyond fear, speak with confidence, and share their stories with pride.</p>
         <p>Today, as a junior at <strong>Rock Hill High School</strong>, she’s on a mission to inspire students everywhere to find their voice — not just to speak, but to lead.</p>
         <p class="founder-quote">“Courage starts with showing up and letting ourselves be seen.” — <em>Brené Brown</em></p>
       </div>
-      <div class="founder-photo">
-        <!-- update the src to your real image -->
-        <img src="assets/founder-nidhi.jpg" alt="Photo of founder Nidhi Maddi" />
-        <h3>Nidhi Maddi</h3>
-        <p>Founder, VoiceToLead</p>
+    </section>
+
+    <!-- HOW YOU CAN HELP (now AFTER founder) -->
+    <section class="section alt-bg">
+      <h2 class="section-title">How You Can Help</h2>
+      <p>We partner with student mentors, parents, educators, and sponsors to deliver high-quality sessions to young speakers.</p>
+      <div class="hero-actions" style="margin-top:1.2rem;">
+        <a class="btn-primary" href="get-involved.html#volunteer">Volunteer / Mentor</a>
+        <a class="btn-secondary" href="get-involved.html#donate">Donate</a>
       </div>
     </section>
   </main>
