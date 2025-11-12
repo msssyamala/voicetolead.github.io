@@ -404,17 +404,20 @@ button, .btn-submit {
 
 /* ===== Meet the Founder ===== */
 .founder-section {
-  background: var(--gray);  /* light gray background */
-  padding: 3rem 1rem 3.5rem;
+  background: none;
+  padding: 0; /* remove outer gray bleed */
 }
 
 .founder-inner {
+  background: var(--gray);  /* gray applies only inside founder area */
+  padding: 3rem 1rem 3.5rem;
   max-width: 1100px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1.1fr 0.8fr; /* text left, photo right */
   align-items: center;
   gap: 2.5rem;
+  border-radius: 14px; /* subtle card-like shape */
 }
 
 .founder-text h2 {
