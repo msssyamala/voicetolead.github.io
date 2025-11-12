@@ -23,8 +23,8 @@
      display: block;
    }
 
-     .mission-overlay {
-      position: absolute;                /* THIS is what makes it overlay */
+   .mission-overlay {
+      position: absolute;
       top: 30%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -71,7 +71,7 @@
         font-size: 0.9rem;
       }
     }
-</style>
+  </style>
 </head>
 <body>
   <!-- NAVBAR -->
@@ -96,17 +96,19 @@
     <!-- your navbar stays the same -->
   </header>
 
-  <!-- put this right after the navbar -->
+  <!-- BANNER -->
   <section class="banner">
     <img src="assets/mission-banner.png" alt="VoiceToLead mission banner" />
-    <!--<div class="mission-overlay">
+    <!--
+    <div class="mission-overlay">
       <h2>Our Mission</h2>
-      <p>At VoiceToLead, our mission is to empower every student to  </p>
-      <p>find their voice, overcome fear, and communicate with purpose </p>
-      <p>and impact. Through student-led mentorship and hands-on </p>
+      <p>At VoiceToLead, our mission is to empower every student to</p>
+      <p>find their voice, overcome fear, and communicate with purpose</p>
+      <p>and impact. Through student-led mentorship and hands-on</p>
       <p>workshops, we build confidence, teach essential communication skills,</p>
-      <p> and open doors to public speaking and debate opportunities.</p>
-    </div>  -->
+      <p>and open doors to public speaking and debate opportunities.</p>
+    </div>
+    -->
   </section> 
 
   <main>
@@ -116,7 +118,6 @@
         <div class="card">
           <h3 class="card-title-with-icon">
             <span class="card-icon" aria-hidden="true">
-             <!-- simple mic-ish icon -->
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               <path d="M12 14a3 3 0 0 0 3-3V7a3 3 0 1 0-6 0v4a3 3 0 0 0 3 3Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               <path d="M6 11a6 6 0 0 0 12 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -130,16 +131,15 @@
         </div>
         <div class="card">
           <h3 class="card-title-with-icon">
-          <span class="card-icon" aria-hidden="true">
-          <!-- leadership icon (star/award-style) -->
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2l2.39 4.85L20 7.27l-3.9 3.8L17.78 18 12 15.27 6.22 18l1.68-6.93L4 7.27l5.61-.42L12 2Z" 
-              stroke="currentColor" 
-              stroke-width="1.5" 
-              stroke-linejoin="round" />
-          </svg>
-          </span>
-          Leadership Training
+            <span class="card-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2l2.39 4.85L20 7.27l-3.9 3.8L17.78 18 12 15.27 6.22 18l1.68-6.93L4 7.27l5.61-.42L12 2Z" 
+                  stroke="currentColor" 
+                  stroke-width="1.5" 
+                  stroke-linejoin="round" />
+            </svg>
+            </span>
+            Leadership Training
           </h3>
           <p>Workshops focused on mentorship, initiative, and real-world communication.</p>
         </div>
@@ -158,29 +158,46 @@
         <a class="btn-secondary" href="get-involved.html#donate">Donate</a>
       </div>
     </section>
+
+    <!-- NEW: Meet the Founder -->
+    <section class="section founder-section" id="founder">
+      <div class="founder-text">
+        <h2>Meet the Founder</h2>
+        <p>For students like <strong>Nidhi Maddi</strong>, finding a voice wasn’t always easy. Once a quiet and introverted student through elementary and junior high, Nidhi discovered the power of public speaking — and how confidence and communication can transform a person’s future.</p>
+        <p>What began as a personal challenge soon became a purpose. Nidhi founded <strong>VoiceToLead</strong> to help other young people step beyond fear, speak with confidence, and share their stories with pride.</p>
+        <p>Today, as a junior at <strong>Rock Hill High School</strong>, she’s on a mission to inspire students everywhere to find their voice — not just to speak, but to lead.</p>
+        <p class="founder-quote">“Courage starts with showing up and letting ourselves be seen.” — <em>Brené Brown</em></p>
+      </div>
+      <div class="founder-photo">
+        <!-- update the src to your real image -->
+        <img src="assets/founder-nidhi.jpg" alt="Photo of founder Nidhi Maddi" />
+        <h3>Nidhi Maddi</h3>
+        <p>Founder, VoiceToLead</p>
+      </div>
+    </section>
   </main>
 
- <footer class="footer">
-  <div class="footer-social">
-    <a href="https://instagram.com/voice.to.lead" target="_blank" rel="noreferrer">
-      <img src="assets/icons/instagram.png" alt="Instagram" />
-    </a>
-    <a href="mailto:voicetolead@gmail.com" aria-label="Email">
-        <img src="assets/icons/mail.png" alt="Email icon" />
-    </a>
-  </div>
+  <footer class="footer">
+    <div class="footer-social">
+      <a href="https://instagram.com/voice.to.lead" target="_blank" rel="noreferrer">
+        <img src="assets/icons/instagram.png" alt="Instagram" />
+      </a>
+      <a href="mailto:voicetolead@gmail.com" aria-label="Email">
+          <img src="assets/icons/mail.png" alt="Email icon" />
+      </a>
+    </div>
 
-  <div class="footer-links">
-    <a href="privacy.html">PRIVACY POLICY</a>
-    <span>·</span>
-    <a href="terms.html">TERMS & CONDITIONS</a>
-  </div>
+    <div class="footer-links">
+      <a href="privacy.html">PRIVACY POLICY</a>
+      <span>·</span>
+      <a href="terms.html">TERMS & CONDITIONS</a>
+    </div>
 
-  <p>voicetolead@gmail.com</p>
-  <p>Texas, USA</p>
-  <p>VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).</p>
-  <p class="footer-copy">© <span id="year"></span> VoiceToLead. All rights reserved.</p>
- </footer>
+    <p>voicetolead@gmail.com</p>
+    <p>Texas, USA</p>
+    <p>VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).</p>
+    <p class="footer-copy">© <span id="year"></span> VoiceToLead. All rights reserved.</p>
+  </footer>
 
   <script src="scripts/main.js"></script>
   <script>
