@@ -439,6 +439,8 @@ button, .btn-submit {
 .founder-photo img {
   width: 100%;
   max-width: 320px;
+  aspect-ratio: 1 / 1;  /* keeps image square */
+  object-fit: cover;    /* zooms to fill without distortion */
   border-radius: 14px;
   box-shadow: 0 10px 24px rgba(0,0,0,0.08);
 }
