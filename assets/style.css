@@ -225,6 +225,10 @@ button, .btn-submit {
     right: 0;
     z-index: 5000;        /* above banner + overlay */
   }
+    /* Ensure section-title is visible and matches 'Our Story' color on mobile */
+    .section-title {
+      color: var(--navy) !important;
+    }
 
   /* ✅ this is the important part for you */
   .nav-left {
