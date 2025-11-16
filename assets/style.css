@@ -230,6 +230,11 @@ button, .btn-submit {
       color: var(--navy) !important;
     }
 
+    /* Fix: Add padding to first section so title is not hidden under navbar */
+    main > .section:first-child {
+      padding-top: 5.5rem;
+    }
+
   /* ✅ this is the important part for you */
   .nav-left {
     margin-left: 0;
