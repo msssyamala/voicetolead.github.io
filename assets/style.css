@@ -232,7 +232,7 @@ button, .btn-submit {
 
     /* Fix: Add padding to first section so title is not hidden under navbar */
     main > .section:first-child {
-      padding-top: 5.5rem;
+      padding-top: 7.5rem;
     }
 
   /* ✅ this is the important part for you */
