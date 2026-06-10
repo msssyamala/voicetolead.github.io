@@ -19,10 +19,10 @@
    .banner img {
      width: 100%;
      height: 520px; /* show taller area */
-     object-fit: contain; /* show full image without cropping */
-     object-position: center center;
+     object-fit: cover; /* fill horizontally while preserving focal area */
+     object-position: center 40%; /* shift focal point down to reveal bottom area */
      display: block;
-     background: #fff; /* fill any letterbox with white */
+     background: #fff;
    }
 
    .mission-overlay {
@@ -58,9 +58,9 @@
 
     @media (max-width: 768px) {
       .banner img {
-        height: 360px; /* increase mobile height slightly */
-        object-fit: contain;
-        object-position: center center;
+        height: 360px; /* mobile height */
+        object-fit: cover;
+        object-position: center 45%;
       }
       .mission-overlay {
         max-width: 92%;
