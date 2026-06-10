@@ -17,10 +17,10 @@
    }
 
    .banner img {
-     width: 100%;
-     height: clamp(560px, 60vh, 880px); /* increase vertical space responsively */
-     object-fit: cover; /* fill horizontally while preserving focal area */
-     object-position: center 30%; /* show more of the lower area */
+    width: 100%;
+    height: clamp(720px, 70vh, 1100px); /* increase vertical space significantly to reveal more bottom */
+    object-fit: cover; /* fill horizontally while preserving focal area */
+    object-position: center 25%; /* move focal point up to show lower area */
      display: block;
      background: #fff;
    }
@@ -58,9 +58,9 @@
 
     @media (max-width: 768px) {
       .banner img {
-        height: clamp(360px, 45vh, 520px); /* increase mobile height responsively */
+        height: clamp(420px, 55vh, 720px); /* increase mobile height more */
         object-fit: cover;
-        object-position: center 40%;
+        object-position: center 35%;
       }
       .mission-overlay {
         max-width: 92%;
