@@ -18,9 +18,9 @@
 
    .banner img {
      width: 100%;
-     height: 520px; /* show taller area */
+     height: clamp(560px, 60vh, 880px); /* increase vertical space responsively */
      object-fit: cover; /* fill horizontally while preserving focal area */
-    object-position: center 35%; /* shift focal point up slightly to reveal more bottom */
+     object-position: center 30%; /* show more of the lower area */
      display: block;
      background: #fff;
    }
@@ -58,7 +58,7 @@
 
     @media (max-width: 768px) {
       .banner img {
-        height: 360px; /* mobile height */
+        height: clamp(360px, 45vh, 520px); /* increase mobile height responsively */
         object-fit: cover;
         object-position: center 40%;
       }
