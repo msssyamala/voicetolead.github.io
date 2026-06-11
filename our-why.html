@@ -94,6 +94,7 @@
   </style>
 </head>
 <body>
+  <!-- deploy-touch: 2026-06-11T00:00:00Z -->
   <header class="navbar">
     <div class="nav-left">
       <a href="index.html"><img src="assets/logo.png" alt="VoiceToLead logo" /></a>
@@ -208,6 +209,20 @@
   <script src="scripts/main.js"></script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+  <script>
+    // Remove any stale/duplicate "Why We Exist" sections that don't contain the updated copy.
+    (function(){
+      const desiredPhrase = "The real reason so many people grow up with a fear of public speaking";
+      document.querySelectorAll('.why-section').forEach(section => {
+        const heading = section.querySelector('h2');
+        if (heading && heading.textContent.trim() === 'Why We Exist') {
+          if (!section.textContent.includes(desiredPhrase)) {
+            section.remove();
+          }
+        }
+      });
+    })();
   </script>
 </body>
 </html>
