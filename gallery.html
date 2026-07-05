@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gallery | VoiceToLead</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="index.html"><img src="assets/logo.png" alt="VoiceToLead logo" /></a>
+      <div class="nav-title">VoiceToLead</div>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="programs.html">Programs</a>
+      <a href="our-why.html">Our Why</a>
+      <a href="get-involved.html">Get Involved</a>
+      <a href="team.html">Our Team</a>
+      <a href="gallery.html" class="active">Gallery</a>
+      <a href="contact.html">Contact</a>
+      <a class="nav-cta" href="get-involved.html#donate">Donate</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <h1 class="section-title">Gallery</h1>
+      <p>Explore photos from VoiceToLead events, workshops, and student work. Upload your pictures and I’ll place them here.</p>
+      <div class="columns-3" style="margin-top:1.2rem;">
+        <div class="card" style="min-height: 200px; display:flex; align-items:center; justify-content:center; text-align:center; color:#555;">
+          <p>Image 1 placeholder</p>
+        </div>
+        <div class="card" style="min-height: 200px; display:flex; align-items:center; justify-content:center; text-align:center; color:#555;">
+          <p>Image 2 placeholder</p>
+        </div>
+        <div class="card" style="min-height: 200px; display:flex; align-items:center; justify-content:center; text-align:center; color:#555;">
+          <p>Image 3 placeholder</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-social">
+      <a href="https://instagram.com/voice.to.lead" target="_blank" rel="noreferrer">
+        <img src="assets/icons/instagram.png" alt="Instagram" />
+      </a>
+      <a href="mailto:voicetolead@gmail.com" aria-label="Email">
+          <img src="assets/icons/mail.png" alt="Email icon" />
+      </a>
+    </div>
+    <p>voicetolead@gmail.com</p>
+    <p>Texas, USA</p>
+    <p>VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).</p>
+    <p class="footer-copy">© <span id="year"></span> VoiceToLead. All rights reserved.</p>
+  </footer>
+
+  <script src="scripts/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
