@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Programs & Workshops | VoiceToLead</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="index.html"><img src="assets/logo.png" alt="logo" /></a>
+      <div class="nav-title">VoiceToLead</div>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="programs.html" class="active">Programs</a>
+      <a href="our-why.html">Our Why</a> 
+      <a href="get-involved.html">Get Involved</a>
+      <a href="team.html">Our Team</a>
+      <a href="gallery/">Gallery</a>
+      <a href="contact.html">Contact</a>
+      <a class="nav-cta" href="get-involved.html#donate">Donate</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <h1 class="section-title">Programs & Workshops</h1>
+      <p>We run structured public speaking and leadership sessions tailored for grades 5–12. Below are our core formats.</p>
+      <div class="columns-3" style="margin-top:1.2rem;">
+        <div class="card">
+          <h3>Intro to Public Speaking</h3>
+          <p>60–90 min workshop covering posture, projection, impromptu prompts, and confidence drills.</p>
+        </div>
+        <div class="card">
+          <h3>Speech & Debate Skills</h3>
+          <p>For students already in NSDA / TFA circuits: delivery polishing, case structure, and feedback loops.</p>
+        </div>
+        <div class="card">
+          <h3>Mentor-Led Small Groups</h3>
+          <p>Breakout-style sessions led by trained mentors, focused on peer feedback and stage readiness.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt-bg">
+      <h2 class="section-title">Want to Host a Workshop?</h2>
+      <p>Schools, clubs, or community groups can request a workshop. We can tailor sessions for skill-building, competition prep, or leadership development.</p>
+      <a class="btn-primary" href="https://docs.google.com/forms/d/e/1FAIpQLSemWFvHhWBeotnbztmJKRzE10D6b2dGzyOitZjCOkS_HrmBxQ/viewform?usp=dialog" target="_blank" rel="noopener" style="margin-top: 2rem; display: inline-block;">Request a Workshop</a>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Upcoming Workshop</h2>
+      <p>6 week public speaking workshop led by High School students</p>
+      <a class="btn-primary" href="https://docs.google.com/forms/d/e/1FAIpQLSei13YUpkf5_o8uE-6HROGV74WxT5D4EFH40z4StK6d7C-joA/viewform?usp=dialog" target="_blank" rel="noopener" style="margin-top:1.5rem;display:inline-block;">Register</a>
+    </section>
+
+
+        <section class="section alt-bg">
+          <h2 class="section-title">In Progress Workshops</h2>
+          <div class="columns-3" style="margin-top:1.5rem;">
+            <div class="card" style="padding:0; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+              <img src="assets/interestform.jpeg" alt="Interest form event" style="width:100%; height:auto; display:block;" />
+            </div>
+            <div class="card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:flex-start;">
+              <img src="assets/elevatorpitch.jpeg" alt="Elevator pitch event" style="width:100%; height:auto; display:block;" />
+              <a class="btn-primary" href="https://docs.google.com/forms/d/e/1FAIpQLSfs7HIrOQf57gvUnioUbFQOl4A1gunG2kdbQF2Ypm_dIyeqHg/viewform?usp=header" target="_blank" rel="noopener" style="margin-top:1rem;display:inline-block;">Register</a>
+            </div>
+          </div>
+        </section>
+  </main>
+
+  <footer class="footer">
+  <div class="footer-social">
+    <a href="https://instagram.com/voice.to.lead" target="_blank" rel="noreferrer">
+      <img src="assets/icons/instagram.png" alt="Instagram" />
+    </a>
+    <a href="mailto:voicetolead@gmail.com" aria-label="Email">
+        <img src="assets/icons/mail.png" alt="Email icon" />
+    </a>
+  </div>
+
+   <!--<div class="footer-links">
+    <a href="privacy.html">PRIVACY POLICY</a>
+    <span>·</span>
+    <a href="terms.html">TERMS & CONDITIONS</a>
+  </div> -->
+
+  <p>voicetolead@gmail.com</p>
+  <p>Texas, USA</p>
+  <p>VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).</p>
+  <p class="footer-copy">© <span id="year"></span> VoiceToLead. All rights reserved.</p>
+ </footer>
+  
+  <script src="scripts/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
