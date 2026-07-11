@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Speech Coach Feedback | VoiceToLead</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="index.html">
+        <img src="assets/logo.png" alt="VoiceToLead logo" />
+      </a>
+      <div class="nav-title">VoiceToLead</div>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="programs.html">Programs</a>
+      <a href="our-why.html">Our Why</a>
+      <a href="get-involved.html">Get Involved</a>
+      <a href="team.html">Our Team</a>
+      <a href="gallery/">Gallery</a>
+      <a href="contact.html">Contact</a>
+      <a class="nav-cta" href="get-involved.html#donate">Donate</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section feedback-section">
+      <p class="eyebrow">AI Speech Coach</p>
+      <h1 class="section-title">Speech Feedback</h1>
+      <p class="feedback-intro">Enter a submission ID to check whether feedback is ready.</p>
+
+      <form class="feedback-lookup" data-api-base="https://speech-coach-api.voicetolead.workers.dev">
+        <label>
+          <span>Submission ID</span>
+          <input type="text" name="submission_id" autocomplete="off" placeholder="Paste submission ID" required />
+        </label>
+        <button type="submit" class="btn-primary">Load Feedback</button>
+      </form>
+
+      <p class="feedback-status" aria-live="polite">Waiting for a submission ID.</p>
+      <div class="feedback-results" hidden></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-social">
+      <a href="https://instagram.com/voice.to.lead" target="_blank" rel="noreferrer">
+        <img src="assets/icons/instagram.png" alt="Instagram" />
+      </a>
+      <a href="mailto:voicetolead@gmail.com" aria-label="Email">
+        <img src="assets/icons/mail.png" alt="Email icon" />
+      </a>
+    </div>
+    <p>voicetolead@gmail.com</p>
+    <p>Texas, USA</p>
+    <p>VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).</p>
+    <p class="footer-copy">© <span id="year"></span> VoiceToLead. All rights reserved.</p>
+  </footer>
+
+  <script src="scripts/main.js"></script>
+  <script src="scripts/feedback.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

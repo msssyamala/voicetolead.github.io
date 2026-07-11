@@ -222,10 +222,11 @@ function initSpeechCoachRecorder() {
       }
 
       const submissionId = result.submission && result.submission.id ? result.submission.id : 'received';
+      const feedbackUrl = `feedback.html?id=${encodeURIComponent(submissionId)}`;
       submitForm.hidden = true;
       resetButton.disabled = false;
       startButton.disabled = false;
-      setStatus(`Submitted successfully. Submission ID: ${submissionId}`);
+      status.innerHTML = `Submitted successfully. Save this ID: <strong>${submissionId}</strong>. <a href="${feedbackUrl}">View feedback</a>`;
     } catch (error) {
       submitButton.disabled = false;
       resetButton.disabled = false;

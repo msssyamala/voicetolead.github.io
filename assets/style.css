@@ -343,6 +343,114 @@ body {
   width: fit-content;
 }
 
+.coach-status a {
+  color: var(--navy);
+  font-weight: 800;
+}
+
+.feedback-section {
+  width: min(100%, var(--max-width));
+}
+
+.feedback-intro {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.feedback-lookup {
+  align-items: end;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: minmax(260px, 1fr) auto;
+  max-width: none;
+}
+
+.feedback-lookup label {
+  display: grid;
+  font-weight: 700;
+  gap: 0.35rem;
+}
+
+.feedback-status {
+  color: #444;
+  margin: 1.2rem 0;
+}
+
+.feedback-results {
+  display: grid;
+  gap: 1rem;
+}
+
+.feedback-summary,
+.feedback-panel,
+.feedback-transcript {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.feedback-summary {
+  background: var(--gray);
+}
+
+.feedback-summary p,
+.feedback-panel p,
+.feedback-transcript p {
+  line-height: 1.6;
+}
+
+.feedback-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.feedback-panel h2 {
+  color: var(--navy);
+  font-size: 1.15rem;
+  margin-bottom: 0.7rem;
+}
+
+.feedback-panel ul {
+  display: grid;
+  gap: 0.45rem;
+  margin-left: 1.1rem;
+}
+
+.feedback-score {
+  align-items: center;
+  display: flex;
+  gap: 0.8rem;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+
+.feedback-score span {
+  color: #444;
+  font-weight: 700;
+}
+
+.feedback-score strong {
+  color: var(--navy);
+  font-size: 1.4rem;
+}
+
+.feedback-next-steps {
+  border-color: rgba(0, 32, 91, 0.25);
+}
+
+.feedback-transcript summary {
+  color: var(--navy);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.feedback-transcript p {
+  margin-top: 0.8rem;
+  white-space: pre-wrap;
+}
+
 .stat-strip {
   background: #fff;
   border-radius: var(--radius);
@@ -475,6 +583,13 @@ button, .btn-submit {
     grid-template-columns: 1fr;
   }
   .coach-submit {
+    width: 100%;
+  }
+  .feedback-lookup,
+  .feedback-grid {
+    grid-template-columns: 1fr;
+  }
+  .feedback-lookup .btn-primary {
     width: 100%;
   }
   .get-involved-buttons .btn-primary,
