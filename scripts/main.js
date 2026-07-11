@@ -226,7 +226,7 @@ function initSpeechCoachRecorder() {
       submitForm.hidden = true;
       resetButton.disabled = false;
       startButton.disabled = false;
-      status.innerHTML = `Submitted successfully. Save this ID: <strong>${submissionId}</strong>. <a href="${feedbackUrl}">View feedback</a>`;
+      status.innerHTML = `Submitted successfully. Save this ID: <strong>${submissionId}</strong>. Feedback is being prepared. <a href="${feedbackUrl}">View feedback</a>`;
     } catch (error) {
       submitButton.disabled = false;
       resetButton.disabled = false;

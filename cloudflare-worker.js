@@ -2,12 +2,8 @@ const TRANSCRIPTION_MODEL = "gpt-4o-mini-transcribe";
 const FEEDBACK_MODEL = "gpt-4o-mini";
 
 export default {
-  async fetch(request, env) {
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": env.ALLOWED_ORIGIN || "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    };
+  async fetch(request, env, ctx) {
+    const corsHeaders = getCorsHeaders(request, env);
 
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: corsHeaders });
@@ -30,7 +26,7 @@ export default {
     }
 
     if (url.pathname === "/speech-submissions") {
-      return createSubmission(request, env, corsHeaders);
+      return createSubmission(request, env, corsHeaders, ctx);
     }
 
     const transcribeMatch = url.pathname.match(
@@ -53,7 +49,7 @@ export default {
   },
 };
 
-async function createSubmission(request, env, corsHeaders) {
+async function createSubmission(request, env, corsHeaders, ctx) {
   try {
     const formData = await request.formData();
     const video = formData.get("video");
@@ -96,10 +92,15 @@ async function createSubmission(request, env, corsHeaders) {
     }
 
     const rows = await supabaseResponse.json();
+    const submission = rows[0];
+
+    if (ctx && submission && submission.id) {
+      ctx.waitUntil(processSubmission(submission.id, env));
+    }
 
     return json({
       ok: true,
-      submission: rows[0],
+      submission,
     }, 200, corsHeaders);
   } catch (error) {
     return json({
@@ -107,6 +108,16 @@ async function createSubmission(request, env, corsHeaders) {
       details: error.message,
     }, 500, corsHeaders);
   }
+}
+
+async function processSubmission(submissionId, env) {
+  const transcribeResponse = await transcribeSubmission(submissionId, env, {});
+
+  if (!transcribeResponse.ok) {
+    return;
+  }
+
+  await generateSpeechFeedback(submissionId, env, {});
 }
 
 async function readSubmission(submissionId, env, corsHeaders) {
@@ -372,6 +383,23 @@ function updateSubmission(env, submissionId, values) {
     },
     body: JSON.stringify(values),
   });
+}
+
+function getCorsHeaders(request, env) {
+  const requestOrigin = request.headers.get("Origin");
+  const allowedOrigins = (env.ALLOWED_ORIGIN || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  const corsOrigin = allowedOrigins.includes(requestOrigin)
+    ? requestOrigin
+    : allowedOrigins[0] || "*";
+
+  return {
+    "Access-Control-Allow-Origin": corsOrigin,
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
 }
 
 function json(data, status, headers) {
