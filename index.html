@@ -6,74 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="icon" type="image/png" href="assets/logo.png" />
-  <!--adding comment-->
-  <!-- FORCE banner styles inline so GitHub/cache can't ignore them -->
-  <style>
-   .banner {
-     position: relative;
-     width: 100vw;
-     margin-left: calc(50% - 50vw);
-     overflow: hidden;
-   }
-
-   .banner img {
-    width: 100%;
-    height: clamp(900px, 75vh, 1375px); /* increased ~25% to reveal more bottom */
-    object-fit: cover; /* fill horizontally while preserving focal area */
-    object-position: center 20%; /* shift focal point up more to show lower area */
-     display: block;
-     background: #fff;
-   }
-
-   .mission-overlay {
-      position: absolute;
-      top: 30%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #fff;
-      text-align: center;
-      max-width: 900px;
-      text-align: center;
-      padding: 1.8rem 2rem;
-      border-radius: 14px;
-      line-height: 1.5;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
-    }
-
-    .mission-overlay h2 {
-      color: #FFBF00;
-      margin-bottom: 0.6rem;
-      font-size: 2rem;
-    }
-
-    .mission-overlay p {
-      margin-bottom: 0.4rem;
-      font-size: 1.02rem;
-    }
-
-    html, body {
-      overflow-x: hidden;
-      margin: 0;
-    }
-
-    @media (max-width: 768px) {
-      .banner img {
-        height: clamp(525px, 70vh, 900px); /* increased ~25% for mobile */
-        object-fit: cover;
-        object-position: center 30%;
-      }
-      .mission-overlay {
-        max-width: 92%;
-        padding: 1.1rem 1.2rem;
-      }
-      .mission-overlay h2 {
-        font-size: 1.5rem;
-      }
-      .mission-overlay p {
-        font-size: 0.9rem;
-      }
-    }
-  </style>
 </head>
 <body>
   <!-- NAVBAR -->
@@ -98,13 +30,69 @@
     </nav>
   </header>
 
-  <!-- BANNER -->
-  <section class="banner">
-    <img src="assets/front-page.png" alt="VoiceToLead front page banner" />
-    <!-- mission overlay is commented out on purpose -->
-  </section> 
-
   <main>
+    <!-- HOMEPAGE SPOTLIGHT -->
+    <section class="home-spotlight">
+      <div class="spotlight-story">
+        <div class="spotlight-image">
+          <img src="assets/front-page.png" alt="VoiceToLead students and mentors" />
+        </div>
+        <div class="spotlight-copy">
+          <p class="eyebrow">Empowering young voices</p>
+          <h1>Practice speaking with confidence.</h1>
+          <p>VoiceToLead helps young speakers build delivery, storytelling, and leadership skills through workshops, mentorship, and now AI-powered practice feedback.</p>
+          <div class="spotlight-points" aria-label="What we do">
+            <span>Public speaking labs</span>
+            <span>Leadership training</span>
+            <span>Competition prep</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="spotlight-coach" id="ai-speech-coach">
+        <div class="ai-coach-copy">
+          <p class="eyebrow">New practice tool</p>
+          <h2 class="section-title">AI Speech Coach</h2>
+          <p>Record a practice video up to 1 minute long. When you are happy with it, submit the recording for feedback.</p>
+        </div>
+
+        <div class="coach-recorder" data-max-seconds="60" data-upload-url="https://speech-coach-api.voicetolead.workers.dev/speech-submissions">
+          <div class="coach-video-frame">
+            <video class="coach-preview" playsinline muted></video>
+            <video class="coach-playback" controls playsinline hidden></video>
+            <div class="coach-placeholder">
+              <strong>Camera preview will appear here</strong>
+              <span>Allow camera and microphone access when prompted.</span>
+            </div>
+          </div>
+
+          <div class="coach-controls">
+            <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
+            <div class="coach-actions">
+              <button type="button" class="btn-primary coach-start">Start Recording</button>
+              <button type="button" class="btn-secondary coach-stop" disabled>Stop</button>
+              <button type="button" class="btn-secondary coach-reset" disabled>Record Again</button>
+            </div>
+            <form class="coach-submit-form" hidden>
+              <div class="coach-form-grid">
+                <label>
+                  <span>Name</span>
+                  <input type="text" name="student_name" autocomplete="name" placeholder="Student name" />
+                </label>
+                <label>
+                  <span>Email</span>
+                  <input type="email" name="student_email" autocomplete="email" placeholder="Email for updates" />
+                </label>
+              </div>
+              <button type="submit" class="btn-primary coach-submit">Submit for Feedback</button>
+            </form>
+            <p class="coach-status" aria-live="polite">Ready when you are.</p>
+            <a class="coach-download" hidden>Download recording</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- WHAT WE DO -->
     <section class="section">
       <h2 class="section-title">What We Do</h2>
@@ -140,64 +128,6 @@
         <div class="card">
           <h3>Competition Prep</h3>
           <p>Support for speech & debate competitors to refine cases, intros, and delivery.</p>
-        </div>
-        <div class="card">
-          <h3 class="card-title-with-icon">
-            <span class="card-icon" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <rect x="4" y="5" width="11" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M15 10.5 20 8v8l-5-2.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                <path d="M8 15h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </span>
-            AI Speech Coach
-          </h3>
-          <p>Record a short practice speech and get ready for personalized feedback.</p>
-          <a class="card-link" href="#ai-speech-coach">Try the recorder</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- AI SPEECH COACH -->
-    <section class="section ai-coach-section" id="ai-speech-coach">
-      <div class="ai-coach-copy">
-        <p class="eyebrow">New practice tool</p>
-        <h2 class="section-title">AI Speech Coach</h2>
-        <p>Record a practice video up to 1 minute long. When you are happy with it, submit the recording for feedback.</p>
-      </div>
-
-      <div class="coach-recorder" data-max-seconds="60" data-upload-url="https://speech-coach-api.voicetolead.workers.dev/speech-submissions">
-        <div class="coach-video-frame">
-          <video class="coach-preview" playsinline muted></video>
-          <video class="coach-playback" controls playsinline hidden></video>
-          <div class="coach-placeholder">
-            <strong>Camera preview will appear here</strong>
-            <span>Allow camera and microphone access when prompted.</span>
-          </div>
-        </div>
-
-        <div class="coach-controls">
-          <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
-          <div class="coach-actions">
-            <button type="button" class="btn-primary coach-start">Start Recording</button>
-            <button type="button" class="btn-secondary coach-stop" disabled>Stop</button>
-            <button type="button" class="btn-secondary coach-reset" disabled>Record Again</button>
-          </div>
-          <form class="coach-submit-form" hidden>
-            <div class="coach-form-grid">
-              <label>
-                <span>Name</span>
-                <input type="text" name="student_name" autocomplete="name" placeholder="Student name" />
-              </label>
-              <label>
-                <span>Email</span>
-                <input type="email" name="student_email" autocomplete="email" placeholder="Email for updates" />
-              </label>
-            </div>
-            <button type="submit" class="btn-primary coach-submit">Submit for Feedback</button>
-          </form>
-          <p class="coach-status" aria-live="polite">Ready when you are.</p>
-          <a class="coach-download" hidden>Download recording</a>
         </div>
       </div>
     </section>

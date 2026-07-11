@@ -21,6 +21,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 /* NAVBAR */
@@ -139,6 +140,85 @@ body {
   text-decoration: none;
   border-radius: 999px;
   font-weight: 500;
+}
+
+/* HOME SPOTLIGHT */
+.home-spotlight {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+  width: 100%;
+}
+
+.spotlight-story {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.spotlight-image {
+  aspect-ratio: 16 / 10;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.spotlight-image img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  width: 100%;
+}
+
+.spotlight-copy {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.spotlight-copy h1 {
+  color: var(--navy);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.05;
+}
+
+.spotlight-copy p {
+  line-height: 1.6;
+  max-width: 680px;
+}
+
+.spotlight-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.spotlight-points span {
+  background: var(--gray);
+  border: 1px solid #e8e8e8;
+  border-radius: 999px;
+  color: var(--navy);
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 0.45rem 0.75rem;
+}
+
+.spotlight-coach {
+  align-self: start;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.spotlight-coach .section-title {
+  margin-bottom: 0.65rem;
+}
+
+.spotlight-coach .ai-coach-copy {
+  margin-bottom: 1rem;
 }
 
 /* CONTENT SECTIONS */
@@ -514,8 +594,9 @@ button, .btn-submit {
       color: var(--navy) !important;
     }
 
-    /* Fix: Add padding to first section so title is not hidden under navbar */
-    main > .section:first-child {
+    /* Fix: Add padding so first homepage content is not hidden under navbar */
+    main > .section:first-child,
+    main > .home-spotlight:first-child {
       padding-top: 7.5rem;
     }
 
@@ -568,6 +649,15 @@ button, .btn-submit {
   section.section.alt-bg {
     display: block !important;
   }
+  .home-spotlight {
+    grid-template-columns: 1fr;
+  }
+  .spotlight-coach {
+    padding: 0.9rem;
+  }
+  .spotlight-image {
+    aspect-ratio: 4 / 3;
+  }
   .ai-coach-section {
     grid-template-columns: 1fr;
   }
@@ -607,23 +697,6 @@ button, .btn-submit {
   #get-involved-page .card a.btn-primary,
   #get-involved-page .card a.btn-secondary {
     display: inline-block;
-  }
-
-  /* ===== Banner Styling (you had this inside mobile) ===== */
-  .banner {
-    margin-top: 70px;
-    position: relative;
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-    overflow: hidden;
-  }
-
-  .banner img {
-    width: 100%;
-    height: 340px;
-    object-fit: cover;
-    object-position: center 35%;
-    display: block;
   }
 
   html, body {
