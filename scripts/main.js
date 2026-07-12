@@ -44,11 +44,20 @@ function initSpeechCoachRecorder() {
   const status = recorder.querySelector('.coach-status');
   const timer = recorder.querySelector('.coach-timer');
   const download = recorder.querySelector('.coach-download');
+  const livePanel = recorder.querySelector('.coach-live-panel');
+  const volumeStatus = recorder.querySelector('.coach-volume-status');
+  const volumeBar = recorder.querySelector('.coach-volume-bar');
+  const pauseStatus = recorder.querySelector('.coach-pause-status');
   const turnstileContainer = recorder.querySelector('.coach-turnstile');
   const turnstileToken = recorder.querySelector('.coach-turnstile-token');
 
   let mediaRecorder;
   let stream;
+  let audioContext;
+  let audioAnalyser;
+  let audioData;
+  let liveCoachId;
+  let quietStartedAt;
   let chunks = [];
   let elapsedSeconds = 0;
   let timerId;
@@ -85,6 +94,109 @@ function initSpeechCoachRecorder() {
     }
     preview.srcObject = null;
     frame.classList.remove('is-previewing');
+  };
+
+  const setLiveCoachDisplay = (level, volumeMessage, pauseMessage, stateClass) => {
+    if (volumeStatus) {
+      volumeStatus.textContent = volumeMessage;
+    }
+
+    if (pauseStatus) {
+      pauseStatus.textContent = pauseMessage;
+    }
+
+    if (volumeBar) {
+      volumeBar.style.width = `${Math.round(Math.min(level * 100, 100))}%`;
+      volumeBar.classList.remove('is-low', 'is-good', 'is-high');
+
+      if (stateClass) {
+        volumeBar.classList.add(stateClass);
+      }
+    }
+  };
+
+  const stopLiveCoach = () => {
+    if (liveCoachId) {
+      cancelAnimationFrame(liveCoachId);
+      liveCoachId = null;
+    }
+
+    if (audioContext) {
+      audioContext.close().catch(() => null);
+      audioContext = null;
+    }
+
+    audioAnalyser = null;
+    audioData = null;
+    quietStartedAt = null;
+
+    if (livePanel) {
+      livePanel.hidden = true;
+    }
+
+    setLiveCoachDisplay(0, 'Waiting', 'Listening', '');
+  };
+
+  const startLiveCoach = () => {
+    if (!livePanel || !window.AudioContext && !window.webkitAudioContext) {
+      return;
+    }
+
+    stopLiveCoach();
+
+    const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+    audioContext = new AudioContextConstructor();
+    audioAnalyser = audioContext.createAnalyser();
+    audioAnalyser.fftSize = 1024;
+    audioAnalyser.smoothingTimeConstant = 0.75;
+    audioData = new Uint8Array(audioAnalyser.fftSize);
+
+    const source = audioContext.createMediaStreamSource(stream);
+    source.connect(audioAnalyser);
+
+    livePanel.hidden = false;
+    setLiveCoachDisplay(0, 'Listening', 'Listening', '');
+
+    const analyzeAudio = () => {
+      audioAnalyser.getByteTimeDomainData(audioData);
+
+      let sumSquares = 0;
+      for (let index = 0; index < audioData.length; index += 1) {
+        const centeredSample = (audioData[index] - 128) / 128;
+        sumSquares += centeredSample * centeredSample;
+      }
+
+      const rms = Math.sqrt(sumSquares / audioData.length);
+      const level = Math.min(rms * 5, 1);
+      const now = Date.now();
+      let volumeMessage = 'Good volume';
+      let pauseMessage = 'Nice flow';
+      let stateClass = 'is-good';
+
+      if (level < 0.08) {
+        volumeMessage = 'Speak a little louder';
+        stateClass = 'is-low';
+        quietStartedAt = quietStartedAt || now;
+
+        if (now - quietStartedAt > 2500) {
+          pauseMessage = 'Long pause detected';
+        } else {
+          pauseMessage = 'Listening';
+        }
+      } else {
+        quietStartedAt = null;
+
+        if (level > 0.75) {
+          volumeMessage = 'A little too loud';
+          stateClass = 'is-high';
+        }
+      }
+
+      setLiveCoachDisplay(level, volumeMessage, pauseMessage, stateClass);
+      liveCoachId = requestAnimationFrame(analyzeAudio);
+    };
+
+    liveCoachId = requestAnimationFrame(analyzeAudio);
   };
 
   const resetTurnstileWidget = () => {
@@ -130,6 +242,7 @@ function initSpeechCoachRecorder() {
     resetRecordingUrl();
     recordingBlob = null;
     recordingExtension = 'webm';
+    stopLiveCoach();
     stopStream();
     updateTimer();
     playback.hidden = true;
@@ -163,6 +276,7 @@ function initSpeechCoachRecorder() {
     stopButton.disabled = true;
     startButton.disabled = false;
     resetButton.disabled = false;
+    stopLiveCoach();
     stopStream();
 
     const mimeType = mediaRecorder && mediaRecorder.mimeType ? mediaRecorder.mimeType : 'video/webm';
@@ -213,6 +327,7 @@ function initSpeechCoachRecorder() {
       preview.hidden = false;
       await preview.play();
       frame.classList.add('is-previewing');
+      startLiveCoach();
 
       const mimeType = getSupportedMimeType();
       mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);

@@ -71,6 +71,20 @@
 
           <div class="coach-controls">
             <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
+            <div class="coach-live-panel" hidden aria-live="polite">
+              <div class="coach-live-item">
+                <span>Volume</span>
+                <strong class="coach-volume-status">Waiting</strong>
+              </div>
+              <div class="coach-live-meter" aria-hidden="true">
+                <span class="coach-volume-bar"></span>
+              </div>
+              <div class="coach-live-item">
+                <span>Pauses</span>
+                <strong class="coach-pause-status">Listening</strong>
+              </div>
+              <p class="coach-live-hint">Live Coach uses your browser microphone level only. It is not sent anywhere.</p>
+            </div>
             <div class="coach-actions">
               <button type="button" class="btn-primary coach-start">Start Recording</button>
               <button type="button" class="btn-secondary coach-stop" disabled>Stop</button>
