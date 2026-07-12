@@ -44,6 +44,8 @@ function initSpeechCoachRecorder() {
   const status = recorder.querySelector('.coach-status');
   const timer = recorder.querySelector('.coach-timer');
   const download = recorder.querySelector('.coach-download');
+  const turnstileContainer = recorder.querySelector('.coach-turnstile');
+  const turnstileToken = recorder.querySelector('.coach-turnstile-token');
 
   let mediaRecorder;
   let stream;
@@ -53,6 +55,7 @@ function initSpeechCoachRecorder() {
   let recordingBlob;
   let recordingUrl;
   let recordingExtension = 'webm';
+  let turnstileWidgetId = null;
 
   const setStatus = (message) => {
     status.textContent = message;
@@ -84,6 +87,41 @@ function initSpeechCoachRecorder() {
     frame.classList.remove('is-previewing');
   };
 
+  const resetTurnstileWidget = () => {
+    if (turnstileToken) {
+      turnstileToken.value = '';
+    }
+
+    if (window.turnstile && turnstileWidgetId !== null) {
+      window.turnstile.reset(turnstileWidgetId);
+    }
+  };
+
+  const renderTurnstileWidget = () => {
+    if (!turnstileContainer || !turnstileToken || turnstileWidgetId !== null) {
+      return;
+    }
+
+    if (!window.turnstile) {
+      window.setTimeout(renderTurnstileWidget, 300);
+      return;
+    }
+
+    turnstileWidgetId = window.turnstile.render(turnstileContainer, {
+      sitekey: turnstileContainer.dataset.sitekey,
+      callback: (token) => {
+        turnstileToken.value = token;
+      },
+      'expired-callback': () => {
+        turnstileToken.value = '';
+      },
+      'error-callback': () => {
+        turnstileToken.value = '';
+        setStatus('Bot protection could not load. Please refresh the page and try again.');
+      }
+    });
+  };
+
   const resetRecorder = () => {
     clearInterval(timerId);
     timerId = null;
@@ -97,6 +135,7 @@ function initSpeechCoachRecorder() {
     playback.hidden = true;
     playback.removeAttribute('src');
     submitForm.hidden = true;
+    resetTurnstileWidget();
     submitButton.disabled = false;
     download.hidden = true;
     download.removeAttribute('href');
@@ -142,6 +181,7 @@ function initSpeechCoachRecorder() {
     download.download = `voice-to-lead-speech-coach.${extension}`;
     download.hidden = false;
     submitForm.hidden = false;
+    renderTurnstileWidget();
     setStatus('Recording complete. Review it here, then submit it for feedback.');
   };
 
@@ -214,6 +254,11 @@ function initSpeechCoachRecorder() {
       return;
     }
 
+    if (turnstileToken && !turnstileToken.value) {
+      setStatus('Please complete the bot protection check before submitting.');
+      return;
+    }
+
     if (!uploadUrl) {
       setStatus('The upload endpoint is not configured yet.');
       return;
@@ -248,6 +293,7 @@ function initSpeechCoachRecorder() {
       submitButton.disabled = false;
       resetButton.disabled = false;
       startButton.disabled = false;
+      resetTurnstileWidget();
       setStatus(`Submission failed: ${error.message}`);
     }
   };

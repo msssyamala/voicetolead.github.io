@@ -425,6 +425,10 @@ body {
   font-weight: 800;
 }
 
+.coach-turnstile {
+  min-height: 65px;
+}
+
 .coach-submit {
   width: fit-content;
 }

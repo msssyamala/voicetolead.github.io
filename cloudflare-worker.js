@@ -1,5 +1,10 @@
 const TRANSCRIPTION_MODEL = "gpt-4o-mini-transcribe";
 const FEEDBACK_MODEL = "gpt-4o-mini";
+const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
+const ALLOWED_VIDEO_TYPES = new Set([
+  "video/webm",
+  "video/mp4",
+]);
 
 export default {
   async fetch(request, env, ctx) {
@@ -51,13 +56,36 @@ export default {
 
 async function createSubmission(request, env, corsHeaders, ctx) {
   try {
+    const contentLength = Number(request.headers.get("Content-Length") || 0);
+
+    if (contentLength && contentLength > MAX_VIDEO_BYTES) {
+      return json({ error: "Video file is too large." }, 413, corsHeaders);
+    }
+
     const formData = await request.formData();
     const video = formData.get("video");
     const studentName = formData.get("student_name") || null;
     const studentEmail = formData.get("student_email") || null;
+    const turnstileToken = formData.get("turnstile_token");
+
+    const turnstileResult = await verifyTurnstileToken(turnstileToken, request, env);
+
+    if (!turnstileResult.success) {
+      return json({
+        error: "Bot protection check failed. Please refresh and try again.",
+      }, 403, corsHeaders);
+    }
 
     if (!video || typeof video === "string") {
       return json({ error: "Missing video file" }, 400, corsHeaders);
+    }
+
+    if (video.size > MAX_VIDEO_BYTES) {
+      return json({ error: "Video file is too large." }, 413, corsHeaders);
+    }
+
+    if (!ALLOWED_VIDEO_TYPES.has(video.type)) {
+      return json({ error: "Unsupported video type." }, 415, corsHeaders);
     }
 
     const submissionId = crypto.randomUUID();
@@ -108,6 +136,37 @@ async function createSubmission(request, env, corsHeaders, ctx) {
       details: error.message,
     }, 500, corsHeaders);
   }
+}
+
+async function verifyTurnstileToken(token, request, env) {
+  if (!env.TURNSTILE_SECRET_KEY) {
+    return { success: false };
+  }
+
+  if (!token || typeof token !== "string") {
+    return { success: false };
+  }
+
+  const verificationForm = new FormData();
+  verificationForm.append("secret", env.TURNSTILE_SECRET_KEY);
+  verificationForm.append("response", token);
+
+  const remoteIp = request.headers.get("CF-Connecting-IP");
+
+  if (remoteIp) {
+    verificationForm.append("remoteip", remoteIp);
+  }
+
+  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    body: verificationForm,
+  });
+
+  if (!response.ok) {
+    return { success: false };
+  }
+
+  return response.json();
 }
 
 async function processSubmission(submissionId, env) {

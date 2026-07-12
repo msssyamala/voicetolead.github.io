@@ -8,6 +8,7 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#00205B" />
   <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
   <!-- NAVBAR -->
@@ -90,6 +91,8 @@
                 <input type="checkbox" name="consent" required />
                 <span>I understand that my video and audio will be uploaded and processed to generate AI speech feedback. <a href="privacy.html">Privacy details</a></span>
               </label>
+              <div class="coach-turnstile" data-sitekey="0x4AAAAAAD0c2bi7iPrZo6p9"></div>
+              <input type="hidden" name="turnstile_token" class="coach-turnstile-token" required />
               <button type="submit" class="btn-primary coach-submit">Submit for Feedback</button>
             </form>
             <p class="coach-status" aria-live="polite">Ready when you are.</p>
