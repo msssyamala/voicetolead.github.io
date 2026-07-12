@@ -130,19 +130,24 @@ function initSpeechCoachRecorder() {
     audioData = null;
     quietStartedAt = null;
 
-    if (livePanel) {
-      livePanel.hidden = true;
-    }
-
-    setLiveCoachDisplay(0, 'Waiting', 'Listening', '');
+    setLiveCoachDisplay(0, 'Starts when you record', 'Starts when you record', '');
   };
 
   const startLiveCoach = () => {
     if (!livePanel || !window.AudioContext && !window.webkitAudioContext) {
+      setLiveCoachDisplay(0, 'Live coach unavailable', 'Live coach unavailable', '');
       return;
     }
 
-    stopLiveCoach();
+    if (liveCoachId) {
+      cancelAnimationFrame(liveCoachId);
+      liveCoachId = null;
+    }
+
+    if (audioContext) {
+      audioContext.close().catch(() => null);
+      audioContext = null;
+    }
 
     const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
     audioContext = new AudioContextConstructor();
@@ -154,7 +159,6 @@ function initSpeechCoachRecorder() {
     const source = audioContext.createMediaStreamSource(stream);
     source.connect(audioAnalyser);
 
-    livePanel.hidden = false;
     setLiveCoachDisplay(0, 'Listening', 'Listening', '');
 
     const analyzeAudio = () => {
