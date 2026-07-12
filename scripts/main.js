@@ -81,6 +81,8 @@ function initSpeechCoachRecorder() {
   let lastPaceCueAt = 0;
   let speechCueHoldUntil = 0;
   let speechRecognitionStatus = 'idle';
+  let nextEyeContactCueAt = 0;
+  let eyeContactCueHoldUntil = 0;
   let currentMode = 'feedback';
   let chunks = [];
   let elapsedSeconds = 0;
@@ -154,7 +156,7 @@ function initSpeechCoachRecorder() {
     }
 
     if (livePanel) {
-      livePanel.classList.remove('is-good', 'is-warning', 'is-alert', 'is-calibrating', 'is-streak', 'is-speech');
+      livePanel.classList.remove('is-good', 'is-warning', 'is-alert', 'is-calibrating', 'is-streak', 'is-speech', 'is-eye-contact');
 
       if (stateClass) {
         livePanel.classList.add(stateClass);
@@ -177,6 +179,10 @@ function initSpeechCoachRecorder() {
 
     if (stateClass === 'is-filler' || stateClass === 'is-pace-fast' || stateClass === 'is-pace-slow') {
       return 'is-speech';
+    }
+
+    if (stateClass === 'is-eye-contact') {
+      return 'is-eye-contact';
     }
 
     if (stateClass === 'is-high' || pauseMessage === 'Long pause detected') {
@@ -218,6 +224,10 @@ function initSpeechCoachRecorder() {
 
     if (stateClass === 'is-pace-slow') {
       return { key: `pace-slow-${lastPaceCueAt}`, message: 'Add a little more energy to your pace.', emoji: '⚡', word: 'Pace' };
+    }
+
+    if (stateClass === 'is-eye-contact') {
+      return { key: `eye-${nextEyeContactCueAt}`, message: 'Look toward your audience.', emoji: '👀', word: 'Connect' };
     }
 
     if (pauseMessage === 'Long pause detected') {
@@ -292,6 +302,10 @@ function initSpeechCoachRecorder() {
 
   const shouldHoldSpeechCue = (stateClass) => {
     return stateClass === 'is-filler' || stateClass === 'is-pace-fast' || stateClass === 'is-pace-slow';
+  };
+
+  const shouldHoldEyeContactCue = (stateClass) => {
+    return stateClass === 'is-eye-contact';
   };
 
   const getLivePracticeStatus = () => {
@@ -472,6 +486,10 @@ function initSpeechCoachRecorder() {
       speechCueHoldUntil = now + 4200;
     }
 
+    if (shouldHoldEyeContactCue(stateClass)) {
+      eyeContactCueHoldUntil = now + 3600;
+    }
+
     setLiveCoachDisplay(
       getPanelState(stateClass, pauseMessage, timeMessage),
       nextCue.message,
@@ -545,6 +563,8 @@ function initSpeechCoachRecorder() {
     lastPaceCueAt = 0;
     speechCueHoldUntil = 0;
     speechRecognitionStatus = 'idle';
+    nextEyeContactCueAt = 0;
+    eyeContactCueHoldUntil = 0;
 
     if (livePanel) {
       livePanel.hidden = currentMode !== 'practice';
@@ -598,6 +618,8 @@ function initSpeechCoachRecorder() {
     lastPaceCueAt = 0;
     speechCueHoldUntil = 0;
     speechRecognitionStatus = 'idle';
+    nextEyeContactCueAt = 0;
+    eyeContactCueHoldUntil = 0;
     startSpeechRecognition();
 
     const analyzeAudio = () => {
@@ -630,6 +652,7 @@ function initSpeechCoachRecorder() {
         }
 
         volumeCalibration = getCalibratedVolumeRange();
+        nextEyeContactCueAt = now + 7000;
         setStatus(getLivePracticeStatus());
       }
 
@@ -671,6 +694,18 @@ function initSpeechCoachRecorder() {
       }
 
       if (now < speechCueHoldUntil) {
+        liveCoachId = requestAnimationFrame(analyzeAudio);
+        return;
+      }
+
+      if (now < eyeContactCueHoldUntil) {
+        liveCoachId = requestAnimationFrame(analyzeAudio);
+        return;
+      }
+
+      if (nextEyeContactCueAt && now >= nextEyeContactCueAt) {
+        nextEyeContactCueAt = now + 7000;
+        setLiveCoachCue('is-eye-contact', pauseMessage, timeMessage);
         liveCoachId = requestAnimationFrame(analyzeAudio);
         return;
       }

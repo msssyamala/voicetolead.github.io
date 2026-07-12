@@ -451,6 +451,11 @@ body {
   border-color: #9ec5fe;
 }
 
+.coach-live-panel.is-eye-contact .coach-live-cue {
+  background: rgba(240, 251, 245, 0.92);
+  border-color: #9ec5b3;
+}
+
 .coach-live-panel.is-warning .coach-live-cue {
   background: rgba(255, 248, 235, 0.9);
   border-color: #ffd891;
