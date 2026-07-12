@@ -1,4 +1,4 @@
-const CACHE_NAME = "voicetolead-shell-v17";
+const CACHE_NAME = "voicetolead-shell-v18";
 const SHELL_ASSETS = [
   "/",
   "/index.html",

@@ -50,6 +50,7 @@ function initSpeechCoachRecorder() {
   const livePanel = recorder.querySelector('.coach-live-panel');
   const cueStatus = recorder.querySelector('.coach-cue-status');
   const cueEmoji = recorder.querySelector('.coach-cue-emoji');
+  const cueWord = recorder.querySelector('.coach-cue-word');
   const turnstileContainer = recorder.querySelector('.coach-turnstile');
   const turnstileToken = recorder.querySelector('.coach-turnstile-token');
 
@@ -122,13 +123,17 @@ function initSpeechCoachRecorder() {
     frame.classList.remove('is-previewing');
   };
 
-  const setLiveCoachDisplay = (stateClass, cueMessage, emoji) => {
+  const setLiveCoachDisplay = (stateClass, cueMessage, emoji, word) => {
     if (cueStatus) {
       cueStatus.textContent = cueMessage;
     }
 
     if (cueEmoji) {
       cueEmoji.textContent = emoji;
+    }
+
+    if (cueWord) {
+      cueWord.textContent = word;
     }
 
     if (livePanel) {
@@ -162,26 +167,26 @@ function initSpeechCoachRecorder() {
 
   const getCue = (stateClass, pauseMessage, timeMessage) => {
     if (pauseMessage === 'Long pause detected') {
-      return { key: 'pause', message: 'Take a breath and continue.', emoji: '🌬️' };
+      return { key: 'pause', message: 'Take a breath and continue.', emoji: '🌬️', word: 'Breathe' };
     }
 
     if (stateClass === 'is-low') {
-      return { key: 'louder', message: 'Project your voice a little more.', emoji: '🔊' };
+      return { key: 'louder', message: 'Project your voice a little more.', emoji: '🔊', word: 'Louder' };
     }
 
     if (stateClass === 'is-high') {
-      return { key: 'softer', message: 'Lower your volume slightly.', emoji: '🤏' };
+      return { key: 'softer', message: 'Lower your volume slightly.', emoji: '🤫', word: 'Softer' };
     }
 
     if (timeMessage === 'Start wrapping up.' || timeMessage === 'Finish your final sentence.') {
-      return { key: 'wrap', message: timeMessage, emoji: '⏳' };
+      return { key: 'wrap', message: timeMessage, emoji: '⏳', word: 'Wrap up' };
     }
 
     if (stateClass === 'is-good') {
-      return { key: 'good', message: 'Good energy. Keep going.', emoji: '✨' };
+      return { key: 'good', message: 'Good energy. Keep going.', emoji: '✨', word: 'Good' };
     }
 
-    return { key: 'ready', message: 'Start recording when you are ready.', emoji: '✨' };
+    return { key: 'ready', message: 'Start recording when you are ready.', emoji: '✨', word: 'Ready' };
   };
 
   const setLiveCoachCue = (stateClass, pauseMessage, timeMessage) => {
@@ -200,7 +205,8 @@ function initSpeechCoachRecorder() {
     setLiveCoachDisplay(
       getPanelState(stateClass, pauseMessage, timeMessage),
       nextCue.message,
-      nextCue.emoji
+      nextCue.emoji,
+      nextCue.word
     );
   };
 
@@ -259,12 +265,12 @@ function initSpeechCoachRecorder() {
       livePanel.hidden = currentMode !== 'practice';
     }
 
-    setLiveCoachDisplay('', 'Start recording when you are ready.', '✨');
+    setLiveCoachDisplay('', 'Start recording when you are ready.', '✨', 'Ready');
   };
 
   const startLiveCoach = () => {
     if (!livePanel || !window.AudioContext && !window.webkitAudioContext) {
-      setLiveCoachDisplay('', 'Live coach is not available in this browser.', '⚠️');
+      setLiveCoachDisplay('', 'Live coach is not available in this browser.', '⚠️', 'Unavailable');
       return;
     }
 
@@ -290,7 +296,7 @@ function initSpeechCoachRecorder() {
     const source = audioContext.createMediaStreamSource(stream);
     source.connect(audioAnalyser);
 
-    setLiveCoachDisplay('', 'Listening. Begin your speech.', '✨');
+    setLiveCoachDisplay('', 'Listening. Begin your speech.', '✨', 'Ready');
     lastCueKey = '';
     lastCueChangeAt = 0;
 
