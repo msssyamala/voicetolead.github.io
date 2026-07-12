@@ -84,17 +84,18 @@ async function createSubmission(request, env, corsHeaders, ctx) {
       return json({ error: "Video file is too large." }, 413, corsHeaders);
     }
 
-    if (!isAllowedVideoType(video.type)) {
+    const videoMetadata = await getVideoMetadata(video);
+
+    if (!videoMetadata) {
       return json({ error: "Unsupported video type." }, 415, corsHeaders);
     }
 
     const submissionId = crypto.randomUUID();
-    const extension = video.type.includes("mp4") ? "mp4" : "webm";
-    const videoPath = `submissions/${submissionId}/speech.${extension}`;
+    const videoPath = `submissions/${submissionId}/speech.${videoMetadata.extension}`;
 
     await env.SPEECH_VIDEOS.put(videoPath, video.stream(), {
       httpMetadata: {
-        contentType: video.type || "video/webm",
+        contentType: videoMetadata.contentType,
       },
     });
 
@@ -108,7 +109,7 @@ async function createSubmission(request, env, corsHeaders, ctx) {
         student_name: studentName,
         student_email: studentEmail,
         video_path: videoPath,
-        video_mime_type: video.type || null,
+        video_mime_type: videoMetadata.contentType,
         video_size_bytes: video.size || null,
         status: "uploaded",
       }),
@@ -144,6 +145,60 @@ function isAllowedVideoType(type) {
   return ALLOWED_VIDEO_TYPES.some((allowedType) =>
     normalizedType === allowedType || normalizedType.startsWith(`${allowedType};`)
   );
+}
+
+async function getVideoMetadata(video) {
+  const detectedType = await detectVideoType(video);
+
+  if (detectedType) {
+    return detectedType;
+  }
+
+  const fileName = (video.name || "").toLowerCase();
+  const mimeType = (video.type || "").toLowerCase();
+
+  if (isAllowedVideoType(mimeType)) {
+    const isMp4 = mimeType.includes("mp4") || fileName.endsWith(".mp4");
+
+    return {
+      extension: isMp4 ? "mp4" : "webm",
+      contentType: isMp4 ? "video/mp4" : "video/webm",
+    };
+  }
+
+  return null;
+}
+
+async function detectVideoType(video) {
+  const headerBytes = new Uint8Array(await video.slice(0, 16).arrayBuffer());
+
+  if (
+    headerBytes[0] === 0x1a &&
+    headerBytes[1] === 0x45 &&
+    headerBytes[2] === 0xdf &&
+    headerBytes[3] === 0xa3
+  ) {
+    return {
+      extension: "webm",
+      contentType: "video/webm",
+    };
+  }
+
+  const boxType = String.fromCharCode(
+    headerBytes[4] || 0,
+    headerBytes[5] || 0,
+    headerBytes[6] || 0,
+    headerBytes[7] || 0
+  );
+
+  if (boxType === "ftyp") {
+    return {
+      extension: "mp4",
+      contentType: "video/mp4",
+    };
+  }
+
+  return null;
 }
 
 async function verifyTurnstileToken(token, request, env) {
