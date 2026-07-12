@@ -45,6 +45,8 @@ function initSpeechCoachRecorder() {
   const timer = recorder.querySelector('.coach-timer');
   const download = recorder.querySelector('.coach-download');
   const livePanel = recorder.querySelector('.coach-live-panel');
+  const cueStatus = recorder.querySelector('.coach-cue-status');
+  const timeStatus = recorder.querySelector('.coach-time-status');
   const volumeStatus = recorder.querySelector('.coach-volume-status');
   const volumeBar = recorder.querySelector('.coach-volume-bar');
   const pauseStatus = recorder.querySelector('.coach-pause-status');
@@ -80,6 +82,20 @@ function initSpeechCoachRecorder() {
     timer.textContent = `${formatTime(elapsedSeconds)} / ${formatTime(maxSeconds)}`;
   };
 
+  const getTimeMessage = () => {
+    const remainingSeconds = maxSeconds - elapsedSeconds;
+
+    if (remainingSeconds <= 5) {
+      return 'Finish your final sentence.';
+    }
+
+    if (remainingSeconds <= 15) {
+      return 'Start wrapping up.';
+    }
+
+    return 'You have time. Keep going.';
+  };
+
   const resetRecordingUrl = () => {
     if (recordingUrl) {
       URL.revokeObjectURL(recordingUrl);
@@ -96,7 +112,27 @@ function initSpeechCoachRecorder() {
     frame.classList.remove('is-previewing');
   };
 
-  const setLiveCoachDisplay = (level, volumeMessage, pauseMessage, stateClass) => {
+  const setLiveCoachDisplay = (level, volumeMessage, pauseMessage, stateClass, cueMessage, timeMessage) => {
+    if (cueStatus) {
+      cueStatus.textContent = cueMessage;
+    }
+
+    if (timeStatus) {
+      timeStatus.textContent = timeMessage;
+    }
+
+    if (livePanel) {
+      livePanel.classList.remove('is-good', 'is-warning', 'is-alert');
+
+      if (stateClass === 'is-high' || pauseMessage === 'Long pause detected') {
+        livePanel.classList.add('is-alert');
+      } else if (stateClass === 'is-low' || timeMessage !== 'You have time. Keep going.') {
+        livePanel.classList.add('is-warning');
+      } else if (stateClass === 'is-good') {
+        livePanel.classList.add('is-good');
+      }
+    }
+
     if (volumeStatus) {
       volumeStatus.textContent = volumeMessage;
     }
@@ -130,12 +166,26 @@ function initSpeechCoachRecorder() {
     audioData = null;
     quietStartedAt = null;
 
-    setLiveCoachDisplay(0, 'Starts when you record', 'Starts when you record', '');
+    setLiveCoachDisplay(
+      0,
+      'Starts when you record',
+      'Starts when you record',
+      '',
+      'Start recording when you are ready.',
+      'Up to 1 minute'
+    );
   };
 
   const startLiveCoach = () => {
     if (!livePanel || !window.AudioContext && !window.webkitAudioContext) {
-      setLiveCoachDisplay(0, 'Live coach unavailable', 'Live coach unavailable', '');
+      setLiveCoachDisplay(
+        0,
+        'Live coach unavailable',
+        'Live coach unavailable',
+        '',
+        'Live coach is not available in this browser.',
+        getTimeMessage()
+      );
       return;
     }
 
@@ -159,7 +209,7 @@ function initSpeechCoachRecorder() {
     const source = audioContext.createMediaStreamSource(stream);
     source.connect(audioAnalyser);
 
-    setLiveCoachDisplay(0, 'Listening', 'Listening', '');
+    setLiveCoachDisplay(0, 'Listening', 'Listening', '', 'Listening. Begin your speech.', getTimeMessage());
 
     const analyzeAudio = () => {
       audioAnalyser.getByteTimeDomainData(audioData);
@@ -176,14 +226,18 @@ function initSpeechCoachRecorder() {
       let volumeMessage = 'Good volume';
       let pauseMessage = 'Nice flow';
       let stateClass = 'is-good';
+      let cueMessage = 'Good energy. Keep going.';
+      const timeMessage = getTimeMessage();
 
       if (level < 0.08) {
         volumeMessage = 'Speak a little louder';
         stateClass = 'is-low';
+        cueMessage = 'Project your voice a little more.';
         quietStartedAt = quietStartedAt || now;
 
         if (now - quietStartedAt > 2500) {
           pauseMessage = 'Long pause detected';
+          cueMessage = 'Take a breath and continue.';
         } else {
           pauseMessage = 'Listening';
         }
@@ -193,10 +247,15 @@ function initSpeechCoachRecorder() {
         if (level > 0.75) {
           volumeMessage = 'A little too loud';
           stateClass = 'is-high';
+          cueMessage = 'Lower your volume slightly.';
         }
       }
 
-      setLiveCoachDisplay(level, volumeMessage, pauseMessage, stateClass);
+      if (timeMessage !== 'You have time. Keep going.' && stateClass === 'is-good') {
+        cueMessage = timeMessage;
+      }
+
+      setLiveCoachDisplay(level, volumeMessage, pauseMessage, stateClass, cueMessage, timeMessage);
       liveCoachId = requestAnimationFrame(analyzeAudio);
     };
 

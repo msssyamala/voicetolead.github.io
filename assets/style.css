@@ -357,6 +357,44 @@ body {
   padding: 0.85rem;
 }
 
+.coach-live-cue {
+  background: #f7f9fc;
+  border: 1px solid #e6ebf3;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem;
+}
+
+.coach-live-cue span {
+  color: var(--navy);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coach-live-cue strong {
+  color: var(--navy);
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.coach-live-panel.is-good .coach-live-cue {
+  background: #f0fbf5;
+  border-color: #bde8cc;
+}
+
+.coach-live-panel.is-warning .coach-live-cue {
+  background: #fff8eb;
+  border-color: #ffd891;
+}
+
+.coach-live-panel.is-alert .coach-live-cue {
+  background: #fff1f0;
+  border-color: #f3b5b0;
+}
+
 .coach-live-item {
   align-items: center;
   display: flex;
