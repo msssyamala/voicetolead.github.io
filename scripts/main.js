@@ -49,6 +49,7 @@ function initSpeechCoachRecorder() {
   const modeNote = recorder.querySelector('.coach-mode-note');
   const livePanel = recorder.querySelector('.coach-live-panel');
   const cueStatus = recorder.querySelector('.coach-cue-status');
+  const cueEmoji = recorder.querySelector('.coach-cue-emoji');
   const turnstileContainer = recorder.querySelector('.coach-turnstile');
   const turnstileToken = recorder.querySelector('.coach-turnstile-token');
 
@@ -60,6 +61,8 @@ function initSpeechCoachRecorder() {
   let liveCoachId;
   let quietStartedAt;
   let lastLiveCoachUpdate = 0;
+  let lastCueKey = '';
+  let lastCueChangeAt = 0;
   let currentMode = 'feedback';
   let chunks = [];
   let elapsedSeconds = 0;
@@ -119,9 +122,13 @@ function initSpeechCoachRecorder() {
     frame.classList.remove('is-previewing');
   };
 
-  const setLiveCoachDisplay = (stateClass, cueMessage) => {
+  const setLiveCoachDisplay = (stateClass, cueMessage, emoji) => {
     if (cueStatus) {
       cueStatus.textContent = cueMessage;
+    }
+
+    if (cueEmoji) {
+      cueEmoji.textContent = emoji;
     }
 
     if (livePanel) {
@@ -149,34 +156,47 @@ function initSpeechCoachRecorder() {
     return '';
   };
 
-  const getCueMessage = (stateClass, pauseMessage, timeMessage) => {
+  const getCue = (stateClass, pauseMessage, timeMessage) => {
     if (pauseMessage === 'Long pause detected') {
-      return 'Take a breath and continue.';
+      return { key: 'pause', message: 'Take a breath and continue.', emoji: '🌬️' };
     }
 
     if (stateClass === 'is-low') {
-      return 'Project your voice a little more.';
+      return { key: 'louder', message: 'Project your voice a little more.', emoji: '🔊' };
     }
 
     if (stateClass === 'is-high') {
-      return 'Lower your volume slightly.';
+      return { key: 'softer', message: 'Lower your volume slightly.', emoji: '🤏' };
     }
 
     if (timeMessage === 'Start wrapping up.' || timeMessage === 'Finish your final sentence.') {
-      return timeMessage;
+      return { key: 'wrap', message: timeMessage, emoji: '⏳' };
     }
 
     if (stateClass === 'is-good') {
-      return 'Good energy. Keep going.';
+      return { key: 'good', message: 'Good energy. Keep going.', emoji: '✨' };
     }
 
-    return 'Start recording when you are ready.';
+    return { key: 'ready', message: 'Start recording when you are ready.', emoji: '✨' };
   };
 
   const setLiveCoachCue = (stateClass, pauseMessage, timeMessage) => {
+    const nextCue = getCue(stateClass, pauseMessage, timeMessage);
+    const now = Date.now();
+    const shouldChangeCue =
+      nextCue.key !== lastCueKey && (now - lastCueChangeAt > 3200 || nextCue.key === 'pause');
+
+    if (!shouldChangeCue) {
+      return;
+    }
+
+    lastCueKey = nextCue.key;
+    lastCueChangeAt = now;
+
     setLiveCoachDisplay(
       getPanelState(stateClass, pauseMessage, timeMessage),
-      getCueMessage(stateClass, pauseMessage, timeMessage)
+      nextCue.message,
+      nextCue.emoji
     );
   };
 
@@ -228,17 +248,19 @@ function initSpeechCoachRecorder() {
     audioData = null;
     quietStartedAt = null;
     lastLiveCoachUpdate = 0;
+    lastCueKey = '';
+    lastCueChangeAt = 0;
 
     if (livePanel) {
       livePanel.hidden = currentMode !== 'practice';
     }
 
-    setLiveCoachDisplay('', 'Start recording when you are ready.');
+    setLiveCoachDisplay('', 'Start recording when you are ready.', '✨');
   };
 
   const startLiveCoach = () => {
     if (!livePanel || !window.AudioContext && !window.webkitAudioContext) {
-      setLiveCoachDisplay('', 'Live coach is not available in this browser.');
+      setLiveCoachDisplay('', 'Live coach is not available in this browser.', '⚠️');
       return;
     }
 
@@ -264,7 +286,9 @@ function initSpeechCoachRecorder() {
     const source = audioContext.createMediaStreamSource(stream);
     source.connect(audioAnalyser);
 
-    setLiveCoachDisplay('', 'Listening. Begin your speech.');
+    setLiveCoachDisplay('', 'Listening. Begin your speech.', '✨');
+    lastCueKey = 'ready';
+    lastCueChangeAt = Date.now();
 
     const analyzeAudio = () => {
       audioAnalyser.getByteTimeDomainData(audioData);
@@ -279,7 +303,7 @@ function initSpeechCoachRecorder() {
       const level = Math.min(rms * 5, 1);
       const now = Date.now();
 
-      if (now - lastLiveCoachUpdate < 650) {
+      if (now - lastLiveCoachUpdate < 1200) {
         liveCoachId = requestAnimationFrame(analyzeAudio);
         return;
       }
