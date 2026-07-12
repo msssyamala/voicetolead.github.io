@@ -137,6 +137,10 @@ function initSpeechCoachRecorder() {
       if (stateClass) {
         livePanel.classList.add(stateClass);
       }
+
+      livePanel.classList.remove('is-refreshed');
+      void livePanel.offsetWidth;
+      livePanel.classList.add('is-refreshed');
     }
   };
 
@@ -184,7 +188,7 @@ function initSpeechCoachRecorder() {
     const nextCue = getCue(stateClass, pauseMessage, timeMessage);
     const now = Date.now();
     const shouldChangeCue =
-      nextCue.key !== lastCueKey && (now - lastCueChangeAt > 3200 || nextCue.key === 'pause');
+      nextCue.key !== lastCueKey && (lastCueKey === '' || now - lastCueChangeAt > 2200 || nextCue.key === 'pause');
 
     if (!shouldChangeCue) {
       return;
@@ -287,8 +291,8 @@ function initSpeechCoachRecorder() {
     source.connect(audioAnalyser);
 
     setLiveCoachDisplay('', 'Listening. Begin your speech.', '✨');
-    lastCueKey = 'ready';
-    lastCueChangeAt = Date.now();
+    lastCueKey = '';
+    lastCueChangeAt = 0;
 
     const analyzeAudio = () => {
       audioAnalyser.getByteTimeDomainData(audioData);

@@ -413,6 +413,10 @@ body {
   line-height: 1;
 }
 
+.coach-live-panel.is-refreshed .coach-cue-emoji {
+  animation: coachCuePulse 520ms ease-out;
+}
+
 .coach-live-cue strong {
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
@@ -447,8 +451,24 @@ body {
   }
 }
 
+@keyframes coachCuePulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  65% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .coach-live-cue {
+  .coach-live-cue,
+  .coach-live-panel.is-refreshed .coach-cue-emoji {
     animation: none;
   }
 }
