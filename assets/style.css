@@ -677,6 +677,11 @@ body {
   padding: 0.8rem;
 }
 
+.coach-practice-summary[hidden],
+.coach-recorder.is-feedback .coach-practice-summary {
+  display: none;
+}
+
 .coach-practice-summary strong {
   color: var(--navy);
 }
