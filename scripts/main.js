@@ -303,6 +303,10 @@ function initSpeechCoachRecorder() {
       return 'Live practice running. Speech recognition is blocked, so filler and pace cues are off.';
     }
 
+    if (speechRecognitionStatus === 'listening') {
+      return 'Live practice running. Speech cues are active.';
+    }
+
     return 'Live practice running... stop whenever you are ready.';
   };
 
@@ -412,6 +416,10 @@ function initSpeechCoachRecorder() {
     speechRecognition.continuous = true;
     speechRecognition.interimResults = true;
     speechRecognition.lang = 'en-US';
+    speechRecognition.onstart = () => {
+      speechRecognitionStatus = 'listening';
+      setStatus(getLivePracticeStatus());
+    };
     speechRecognition.onresult = handleSpeechRecognitionResult;
     speechRecognition.onerror = (event) => {
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
@@ -717,6 +725,7 @@ function initSpeechCoachRecorder() {
     resetRecordingUrl();
     recordingBlob = null;
     recordingExtension = 'webm';
+    mediaRecorder = null;
     stopLiveCoach();
     stopStream();
     updateTimer();
@@ -798,14 +807,36 @@ function initSpeechCoachRecorder() {
     }
   };
 
+  const finishPractice = () => {
+    clearInterval(timerId);
+    timerId = null;
+    stopButton.disabled = true;
+    startButton.disabled = false;
+    resetButton.disabled = false;
+    stopLiveCoach();
+    stopStream();
+    playback.hidden = true;
+    playback.removeAttribute('src');
+    frame.classList.remove('has-recording');
+    modeButtons.forEach((button) => {
+      button.disabled = false;
+    });
+    setStatus('Live practice complete. Nothing was recorded or uploaded.');
+  };
+
   const stopRecording = () => {
+    if (currentMode === 'practice') {
+      finishPractice();
+      return;
+    }
+
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
     }
   };
 
   const startRecording = async () => {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || (currentMode === 'feedback' && !window.MediaRecorder)) {
       setStatus('Video recording is not supported in this browser. Please try the latest Chrome, Edge, Firefox, or Safari.');
       return;
     }
@@ -831,23 +862,23 @@ function initSpeechCoachRecorder() {
       frame.classList.add('is-previewing');
       if (currentMode === 'practice') {
         startLiveCoach();
+        stopButton.disabled = false;
+        setStatus('Calibrating your microphone... speak normally for a few seconds.');
+      } else {
+        const mimeType = getSupportedMimeType();
+        mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+
+        mediaRecorder.addEventListener('dataavailable', (event) => {
+          if (event.data && event.data.size > 0) {
+            chunks.push(event.data);
+          }
+        });
+
+        mediaRecorder.addEventListener('stop', finishRecording, { once: true });
+        mediaRecorder.start();
+        stopButton.disabled = false;
+        setStatus('Recording for AI feedback... it will stop automatically at 1 minute.');
       }
-
-      const mimeType = getSupportedMimeType();
-      mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-
-      mediaRecorder.addEventListener('dataavailable', (event) => {
-        if (event.data && event.data.size > 0) {
-          chunks.push(event.data);
-        }
-      });
-
-      mediaRecorder.addEventListener('stop', finishRecording, { once: true });
-      mediaRecorder.start();
-      stopButton.disabled = false;
-      setStatus(currentMode === 'feedback'
-        ? 'Recording for AI feedback... it will stop automatically at 1 minute.'
-        : 'Calibrating your microphone... speak normally for a few seconds.');
 
       timerId = setInterval(() => {
         elapsedSeconds += 1;
