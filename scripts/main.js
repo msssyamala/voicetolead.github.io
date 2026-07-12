@@ -107,32 +107,92 @@ function initSpeechCoachRecorder() {
     open: {
       title: 'Open practice',
       prompt: 'Practice any speech, answer, or idea. Focus on speaking clearly and finishing strong.',
-      focus: 'steady delivery'
+      focus: 'steady delivery',
+      rubric: 'clear point, steady delivery, strong finish',
+      nextSteps: {
+        default: 'Next focus: make one clear point and close with a strong final sentence.',
+        filler: 'Next focus: repeat the same idea with fewer filler words.',
+        paceFast: 'Next focus: slow down before your most important point.',
+        paceSlow: 'Next focus: add a little more energy and move confidently into the next idea.',
+        pause: 'Next focus: shorten the pause between ideas.',
+        eye: 'Next focus: look up at the audience during your strongest line.',
+        steady: 'Nice work: your delivery stayed steady. Next, sharpen the ending.'
+      }
     },
     intro: {
       title: '30-second introduction',
       prompt: 'Introduce yourself, what you care about, and one reason the audience should keep listening.',
-      focus: 'clear opening'
+      focus: 'clear opening',
+      rubric: 'name, purpose, audience hook',
+      nextSteps: {
+        default: 'Next focus: include who you are, what you care about, and a reason to keep listening.',
+        filler: 'Next focus: start cleaner. Try the first sentence again without filler words.',
+        paceFast: 'Next focus: slow down on your name and main purpose.',
+        paceSlow: 'Next focus: bring more energy to your opening line.',
+        pause: 'Next focus: move smoothly from your name into your purpose.',
+        eye: 'Next focus: look up when you say why the audience should listen.',
+        steady: 'Nice work: your introduction felt steady. Next, make the hook more memorable.'
+      }
     },
     elevator: {
       title: 'Elevator pitch',
       prompt: 'Explain your idea in a short, persuasive way: problem, solution, and why it matters.',
-      focus: 'concise message'
+      focus: 'concise message',
+      rubric: 'problem, solution, why it matters',
+      nextSteps: {
+        default: 'Next focus: clearly name the problem, your solution, and why it matters.',
+        filler: 'Next focus: tighten the pitch by replacing filler words with short pauses.',
+        paceFast: 'Next focus: slow down when explaining the solution.',
+        paceSlow: 'Next focus: make the pitch more energetic and concise.',
+        pause: 'Next focus: connect problem to solution without a long pause.',
+        eye: 'Next focus: look up when saying why the idea matters.',
+        steady: 'Nice work: your pitch sounded steady. Next, make the impact line stronger.'
+      }
     },
     story: {
       title: 'Storytelling practice',
       prompt: 'Tell a short story with a beginning, challenge, turning point, and takeaway.',
-      focus: 'organized story'
+      focus: 'organized story',
+      rubric: 'beginning, challenge, turning point, takeaway',
+      nextSteps: {
+        default: 'Next focus: include a beginning, challenge, turning point, and takeaway.',
+        filler: 'Next focus: reduce filler words during the transition between story moments.',
+        paceFast: 'Next focus: slow down at the turning point so the audience can feel it.',
+        paceSlow: 'Next focus: add energy when the challenge appears.',
+        pause: 'Next focus: keep the story moving between the challenge and takeaway.',
+        eye: 'Next focus: look up when delivering the takeaway.',
+        steady: 'Nice work: your story had steady delivery. Next, make the takeaway clearer.'
+      }
     },
     interview: {
       title: 'Tell me about yourself',
       prompt: 'Answer like an interview: present yourself, name your strengths, and connect them to your goal.',
-      focus: 'confident answer'
+      focus: 'confident answer',
+      rubric: 'present, strengths, goal connection',
+      nextSteps: {
+        default: 'Next focus: connect who you are, your strengths, and the goal you are working toward.',
+        filler: 'Next focus: make the answer sound more confident by cutting filler words.',
+        paceFast: 'Next focus: slow down when naming your strengths.',
+        paceSlow: 'Next focus: add more energy when connecting your strengths to your goal.',
+        pause: 'Next focus: avoid a long pause before explaining your goal.',
+        eye: 'Next focus: look up when saying your strongest qualification.',
+        steady: 'Nice work: your answer sounded steady. Next, add one concrete example.'
+      }
     },
     debate: {
       title: 'Debate opening',
       prompt: 'Open with a claim, give one reason, preview your evidence, and close with impact.',
-      focus: 'strong structure'
+      focus: 'strong structure',
+      rubric: 'claim, reason, evidence preview, impact',
+      nextSteps: {
+        default: 'Next focus: include a claim, one reason, evidence preview, and impact.',
+        filler: 'Next focus: remove filler words so your claim sounds stronger.',
+        paceFast: 'Next focus: slow down on the claim and impact line.',
+        paceSlow: 'Next focus: add more force when introducing your reason.',
+        pause: 'Next focus: move from claim to reason without losing momentum.',
+        eye: 'Next focus: look up when delivering your impact line.',
+        steady: 'Nice work: your debate opening stayed steady. Next, make the claim sharper.'
+      }
     }
   };
   let practiceMetrics = {
@@ -182,32 +242,38 @@ function initSpeechCoachRecorder() {
     }
   };
 
-  const getPracticeFocus = () => {
+  const getPracticeFocusType = () => {
     if (practiceMetrics.filler >= 3) {
-      return 'Next focus: try fewer filler words next round.';
+      return 'filler';
     }
 
     if (practiceMetrics.paceFast > practiceMetrics.paceSlow && practiceMetrics.paceFast > 0) {
-      return 'Next focus: slow down slightly and let key ideas land.';
+      return 'paceFast';
     }
 
     if (practiceMetrics.paceSlow > 0) {
-      return 'Next focus: add a little more energy to your pace.';
+      return 'paceSlow';
     }
 
     if (practiceMetrics.pause >= 2) {
-      return 'Next focus: shorten long pauses between thoughts.';
+      return 'pause';
     }
 
     if (practiceMetrics.eye >= 3) {
-      return 'Next focus: keep connecting with your audience.';
+      return 'eye';
     }
 
     if (practiceMetrics.steady > 0) {
-      return 'Next focus: keep that steady delivery going.';
+      return 'steady';
     }
 
-    return 'Next focus: try one more round and build your rhythm.';
+    return 'default';
+  };
+
+  const getPracticeFocus = () => {
+    const selectedDrill = getSelectedDrill();
+    const focusType = getPracticeFocusType();
+    return selectedDrill.nextSteps[focusType] || selectedDrill.nextSteps.default;
   };
 
   const updateGuidedDrill = () => {
@@ -222,7 +288,7 @@ function initSpeechCoachRecorder() {
     }
 
     if (drillFocus) {
-      drillFocus.textContent = `Focus: ${selectedDrill.focus}`;
+      drillFocus.textContent = `Focus: ${selectedDrill.focus} (${selectedDrill.rubric})`;
     }
   };
 
@@ -248,7 +314,8 @@ function initSpeechCoachRecorder() {
     }
 
     if (summaryFocus) {
-      summaryFocus.textContent = `${getPracticeFocus()} Drill practiced: ${getSelectedDrill().title}.`;
+      const selectedDrill = getSelectedDrill();
+      summaryFocus.textContent = `${selectedDrill.title}: ${getPracticeFocus()} Rubric: ${selectedDrill.rubric}.`;
     }
 
     practiceSummary.hidden = false;
