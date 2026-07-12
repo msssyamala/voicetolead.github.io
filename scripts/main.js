@@ -75,8 +75,12 @@ function initSpeechCoachRecorder() {
   let speechRecognitionRestartId;
   let speechStartedAt = 0;
   let recognizedWordCount = 0;
+  let lastRecognizedWordCount = 0;
+  let recognizedText = '';
   let lastFillerCueAt = 0;
   let lastPaceCueAt = 0;
+  let speechCueHoldUntil = 0;
+  let speechRecognitionStatus = 'idle';
   let currentMode = 'feedback';
   let chunks = [];
   let elapsedSeconds = 0;
@@ -286,23 +290,41 @@ function initSpeechCoachRecorder() {
     return fillerPatterns.some((pattern) => pattern.test(normalizedText));
   };
 
+  const shouldHoldSpeechCue = (stateClass) => {
+    return stateClass === 'is-filler' || stateClass === 'is-pace-fast' || stateClass === 'is-pace-slow';
+  };
+
+  const getLivePracticeStatus = () => {
+    if (speechRecognitionStatus === 'unsupported') {
+      return 'Live practice running. Filler and pace cues work best in Chrome or Edge.';
+    }
+
+    if (speechRecognitionStatus === 'blocked') {
+      return 'Live practice running. Speech recognition is blocked, so filler and pace cues are off.';
+    }
+
+    return 'Live practice running... stop whenever you are ready.';
+  };
+
   const handleSpeechRecognitionResult = (event) => {
     if (currentMode !== 'practice') {
       return;
     }
 
     const now = Date.now();
-    let finalTranscript = '';
+    let transcript = '';
 
-    for (let index = event.resultIndex; index < event.results.length; index += 1) {
+    for (let index = 0; index < event.results.length; index += 1) {
       const result = event.results[index];
 
-      if (result.isFinal && result[0] && result[0].transcript) {
-        finalTranscript += ` ${result[0].transcript}`;
+      if (result[0] && result[0].transcript) {
+        transcript += ` ${result[0].transcript}`;
       }
     }
 
-    if (!finalTranscript.trim()) {
+    recognizedText = transcript.trim();
+
+    if (!recognizedText) {
       return;
     }
 
@@ -310,10 +332,10 @@ function initSpeechCoachRecorder() {
       speechStartedAt = now;
     }
 
-    const words = getWords(finalTranscript);
-    recognizedWordCount += words.length;
+    const words = getWords(recognizedText);
+    recognizedWordCount = Math.max(recognizedWordCount, words.length);
 
-    if (hasFillerWords(finalTranscript) && now - lastFillerCueAt > 8000) {
+    if (hasFillerWords(recognizedText) && now - lastFillerCueAt > 6000) {
       lastFillerCueAt = now;
       setLiveCoachCue('is-filler', '', getTimeMessage());
       return;
@@ -321,17 +343,24 @@ function initSpeechCoachRecorder() {
 
     const elapsedSpeechMinutes = (now - speechStartedAt) / 60000;
 
-    if (elapsedSpeechMinutes < 0.35 || recognizedWordCount < 25 || now - lastPaceCueAt < 12000) {
+    if (
+      elapsedSpeechMinutes < 0.15 ||
+      recognizedWordCount < 18 ||
+      recognizedWordCount === lastRecognizedWordCount ||
+      now - lastPaceCueAt < 9000
+    ) {
       return;
     }
 
     const wordsPerMinute = recognizedWordCount / elapsedSpeechMinutes;
 
-    if (wordsPerMinute > 175) {
+    if (wordsPerMinute > 165) {
       lastPaceCueAt = now;
+      lastRecognizedWordCount = recognizedWordCount;
       setLiveCoachCue('is-pace-fast', '', getTimeMessage());
-    } else if (wordsPerMinute < 95) {
+    } else if (wordsPerMinute < 105) {
       lastPaceCueAt = now;
+      lastRecognizedWordCount = recognizedWordCount;
       setLiveCoachCue('is-pace-slow', '', getTimeMessage());
     }
   };
@@ -361,8 +390,11 @@ function initSpeechCoachRecorder() {
 
   const startSpeechRecognition = () => {
     const SpeechRecognitionConstructor = window.SpeechRecognition || window.webkitSpeechRecognition;
+    speechRecognitionStatus = 'available';
 
     if (!SpeechRecognitionConstructor) {
+      speechRecognitionStatus = 'unsupported';
+      setStatus(getLivePracticeStatus());
       return;
     }
 
@@ -370,8 +402,11 @@ function initSpeechCoachRecorder() {
 
     speechStartedAt = 0;
     recognizedWordCount = 0;
+    lastRecognizedWordCount = 0;
+    recognizedText = '';
     lastFillerCueAt = 0;
     lastPaceCueAt = 0;
+    speechCueHoldUntil = 0;
     speechRecognitionActive = true;
     speechRecognition = new SpeechRecognitionConstructor();
     speechRecognition.continuous = true;
@@ -381,6 +416,8 @@ function initSpeechCoachRecorder() {
     speechRecognition.onerror = (event) => {
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
         speechRecognitionActive = false;
+        speechRecognitionStatus = 'blocked';
+        setStatus(getLivePracticeStatus());
       }
     };
     speechRecognition.onend = () => {
@@ -405,6 +442,8 @@ function initSpeechCoachRecorder() {
       speechRecognition.start();
     } catch (error) {
       speechRecognitionActive = false;
+      speechRecognitionStatus = 'unsupported';
+      setStatus(getLivePracticeStatus());
     }
   };
 
@@ -420,6 +459,10 @@ function initSpeechCoachRecorder() {
 
     lastCueKey = nextCue.key;
     lastCueChangeAt = now;
+
+    if (shouldHoldSpeechCue(stateClass)) {
+      speechCueHoldUntil = now + 4200;
+    }
 
     setLiveCoachDisplay(
       getPanelState(stateClass, pauseMessage, timeMessage),
@@ -488,8 +531,12 @@ function initSpeechCoachRecorder() {
     confidenceStreakCount = 0;
     speechStartedAt = 0;
     recognizedWordCount = 0;
+    lastRecognizedWordCount = 0;
+    recognizedText = '';
     lastFillerCueAt = 0;
     lastPaceCueAt = 0;
+    speechCueHoldUntil = 0;
+    speechRecognitionStatus = 'idle';
 
     if (livePanel) {
       livePanel.hidden = currentMode !== 'practice';
@@ -537,8 +584,12 @@ function initSpeechCoachRecorder() {
     confidenceStreakCount = 0;
     speechStartedAt = 0;
     recognizedWordCount = 0;
+    lastRecognizedWordCount = 0;
+    recognizedText = '';
     lastFillerCueAt = 0;
     lastPaceCueAt = 0;
+    speechCueHoldUntil = 0;
+    speechRecognitionStatus = 'idle';
     startSpeechRecognition();
 
     const analyzeAudio = () => {
@@ -571,7 +622,7 @@ function initSpeechCoachRecorder() {
         }
 
         volumeCalibration = getCalibratedVolumeRange();
-        setStatus('Live practice running... stop whenever you are ready.');
+        setStatus(getLivePracticeStatus());
       }
 
       let pauseMessage = 'Nice flow';
@@ -609,6 +660,11 @@ function initSpeechCoachRecorder() {
         }
       } else {
         steadyStartedAt = null;
+      }
+
+      if (now < speechCueHoldUntil) {
+        liveCoachId = requestAnimationFrame(analyzeAudio);
+        return;
       }
 
       setLiveCoachCue(stateClass, pauseMessage, timeMessage);
