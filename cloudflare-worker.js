@@ -5,6 +5,66 @@ const ALLOWED_VIDEO_TYPES = [
   "video/webm",
   "video/mp4",
 ];
+const GUIDED_DRILLS = {
+  open: {
+    title: "Open practice",
+    rubric: "clear point, steady delivery, strong finish",
+    questions: [
+      "Did the speaker make one clear point?",
+      "Was the delivery steady and understandable?",
+      "Did the speaker finish with a strong final sentence?",
+    ],
+  },
+  intro: {
+    title: "30-second introduction",
+    rubric: "name, purpose, audience hook",
+    questions: [
+      "Did the speaker clearly introduce who they are?",
+      "Did they explain what they care about or why they are speaking?",
+      "Did they give the audience a reason to keep listening?",
+    ],
+  },
+  elevator: {
+    title: "Elevator pitch",
+    rubric: "problem, solution, why it matters",
+    questions: [
+      "Did the speaker clearly state the problem?",
+      "Did they explain their solution?",
+      "Did they explain why the idea matters?",
+      "Was the pitch concise?",
+    ],
+  },
+  story: {
+    title: "Storytelling practice",
+    rubric: "beginning, challenge, turning point, takeaway",
+    questions: [
+      "Did the story have a clear beginning?",
+      "Did the speaker describe a challenge?",
+      "Was there a turning point?",
+      "Did the story end with a takeaway?",
+    ],
+  },
+  interview: {
+    title: "Tell me about yourself",
+    rubric: "present, strengths, goal connection",
+    questions: [
+      "Did the speaker present who they are?",
+      "Did they name strengths or experiences?",
+      "Did they connect those strengths to a goal or opportunity?",
+      "Did the answer sound confident and focused?",
+    ],
+  },
+  debate: {
+    title: "Debate opening",
+    rubric: "claim, reason, evidence preview, impact",
+    questions: [
+      "Did the speaker make a clear claim?",
+      "Did they provide a reason?",
+      "Did they preview evidence?",
+      "Did they close with impact?",
+    ],
+  },
+};
 
 export default {
   async fetch(request, env, ctx) {
@@ -66,6 +126,7 @@ async function createSubmission(request, env, corsHeaders, ctx) {
     const video = formData.get("video");
     const studentName = formData.get("student_name") || null;
     const studentEmail = formData.get("student_email") || null;
+    const drill = getGuidedDrill(formData.get("drill_type"));
     const turnstileToken = formData.get("turnstile_token");
 
     const turnstileResult = await verifyTurnstileToken(turnstileToken, request, env);
@@ -111,6 +172,9 @@ async function createSubmission(request, env, corsHeaders, ctx) {
         video_path: videoPath,
         video_mime_type: videoMetadata.contentType,
         video_size_bytes: video.size || null,
+        drill_type: drill.type,
+        drill_title: drill.title,
+        drill_rubric: drill.rubric,
         status: "uploaded",
       }),
     });
@@ -167,6 +231,16 @@ async function getVideoMetadata(video) {
   }
 
   return null;
+}
+
+function getGuidedDrill(value) {
+  const drillType = typeof value === "string" && GUIDED_DRILLS[value] ? value : "open";
+  const drill = GUIDED_DRILLS[drillType];
+
+  return {
+    type: drillType,
+    ...drill,
+  };
 }
 
 async function detectVideoType(video) {
@@ -265,6 +339,9 @@ async function readSubmission(submissionId, env, corsHeaders) {
         created_at: submission.created_at,
         status: submission.status,
         transcript: submission.transcript,
+        drill_type: submission.drill_type,
+        drill_title: submission.drill_title,
+        drill_rubric: submission.drill_rubric,
         speech_feedback: submission.speech_feedback,
         final_feedback: submission.final_feedback,
         speech_feedback_at: submission.speech_feedback_at,
@@ -384,6 +461,7 @@ async function generateSpeechFeedback(submissionId, env, corsHeaders) {
       error_message: null,
     });
 
+    const drill = getGuidedDrill(submission.drill_type);
     const prompt = `
 You are an encouraging youth public speaking coach for VoiceToLead.
 
@@ -408,15 +486,33 @@ Analyze this speech transcript and return only valid JSON with this exact shape:
   "opening_and_closing": {
     "notes": ""
   },
+  "drill_review": {
+    "drill_title": "",
+    "rubric": "",
+    "score": 1,
+    "covered_well": [],
+    "missing_or_unclear": [],
+    "next_drill_focus": "",
+    "stronger_example": ""
+  },
   "top_3_next_steps": []
 }
 
 Guidelines:
 - Use scores from 1 to 10.
 - Be specific, kind, and age-appropriate.
+- The drill_review must evaluate the selected drill only, using its rubric and questions.
+- If a rubric item is not clearly present in the transcript, include it in missing_or_unclear.
+- The stronger_example should be a short sample sentence or structure the student could try next.
 - Do not mention that you are an AI model.
 - Do not include markdown.
 - Return JSON only.
+
+Selected drill:
+- Title: ${drill.title}
+- Rubric: ${drill.rubric}
+- Review questions:
+${drill.questions.map((question) => `  - ${question}`).join("\n")}
 
 Transcript:
 ${submission.transcript}

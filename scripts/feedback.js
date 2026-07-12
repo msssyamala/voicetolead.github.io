@@ -42,6 +42,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const renderFeedback = (submission) => {
     const feedback = submission.final_feedback || submission.speech_feedback;
+    const drillReview = feedback && feedback.drill_review;
+    const drillTitle = (drillReview && drillReview.drill_title) || submission.drill_title;
+    const drillRubric = (drillReview && drillReview.rubric) || submission.drill_rubric;
 
     if (!feedback) {
       results.hidden = true;
@@ -57,6 +60,26 @@ document.addEventListener('DOMContentLoaded', function () {
         ${renderScore('Overall score', feedback.overall_score)}
         <p>${escapeHtml(feedback.summary || 'Feedback has been generated.')}</p>
       </div>
+
+      ${drillTitle ? `
+        <section class="feedback-panel feedback-drill-review">
+          <h2>Drill Review: ${escapeHtml(drillTitle)}</h2>
+          ${drillRubric ? `<p><strong>Rubric:</strong> ${escapeHtml(drillRubric)}</p>` : ''}
+          ${renderScore('Drill score', drillReview && drillReview.score)}
+          <div class="feedback-grid feedback-drill-grid">
+            <div>
+              <h3>Covered Well</h3>
+              ${renderList(drillReview && drillReview.covered_well)}
+            </div>
+            <div>
+              <h3>Missing or Unclear</h3>
+              ${renderList(drillReview && drillReview.missing_or_unclear)}
+            </div>
+          </div>
+          ${drillReview && drillReview.next_drill_focus ? `<p><strong>Next drill focus:</strong> ${escapeHtml(drillReview.next_drill_focus)}</p>` : ''}
+          ${drillReview && drillReview.stronger_example ? `<p><strong>Try this:</strong> ${escapeHtml(drillReview.stronger_example)}</p>` : ''}
+        </section>
+      ` : ''}
 
       <div class="feedback-grid">
         <section class="feedback-panel">

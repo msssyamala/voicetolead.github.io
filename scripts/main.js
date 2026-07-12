@@ -780,8 +780,11 @@ function initSpeechCoachRecorder() {
       }
       updateGuidedDrill();
       resetTurnstileWidget();
-    } else if (drillPanel) {
-      drillPanel.hidden = true;
+    } else {
+      if (drillPanel) {
+        drillPanel.hidden = false;
+      }
+      updateGuidedDrill();
     }
     if (modeNote) {
       modeNote.textContent = mode === 'feedback'
@@ -1226,6 +1229,10 @@ function initSpeechCoachRecorder() {
     }
 
     const formData = new FormData(submitForm);
+    const selectedDrill = getSelectedDrill();
+    formData.append('drill_type', drillSelect && guidedDrills[drillSelect.value] ? drillSelect.value : 'open');
+    formData.append('drill_title', selectedDrill.title);
+    formData.append('drill_rubric', selectedDrill.rubric);
     formData.append('video', recordingBlob, `speech.${recordingExtension}`);
 
     submitButton.disabled = true;

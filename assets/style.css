@@ -434,8 +434,7 @@ body {
   padding: 0.75rem;
 }
 
-.coach-drills[hidden],
-.coach-recorder.is-feedback .coach-drills {
+.coach-drills[hidden] {
   display: none;
 }
 
@@ -857,6 +856,20 @@ body {
 
 .feedback-next-steps {
   border-color: rgba(0, 32, 91, 0.25);
+}
+
+.feedback-drill-review {
+  border-color: rgba(0, 32, 91, 0.25);
+}
+
+.feedback-drill-review h3 {
+  color: var(--navy);
+  font-size: 1rem;
+  margin-bottom: 0.45rem;
+}
+
+.feedback-drill-grid {
+  margin: 0.8rem 0;
 }
 
 .feedback-transcript summary {
