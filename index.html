@@ -70,6 +70,10 @@
           </div>
 
           <div class="coach-controls">
+            <div class="coach-mode-switch" aria-label="Choose practice mode">
+              <button type="button" class="coach-mode is-active" data-mode="feedback" aria-pressed="true">AI Feedback</button>
+              <button type="button" class="coach-mode" data-mode="practice" aria-pressed="false">Delivery Practice</button>
+            </div>
             <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
             <div class="coach-live-panel" aria-live="polite">
               <div class="coach-live-cue">
@@ -83,9 +87,6 @@
               <div class="coach-live-item">
                 <span>Volume</span>
                 <strong class="coach-volume-status">Starts when you record</strong>
-              </div>
-              <div class="coach-live-meter" aria-hidden="true">
-                <span class="coach-volume-bar"></span>
               </div>
               <div class="coach-live-item">
                 <span>Pauses</span>

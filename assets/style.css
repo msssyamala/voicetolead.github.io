@@ -348,6 +348,33 @@ body {
   font-weight: 800;
 }
 
+.coach-mode-switch {
+  background: #fff;
+  border: 1px solid #dbe3ef;
+  border-radius: 999px;
+  display: grid;
+  gap: 0.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0.25rem;
+}
+
+.coach-mode {
+  background: transparent;
+  border-radius: 999px;
+  color: var(--navy);
+  min-height: 38px;
+}
+
+.coach-mode.is-active {
+  background: var(--navy);
+  color: #fff;
+}
+
+.coach-mode:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .coach-live-panel {
   background: #fff;
   border: 1px solid #e2e7f0;
@@ -411,34 +438,6 @@ body {
 .coach-live-item strong {
   color: var(--navy);
   text-align: right;
-}
-
-.coach-live-meter {
-  background: #edf0f5;
-  border-radius: 999px;
-  height: 10px;
-  overflow: hidden;
-}
-
-.coach-volume-bar {
-  background: var(--gold);
-  border-radius: inherit;
-  display: block;
-  height: 100%;
-  transition: width 120ms linear, background 120ms linear;
-  width: 0%;
-}
-
-.coach-volume-bar.is-low {
-  background: #d98000;
-}
-
-.coach-volume-bar.is-good {
-  background: #20834a;
-}
-
-.coach-volume-bar.is-high {
-  background: #b42318;
 }
 
 .coach-live-hint {

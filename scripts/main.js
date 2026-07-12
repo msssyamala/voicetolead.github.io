@@ -36,6 +36,7 @@ function initSpeechCoachRecorder() {
   const preview = recorder.querySelector('.coach-preview');
   const playback = recorder.querySelector('.coach-playback');
   const frame = recorder.querySelector('.coach-video-frame');
+  const modeButtons = Array.from(recorder.querySelectorAll('.coach-mode'));
   const startButton = recorder.querySelector('.coach-start');
   const stopButton = recorder.querySelector('.coach-stop');
   const resetButton = recorder.querySelector('.coach-reset');
@@ -48,7 +49,6 @@ function initSpeechCoachRecorder() {
   const cueStatus = recorder.querySelector('.coach-cue-status');
   const timeStatus = recorder.querySelector('.coach-time-status');
   const volumeStatus = recorder.querySelector('.coach-volume-status');
-  const volumeBar = recorder.querySelector('.coach-volume-bar');
   const pauseStatus = recorder.querySelector('.coach-pause-status');
   const turnstileContainer = recorder.querySelector('.coach-turnstile');
   const turnstileToken = recorder.querySelector('.coach-turnstile-token');
@@ -60,6 +60,8 @@ function initSpeechCoachRecorder() {
   let audioData;
   let liveCoachId;
   let quietStartedAt;
+  let lastLiveCoachUpdate = 0;
+  let currentMode = 'feedback';
   let chunks = [];
   let elapsedSeconds = 0;
   let timerId;
@@ -79,10 +81,16 @@ function initSpeechCoachRecorder() {
   };
 
   const updateTimer = () => {
-    timer.textContent = `${formatTime(elapsedSeconds)} / ${formatTime(maxSeconds)}`;
+    timer.textContent = currentMode === 'feedback'
+      ? `${formatTime(elapsedSeconds)} / ${formatTime(maxSeconds)}`
+      : formatTime(elapsedSeconds);
   };
 
   const getTimeMessage = () => {
+    if (currentMode === 'practice') {
+      return 'Practice as long as you need.';
+    }
+
     const remainingSeconds = maxSeconds - elapsedSeconds;
 
     if (remainingSeconds <= 5) {
@@ -112,7 +120,7 @@ function initSpeechCoachRecorder() {
     frame.classList.remove('is-previewing');
   };
 
-  const setLiveCoachDisplay = (level, volumeMessage, pauseMessage, stateClass, cueMessage, timeMessage) => {
+  const setLiveCoachDisplay = (volumeMessage, pauseMessage, stateClass, cueMessage, timeMessage) => {
     if (cueStatus) {
       cueStatus.textContent = cueMessage;
     }
@@ -126,7 +134,7 @@ function initSpeechCoachRecorder() {
 
       if (stateClass === 'is-high' || pauseMessage === 'Long pause detected') {
         livePanel.classList.add('is-alert');
-      } else if (stateClass === 'is-low' || timeMessage !== 'You have time. Keep going.') {
+      } else if (stateClass === 'is-low' || timeMessage === 'Start wrapping up.' || timeMessage === 'Finish your final sentence.') {
         livePanel.classList.add('is-warning');
       } else if (stateClass === 'is-good') {
         livePanel.classList.add('is-good');
@@ -140,15 +148,24 @@ function initSpeechCoachRecorder() {
     if (pauseStatus) {
       pauseStatus.textContent = pauseMessage;
     }
+  };
 
-    if (volumeBar) {
-      volumeBar.style.width = `${Math.round(Math.min(level * 100, 100))}%`;
-      volumeBar.classList.remove('is-low', 'is-good', 'is-high');
+  const setMode = (mode) => {
+    currentMode = mode;
 
-      if (stateClass) {
-        volumeBar.classList.add(stateClass);
-      }
-    }
+    modeButtons.forEach((button) => {
+      const isActive = button.dataset.mode === mode;
+      button.classList.toggle('is-active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+
+    startButton.textContent = mode === 'feedback' ? 'Start Recording' : 'Start Practice';
+    submitButton.textContent = 'Submit for Feedback';
+    updateTimer();
+    stopLiveCoach();
+    setStatus(mode === 'feedback'
+      ? 'AI Feedback mode records up to 1 minute and can be submitted for AI feedback.'
+      : 'Delivery Practice mode can run longer and stays on this device unless you download it.');
   };
 
   const stopLiveCoach = () => {
@@ -165,21 +182,20 @@ function initSpeechCoachRecorder() {
     audioAnalyser = null;
     audioData = null;
     quietStartedAt = null;
+    lastLiveCoachUpdate = 0;
 
     setLiveCoachDisplay(
-      0,
       'Starts when you record',
       'Starts when you record',
       '',
       'Start recording when you are ready.',
-      'Up to 1 minute'
+      currentMode === 'feedback' ? 'Up to 1 minute' : 'No 1-minute limit'
     );
   };
 
   const startLiveCoach = () => {
     if (!livePanel || !window.AudioContext && !window.webkitAudioContext) {
       setLiveCoachDisplay(
-        0,
         'Live coach unavailable',
         'Live coach unavailable',
         '',
@@ -209,7 +225,7 @@ function initSpeechCoachRecorder() {
     const source = audioContext.createMediaStreamSource(stream);
     source.connect(audioAnalyser);
 
-    setLiveCoachDisplay(0, 'Listening', 'Listening', '', 'Listening. Begin your speech.', getTimeMessage());
+    setLiveCoachDisplay('Listening', 'Listening', '', 'Listening. Begin your speech.', getTimeMessage());
 
     const analyzeAudio = () => {
       audioAnalyser.getByteTimeDomainData(audioData);
@@ -223,6 +239,14 @@ function initSpeechCoachRecorder() {
       const rms = Math.sqrt(sumSquares / audioData.length);
       const level = Math.min(rms * 5, 1);
       const now = Date.now();
+
+      if (now - lastLiveCoachUpdate < 650) {
+        liveCoachId = requestAnimationFrame(analyzeAudio);
+        return;
+      }
+
+      lastLiveCoachUpdate = now;
+
       let volumeMessage = 'Good volume';
       let pauseMessage = 'Nice flow';
       let stateClass = 'is-good';
@@ -251,11 +275,14 @@ function initSpeechCoachRecorder() {
         }
       }
 
-      if (timeMessage !== 'You have time. Keep going.' && stateClass === 'is-good') {
+      if (
+        stateClass === 'is-good' &&
+        (timeMessage === 'Start wrapping up.' || timeMessage === 'Finish your final sentence.')
+      ) {
         cueMessage = timeMessage;
       }
 
-      setLiveCoachDisplay(level, volumeMessage, pauseMessage, stateClass, cueMessage, timeMessage);
+      setLiveCoachDisplay(volumeMessage, pauseMessage, stateClass, cueMessage, timeMessage);
       liveCoachId = requestAnimationFrame(analyzeAudio);
     };
 
@@ -318,8 +345,13 @@ function initSpeechCoachRecorder() {
     startButton.disabled = false;
     stopButton.disabled = true;
     resetButton.disabled = true;
+    modeButtons.forEach((button) => {
+      button.disabled = false;
+    });
     frame.classList.remove('has-recording');
-    setStatus('Ready when you are.');
+    setStatus(currentMode === 'feedback'
+      ? 'AI Feedback mode records up to 1 minute and can be submitted for AI feedback.'
+      : 'Delivery Practice mode can run longer and stays on this device unless you download it.');
   };
 
   const getSupportedMimeType = () => {
@@ -357,9 +389,18 @@ function initSpeechCoachRecorder() {
     download.href = recordingUrl;
     download.download = `voice-to-lead-speech-coach.${extension}`;
     download.hidden = false;
-    submitForm.hidden = false;
-    renderTurnstileWidget();
-    setStatus('Recording complete. Review it here, then submit it for feedback.');
+    modeButtons.forEach((button) => {
+      button.disabled = false;
+    });
+
+    if (currentMode === 'feedback') {
+      submitForm.hidden = false;
+      renderTurnstileWidget();
+      setStatus('Recording complete. Review it here, then submit it for feedback.');
+    } else {
+      submitForm.hidden = true;
+      setStatus('Practice complete. Review your recording here or download it. Nothing was uploaded.');
+    }
   };
 
   const stopRecording = () => {
@@ -376,6 +417,9 @@ function initSpeechCoachRecorder() {
 
     resetRecorder();
     startButton.disabled = true;
+    modeButtons.forEach((button) => {
+      button.disabled = true;
+    });
     setStatus('Opening your camera and microphone...');
 
     try {
@@ -404,13 +448,15 @@ function initSpeechCoachRecorder() {
       mediaRecorder.addEventListener('stop', finishRecording, { once: true });
       mediaRecorder.start();
       stopButton.disabled = false;
-      setStatus('Recording... it will stop automatically at 1 minute.');
+      setStatus(currentMode === 'feedback'
+        ? 'Recording... it will stop automatically at 1 minute.'
+        : 'Practice recording... stop whenever you are ready.');
 
       timerId = setInterval(() => {
         elapsedSeconds += 1;
         updateTimer();
 
-        if (elapsedSeconds >= maxSeconds) {
+        if (currentMode === 'feedback' && elapsedSeconds >= maxSeconds) {
           stopRecording();
         }
       }, 1000);
@@ -477,6 +523,15 @@ function initSpeechCoachRecorder() {
   };
 
   updateTimer();
+  modeButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (button.dataset.mode && button.dataset.mode !== currentMode) {
+        resetRecorder();
+        setMode(button.dataset.mode);
+      }
+    });
+  });
+  setMode(currentMode);
   startButton.addEventListener('click', startRecording);
   stopButton.addEventListener('click', stopRecording);
   resetButton.addEventListener('click', resetRecorder);
