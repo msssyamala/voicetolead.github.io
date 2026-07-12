@@ -163,6 +163,7 @@ body {
 
 .spotlight-image {
   aspect-ratio: auto;
+  background: #f7f9fc;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -170,8 +171,8 @@ body {
 .spotlight-image img {
   display: block;
   height: 100%;
-  object-fit: cover;
-  object-position: left 25%;
+  object-fit: contain;
+  object-position: center;
   width: 100%;
 }
 
