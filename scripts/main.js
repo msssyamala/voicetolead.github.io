@@ -67,6 +67,9 @@ function initSpeechCoachRecorder() {
   let calibrationStartedAt = 0;
   let calibrationSamples = [];
   let volumeCalibration = null;
+  let steadyStartedAt = null;
+  let lastConfidenceStreakAt = 0;
+  let confidenceStreakCount = 0;
   let currentMode = 'feedback';
   let chunks = [];
   let elapsedSeconds = 0;
@@ -140,7 +143,7 @@ function initSpeechCoachRecorder() {
     }
 
     if (livePanel) {
-      livePanel.classList.remove('is-good', 'is-warning', 'is-alert', 'is-calibrating');
+      livePanel.classList.remove('is-good', 'is-warning', 'is-alert', 'is-calibrating', 'is-streak');
 
       if (stateClass) {
         livePanel.classList.add(stateClass);
@@ -155,6 +158,10 @@ function initSpeechCoachRecorder() {
   const getPanelState = (stateClass, pauseMessage, timeMessage) => {
     if (stateClass === 'is-calibrating') {
       return 'is-calibrating';
+    }
+
+    if (stateClass === 'is-streak') {
+      return 'is-streak';
     }
 
     if (stateClass === 'is-high' || pauseMessage === 'Long pause detected') {
@@ -175,6 +182,15 @@ function initSpeechCoachRecorder() {
   const getCue = (stateClass, pauseMessage, timeMessage) => {
     if (stateClass === 'is-calibrating') {
       return { key: 'calibrate', message: 'Speak normally for a few seconds.', emoji: '🎙️', word: 'Calibrate' };
+    }
+
+    if (stateClass === 'is-streak') {
+      return {
+        key: `streak-${confidenceStreakCount}`,
+        message: 'Steady delivery. Keep that confidence.',
+        emoji: '💪',
+        word: `Steady ${confidenceStreakCount}`
+      };
     }
 
     if (pauseMessage === 'Long pause detected') {
@@ -297,6 +313,9 @@ function initSpeechCoachRecorder() {
     calibrationStartedAt = 0;
     calibrationSamples = [];
     volumeCalibration = null;
+    steadyStartedAt = null;
+    lastConfidenceStreakAt = 0;
+    confidenceStreakCount = 0;
 
     if (livePanel) {
       livePanel.hidden = currentMode !== 'practice';
@@ -339,6 +358,9 @@ function initSpeechCoachRecorder() {
     calibrationStartedAt = Date.now();
     calibrationSamples = [];
     volumeCalibration = null;
+    steadyStartedAt = null;
+    lastConfidenceStreakAt = 0;
+    confidenceStreakCount = 0;
 
     const analyzeAudio = () => {
       audioAnalyser.getByteTimeDomainData(audioData);
@@ -394,6 +416,20 @@ function initSpeechCoachRecorder() {
         if (level > loudThreshold) {
           stateClass = 'is-high';
         }
+      }
+
+      if (stateClass === 'is-good') {
+        steadyStartedAt = steadyStartedAt || now;
+
+        if (now - steadyStartedAt > 6000 && now - lastConfidenceStreakAt > 9000) {
+          confidenceStreakCount += 1;
+          lastConfidenceStreakAt = now;
+          setLiveCoachCue('is-streak', pauseMessage, timeMessage);
+          liveCoachId = requestAnimationFrame(analyzeAudio);
+          return;
+        }
+      } else {
+        steadyStartedAt = null;
       }
 
       setLiveCoachCue(stateClass, pauseMessage, timeMessage);
