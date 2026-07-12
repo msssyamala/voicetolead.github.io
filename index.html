@@ -98,6 +98,24 @@
               <button type="button" class="coach-mode" data-mode="practice" aria-pressed="false">Live Practice</button>
             </div>
             <p class="coach-mode-note">Record up to 1 minute, then submit for written AI feedback.</p>
+            <div class="coach-drills" hidden>
+              <label>
+                <span>Guided drill</span>
+                <select class="coach-drill-select">
+                  <option value="open">Open practice</option>
+                  <option value="intro">30-second introduction</option>
+                  <option value="elevator">Elevator pitch</option>
+                  <option value="story">Storytelling practice</option>
+                  <option value="interview">Tell me about yourself</option>
+                  <option value="debate">Debate opening</option>
+                </select>
+              </label>
+              <div class="coach-drill-card">
+                <strong class="coach-drill-title">Open practice</strong>
+                <p class="coach-drill-prompt">Practice any speech, answer, or idea. Focus on speaking clearly and finishing strong.</p>
+                <span class="coach-drill-focus">Focus: steady delivery</span>
+              </div>
+            </div>
             <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
             <div class="coach-actions">
               <button type="button" class="btn-primary coach-start">Start Recording</button>

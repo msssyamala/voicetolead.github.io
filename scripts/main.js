@@ -47,6 +47,11 @@ function initSpeechCoachRecorder() {
   const timer = recorder.querySelector('.coach-timer');
   const download = recorder.querySelector('.coach-download');
   const modeNote = recorder.querySelector('.coach-mode-note');
+  const drillPanel = recorder.querySelector('.coach-drills');
+  const drillSelect = recorder.querySelector('.coach-drill-select');
+  const drillTitle = recorder.querySelector('.coach-drill-title');
+  const drillPrompt = recorder.querySelector('.coach-drill-prompt');
+  const drillFocus = recorder.querySelector('.coach-drill-focus');
   const livePanel = recorder.querySelector('.coach-live-panel');
   const cueStatus = recorder.querySelector('.coach-cue-status');
   const cueEmoji = recorder.querySelector('.coach-cue-emoji');
@@ -98,6 +103,38 @@ function initSpeechCoachRecorder() {
   let recordingUrl;
   let recordingExtension = 'webm';
   let turnstileWidgetId = null;
+  const guidedDrills = {
+    open: {
+      title: 'Open practice',
+      prompt: 'Practice any speech, answer, or idea. Focus on speaking clearly and finishing strong.',
+      focus: 'steady delivery'
+    },
+    intro: {
+      title: '30-second introduction',
+      prompt: 'Introduce yourself, what you care about, and one reason the audience should keep listening.',
+      focus: 'clear opening'
+    },
+    elevator: {
+      title: 'Elevator pitch',
+      prompt: 'Explain your idea in a short, persuasive way: problem, solution, and why it matters.',
+      focus: 'concise message'
+    },
+    story: {
+      title: 'Storytelling practice',
+      prompt: 'Tell a short story with a beginning, challenge, turning point, and takeaway.',
+      focus: 'organized story'
+    },
+    interview: {
+      title: 'Tell me about yourself',
+      prompt: 'Answer like an interview: present yourself, name your strengths, and connect them to your goal.',
+      focus: 'confident answer'
+    },
+    debate: {
+      title: 'Debate opening',
+      prompt: 'Open with a claim, give one reason, preview your evidence, and close with impact.',
+      focus: 'strong structure'
+    }
+  };
   let practiceMetrics = {
     filler: 0,
     eye: 0,
@@ -105,6 +142,11 @@ function initSpeechCoachRecorder() {
     paceSlow: 0,
     pause: 0,
     steady: 0
+  };
+
+  const getSelectedDrill = () => {
+    const selectedKey = drillSelect && guidedDrills[drillSelect.value] ? drillSelect.value : 'open';
+    return guidedDrills[selectedKey];
   };
 
   const setStatus = (message) => {
@@ -168,6 +210,22 @@ function initSpeechCoachRecorder() {
     return 'Next focus: try one more round and build your rhythm.';
   };
 
+  const updateGuidedDrill = () => {
+    const selectedDrill = getSelectedDrill();
+
+    if (drillTitle) {
+      drillTitle.textContent = selectedDrill.title;
+    }
+
+    if (drillPrompt) {
+      drillPrompt.textContent = selectedDrill.prompt;
+    }
+
+    if (drillFocus) {
+      drillFocus.textContent = `Focus: ${selectedDrill.focus}`;
+    }
+  };
+
   const showPracticeSummary = () => {
     if (!practiceSummary) {
       return;
@@ -190,7 +248,7 @@ function initSpeechCoachRecorder() {
     }
 
     if (summaryFocus) {
-      summaryFocus.textContent = getPracticeFocus();
+      summaryFocus.textContent = `${getPracticeFocus()} Drill practiced: ${getSelectedDrill().title}.`;
     }
 
     practiceSummary.hidden = false;
@@ -649,7 +707,13 @@ function initSpeechCoachRecorder() {
       if (resultActions) {
         resultActions.hidden = true;
       }
+      if (drillPanel) {
+        drillPanel.hidden = false;
+      }
+      updateGuidedDrill();
       resetTurnstileWidget();
+    } else if (drillPanel) {
+      drillPanel.hidden = true;
     }
     if (modeNote) {
       modeNote.textContent = mode === 'feedback'
@@ -1141,4 +1205,7 @@ function initSpeechCoachRecorder() {
   stopButton.addEventListener('click', stopRecording);
   resetButton.addEventListener('click', resetRecorder);
   submitForm.addEventListener('submit', submitRecording);
+  if (drillSelect) {
+    drillSelect.addEventListener('change', updateGuidedDrill);
+  }
 }

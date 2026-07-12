@@ -425,6 +425,64 @@ body {
   line-height: 1.45;
 }
 
+.coach-drills {
+  background: #f7f9fc;
+  border: 1px solid #dce6f5;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.75rem;
+}
+
+.coach-drills[hidden],
+.coach-recorder.is-feedback .coach-drills {
+  display: none;
+}
+
+.coach-drills label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.coach-drills label span {
+  color: var(--navy);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.coach-drill-select {
+  background: #fff;
+  border: 1px solid #d8d8d8;
+  border-radius: 6px;
+  color: #222;
+  min-height: 40px;
+  padding: 0.55rem 0.7rem;
+  width: 100%;
+}
+
+.coach-drill-card {
+  background: #fff;
+  border-radius: 6px;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.65rem;
+}
+
+.coach-drill-card strong {
+  color: var(--navy);
+}
+
+.coach-drill-card p {
+  color: #333;
+  line-height: 1.45;
+}
+
+.coach-drill-focus {
+  color: #44546a;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .coach-live-panel {
   bottom: 1rem;
   left: 50%;
