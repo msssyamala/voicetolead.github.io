@@ -463,6 +463,10 @@ body {
   max-width: none;
 }
 
+.coach-recorder.is-practice .coach-submit-form {
+  display: none !important;
+}
+
 .coach-form-grid {
   display: grid;
   gap: 0.8rem;

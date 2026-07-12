@@ -181,6 +181,8 @@ function initSpeechCoachRecorder() {
 
   const setMode = (mode) => {
     currentMode = mode;
+    recorder.classList.toggle('is-feedback', mode === 'feedback');
+    recorder.classList.toggle('is-practice', mode === 'practice');
 
     modeButtons.forEach((button) => {
       const isActive = button.dataset.mode === mode;
@@ -194,6 +196,10 @@ function initSpeechCoachRecorder() {
     stopLiveCoach();
     if (livePanel) {
       livePanel.hidden = mode !== 'practice';
+    }
+    if (mode === 'practice') {
+      submitForm.hidden = true;
+      resetTurnstileWidget();
     }
     if (modeNote) {
       modeNote.textContent = mode === 'feedback'
@@ -487,6 +493,12 @@ function initSpeechCoachRecorder() {
 
   const submitRecording = async (event) => {
     event.preventDefault();
+
+    if (currentMode !== 'feedback') {
+      submitForm.hidden = true;
+      setStatus('Live Practice does not upload or submit recordings.');
+      return;
+    }
 
     if (!submitForm.reportValidity()) {
       return;
