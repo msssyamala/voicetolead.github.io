@@ -64,6 +64,9 @@ function initSpeechCoachRecorder() {
   let lastLiveCoachUpdate = 0;
   let lastCueKey = '';
   let lastCueChangeAt = 0;
+  let calibrationStartedAt = 0;
+  let calibrationSamples = [];
+  let volumeCalibration = null;
   let currentMode = 'feedback';
   let chunks = [];
   let elapsedSeconds = 0;
@@ -137,7 +140,7 @@ function initSpeechCoachRecorder() {
     }
 
     if (livePanel) {
-      livePanel.classList.remove('is-good', 'is-warning', 'is-alert');
+      livePanel.classList.remove('is-good', 'is-warning', 'is-alert', 'is-calibrating');
 
       if (stateClass) {
         livePanel.classList.add(stateClass);
@@ -150,6 +153,10 @@ function initSpeechCoachRecorder() {
   };
 
   const getPanelState = (stateClass, pauseMessage, timeMessage) => {
+    if (stateClass === 'is-calibrating') {
+      return 'is-calibrating';
+    }
+
     if (stateClass === 'is-high' || pauseMessage === 'Long pause detected') {
       return 'is-alert';
     }
@@ -166,6 +173,10 @@ function initSpeechCoachRecorder() {
   };
 
   const getCue = (stateClass, pauseMessage, timeMessage) => {
+    if (stateClass === 'is-calibrating') {
+      return { key: 'calibrate', message: 'Speak normally for a few seconds.', emoji: '🎙️', word: 'Calibrate' };
+    }
+
     if (pauseMessage === 'Long pause detected') {
       return { key: 'pause', message: 'Take a breath and continue.', emoji: '🌬️', word: 'Breathe' };
     }
@@ -187,6 +198,29 @@ function initSpeechCoachRecorder() {
     }
 
     return { key: 'ready', message: 'Start recording when you are ready.', emoji: '✨', word: 'Ready' };
+  };
+
+  const getCalibratedVolumeRange = () => {
+    const speakingSamples = calibrationSamples
+      .filter((sample) => sample > 0.035)
+      .sort((first, second) => first - second);
+
+    if (speakingSamples.length < 3) {
+      return {
+        quiet: 0.08,
+        loud: 0.75
+      };
+    }
+
+    const middleIndex = Math.floor(speakingSamples.length / 2);
+    const baseline = speakingSamples.length % 2 === 0
+      ? (speakingSamples[middleIndex - 1] + speakingSamples[middleIndex]) / 2
+      : speakingSamples[middleIndex];
+
+    return {
+      quiet: Math.max(0.05, baseline * 0.55),
+      loud: Math.min(0.95, Math.max(0.5, baseline * 1.9))
+    };
   };
 
   const setLiveCoachCue = (stateClass, pauseMessage, timeMessage) => {
@@ -260,6 +294,9 @@ function initSpeechCoachRecorder() {
     lastLiveCoachUpdate = 0;
     lastCueKey = '';
     lastCueChangeAt = 0;
+    calibrationStartedAt = 0;
+    calibrationSamples = [];
+    volumeCalibration = null;
 
     if (livePanel) {
       livePanel.hidden = currentMode !== 'practice';
@@ -299,6 +336,9 @@ function initSpeechCoachRecorder() {
     setLiveCoachDisplay('', 'Listening. Begin your speech.', '✨', 'Ready');
     lastCueKey = '';
     lastCueChangeAt = 0;
+    calibrationStartedAt = Date.now();
+    calibrationSamples = [];
+    volumeCalibration = null;
 
     const analyzeAudio = () => {
       audioAnalyser.getByteTimeDomainData(audioData);
@@ -320,11 +360,26 @@ function initSpeechCoachRecorder() {
 
       lastLiveCoachUpdate = now;
 
+      if (!volumeCalibration) {
+        calibrationSamples.push(level);
+
+        if (now - calibrationStartedAt < 5000) {
+          setLiveCoachCue('is-calibrating', '', getTimeMessage());
+          liveCoachId = requestAnimationFrame(analyzeAudio);
+          return;
+        }
+
+        volumeCalibration = getCalibratedVolumeRange();
+        setStatus('Live practice running... stop whenever you are ready.');
+      }
+
       let pauseMessage = 'Nice flow';
       let stateClass = 'is-good';
       const timeMessage = getTimeMessage();
+      const quietThreshold = volumeCalibration ? volumeCalibration.quiet : 0.08;
+      const loudThreshold = volumeCalibration ? volumeCalibration.loud : 0.75;
 
-      if (level < 0.08) {
+      if (level < quietThreshold) {
         stateClass = 'is-low';
         quietStartedAt = quietStartedAt || now;
 
@@ -336,7 +391,7 @@ function initSpeechCoachRecorder() {
       } else {
         quietStartedAt = null;
 
-        if (level > 0.75) {
+        if (level > loudThreshold) {
           stateClass = 'is-high';
         }
       }
@@ -521,7 +576,7 @@ function initSpeechCoachRecorder() {
       stopButton.disabled = false;
       setStatus(currentMode === 'feedback'
         ? 'Recording for AI feedback... it will stop automatically at 1 minute.'
-        : 'Live practice running... stop whenever you are ready.');
+        : 'Calibrating your microphone... speak normally for a few seconds.');
 
       timerId = setInterval(() => {
         elapsedSeconds += 1;

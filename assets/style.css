@@ -446,6 +446,11 @@ body {
   border-color: #ffd891;
 }
 
+.coach-live-panel.is-calibrating .coach-live-cue {
+  background: rgba(239, 246, 255, 0.9);
+  border-color: #b7cff4;
+}
+
 .coach-live-panel.is-alert .coach-live-cue {
   background: rgba(255, 241, 240, 0.9);
   border-color: #f3b5b0;
