@@ -696,6 +696,7 @@ function initSpeechCoachRecorder() {
     });
 
     startButton.textContent = mode === 'feedback' ? 'Start Recording' : 'Start Live Practice';
+    resetButton.textContent = mode === 'feedback' ? 'Record Again' : 'Practice Again';
     submitButton.textContent = 'Submit for Feedback';
     updateTimer();
     stopLiveCoach();
