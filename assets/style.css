@@ -351,7 +351,7 @@ body {
 .coach-mode-switch {
   background: #fff;
   border: 1px solid #dbe3ef;
-  border-radius: 999px;
+  border-radius: 8px;
   display: grid;
   gap: 0.25rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -360,9 +360,10 @@ body {
 
 .coach-mode {
   background: transparent;
-  border-radius: 999px;
+  border-radius: 6px;
   color: var(--navy);
   min-height: 38px;
+  padding-inline: 0.75rem;
 }
 
 .coach-mode.is-active {
@@ -373,6 +374,11 @@ body {
 .coach-mode:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.coach-mode-note {
+  color: #444;
+  line-height: 1.45;
 }
 
 .coach-live-panel {
@@ -420,24 +426,6 @@ body {
 .coach-live-panel.is-alert .coach-live-cue {
   background: #fff1f0;
   border-color: #f3b5b0;
-}
-
-.coach-live-item {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.coach-live-item span {
-  color: #555;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.coach-live-item strong {
-  color: var(--navy);
-  text-align: right;
 }
 
 .coach-live-hint {
@@ -810,6 +798,9 @@ button, .btn-submit {
     aspect-ratio: 4 / 3;
   }
   .ai-coach-section {
+    grid-template-columns: 1fr;
+  }
+  .coach-mode-switch {
     grid-template-columns: 1fr;
   }
   .coach-actions {

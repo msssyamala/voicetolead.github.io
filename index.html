@@ -56,7 +56,7 @@
         <div class="ai-coach-copy">
           <p class="eyebrow">New practice tool</p>
           <h2 class="section-title">AI Speech Coach</h2>
-          <p>Record a practice video up to 1 minute long. When you are happy with it, submit the recording for feedback.</p>
+          <p>Choose live delivery practice for real-time coaching, or record a short video to submit for AI feedback.</p>
         </div>
 
         <div class="coach-recorder" data-max-seconds="60" data-upload-url="https://speech-coach-api.voicetolead.workers.dev/speech-submissions">
@@ -71,28 +71,17 @@
 
           <div class="coach-controls">
             <div class="coach-mode-switch" aria-label="Choose practice mode">
-              <button type="button" class="coach-mode is-active" data-mode="feedback" aria-pressed="true">AI Feedback</button>
-              <button type="button" class="coach-mode" data-mode="practice" aria-pressed="false">Delivery Practice</button>
+              <button type="button" class="coach-mode is-active" data-mode="feedback" aria-pressed="true">Record for AI Feedback</button>
+              <button type="button" class="coach-mode" data-mode="practice" aria-pressed="false">Live Practice</button>
             </div>
+            <p class="coach-mode-note">Record up to 1 minute, then submit for written AI feedback.</p>
             <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
-            <div class="coach-live-panel" aria-live="polite">
+            <div class="coach-live-panel" hidden aria-live="polite">
               <div class="coach-live-cue">
                 <span>Live Coach</span>
                 <strong class="coach-cue-status">Start recording when you are ready.</strong>
               </div>
-              <div class="coach-live-item">
-                <span>Time</span>
-                <strong class="coach-time-status">Up to 1 minute</strong>
-              </div>
-              <div class="coach-live-item">
-                <span>Volume</span>
-                <strong class="coach-volume-status">Starts when you record</strong>
-              </div>
-              <div class="coach-live-item">
-                <span>Pauses</span>
-                <strong class="coach-pause-status">Starts when you record</strong>
-              </div>
-              <p class="coach-live-hint">Live Coach uses your browser microphone level only. It is not sent anywhere.</p>
+              <p class="coach-live-hint">Live feedback stays in your browser and is not uploaded.</p>
             </div>
             <div class="coach-actions">
               <button type="button" class="btn-primary coach-start">Start Recording</button>

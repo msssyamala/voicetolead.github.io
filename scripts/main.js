@@ -45,11 +45,9 @@ function initSpeechCoachRecorder() {
   const status = recorder.querySelector('.coach-status');
   const timer = recorder.querySelector('.coach-timer');
   const download = recorder.querySelector('.coach-download');
+  const modeNote = recorder.querySelector('.coach-mode-note');
   const livePanel = recorder.querySelector('.coach-live-panel');
   const cueStatus = recorder.querySelector('.coach-cue-status');
-  const timeStatus = recorder.querySelector('.coach-time-status');
-  const volumeStatus = recorder.querySelector('.coach-volume-status');
-  const pauseStatus = recorder.querySelector('.coach-pause-status');
   const turnstileContainer = recorder.querySelector('.coach-turnstile');
   const turnstileToken = recorder.querySelector('.coach-turnstile-token');
 
@@ -120,34 +118,65 @@ function initSpeechCoachRecorder() {
     frame.classList.remove('is-previewing');
   };
 
-  const setLiveCoachDisplay = (volumeMessage, pauseMessage, stateClass, cueMessage, timeMessage) => {
+  const setLiveCoachDisplay = (stateClass, cueMessage) => {
     if (cueStatus) {
       cueStatus.textContent = cueMessage;
-    }
-
-    if (timeStatus) {
-      timeStatus.textContent = timeMessage;
     }
 
     if (livePanel) {
       livePanel.classList.remove('is-good', 'is-warning', 'is-alert');
 
-      if (stateClass === 'is-high' || pauseMessage === 'Long pause detected') {
-        livePanel.classList.add('is-alert');
-      } else if (stateClass === 'is-low' || timeMessage === 'Start wrapping up.' || timeMessage === 'Finish your final sentence.') {
-        livePanel.classList.add('is-warning');
-      } else if (stateClass === 'is-good') {
-        livePanel.classList.add('is-good');
+      if (stateClass) {
+        livePanel.classList.add(stateClass);
       }
     }
+  };
 
-    if (volumeStatus) {
-      volumeStatus.textContent = volumeMessage;
+  const getPanelState = (stateClass, pauseMessage, timeMessage) => {
+    if (stateClass === 'is-high' || pauseMessage === 'Long pause detected') {
+      return 'is-alert';
     }
 
-    if (pauseStatus) {
-      pauseStatus.textContent = pauseMessage;
+    if (stateClass === 'is-low' || timeMessage === 'Start wrapping up.' || timeMessage === 'Finish your final sentence.') {
+      return 'is-warning';
     }
+
+    if (stateClass === 'is-good') {
+      return 'is-good';
+    }
+
+    return '';
+  };
+
+  const getCueMessage = (stateClass, pauseMessage, timeMessage) => {
+    if (pauseMessage === 'Long pause detected') {
+      return 'Take a breath and continue.';
+    }
+
+    if (stateClass === 'is-low') {
+      return 'Project your voice a little more.';
+    }
+
+    if (stateClass === 'is-high') {
+      return 'Lower your volume slightly.';
+    }
+
+    if (timeMessage === 'Start wrapping up.' || timeMessage === 'Finish your final sentence.') {
+      return timeMessage;
+    }
+
+    if (stateClass === 'is-good') {
+      return 'Good energy. Keep going.';
+    }
+
+    return 'Start recording when you are ready.';
+  };
+
+  const setLiveCoachCue = (stateClass, pauseMessage, timeMessage) => {
+    setLiveCoachDisplay(
+      getPanelState(stateClass, pauseMessage, timeMessage),
+      getCueMessage(stateClass, pauseMessage, timeMessage)
+    );
   };
 
   const setMode = (mode) => {
@@ -159,13 +188,21 @@ function initSpeechCoachRecorder() {
       button.setAttribute('aria-pressed', String(isActive));
     });
 
-    startButton.textContent = mode === 'feedback' ? 'Start Recording' : 'Start Practice';
+    startButton.textContent = mode === 'feedback' ? 'Start Recording' : 'Start Live Practice';
     submitButton.textContent = 'Submit for Feedback';
     updateTimer();
     stopLiveCoach();
+    if (livePanel) {
+      livePanel.hidden = mode !== 'practice';
+    }
+    if (modeNote) {
+      modeNote.textContent = mode === 'feedback'
+        ? 'Record up to 1 minute, then submit for written AI feedback.'
+        : 'Practice delivery with real-time coaching. No 1-minute limit and nothing uploads.';
+    }
     setStatus(mode === 'feedback'
-      ? 'AI Feedback mode records up to 1 minute and can be submitted for AI feedback.'
-      : 'Delivery Practice mode can run longer and stays on this device unless you download it.');
+      ? 'Ready to record a short speech for AI feedback.'
+      : 'Ready for live practice.');
   };
 
   const stopLiveCoach = () => {
@@ -184,26 +221,20 @@ function initSpeechCoachRecorder() {
     quietStartedAt = null;
     lastLiveCoachUpdate = 0;
 
-    setLiveCoachDisplay(
-      'Starts when you record',
-      'Starts when you record',
-      '',
-      'Start recording when you are ready.',
-      currentMode === 'feedback' ? 'Up to 1 minute' : 'No 1-minute limit'
-    );
+    if (livePanel) {
+      livePanel.hidden = currentMode !== 'practice';
+    }
+
+    setLiveCoachDisplay('', 'Start recording when you are ready.');
   };
 
   const startLiveCoach = () => {
     if (!livePanel || !window.AudioContext && !window.webkitAudioContext) {
-      setLiveCoachDisplay(
-        'Live coach unavailable',
-        'Live coach unavailable',
-        '',
-        'Live coach is not available in this browser.',
-        getTimeMessage()
-      );
+      setLiveCoachDisplay('', 'Live coach is not available in this browser.');
       return;
     }
+
+    livePanel.hidden = false;
 
     if (liveCoachId) {
       cancelAnimationFrame(liveCoachId);
@@ -225,7 +256,7 @@ function initSpeechCoachRecorder() {
     const source = audioContext.createMediaStreamSource(stream);
     source.connect(audioAnalyser);
 
-    setLiveCoachDisplay('Listening', 'Listening', '', 'Listening. Begin your speech.', getTimeMessage());
+    setLiveCoachDisplay('', 'Listening. Begin your speech.');
 
     const analyzeAudio = () => {
       audioAnalyser.getByteTimeDomainData(audioData);
@@ -247,21 +278,16 @@ function initSpeechCoachRecorder() {
 
       lastLiveCoachUpdate = now;
 
-      let volumeMessage = 'Good volume';
       let pauseMessage = 'Nice flow';
       let stateClass = 'is-good';
-      let cueMessage = 'Good energy. Keep going.';
       const timeMessage = getTimeMessage();
 
       if (level < 0.08) {
-        volumeMessage = 'Speak a little louder';
         stateClass = 'is-low';
-        cueMessage = 'Project your voice a little more.';
         quietStartedAt = quietStartedAt || now;
 
         if (now - quietStartedAt > 2500) {
           pauseMessage = 'Long pause detected';
-          cueMessage = 'Take a breath and continue.';
         } else {
           pauseMessage = 'Listening';
         }
@@ -269,20 +295,11 @@ function initSpeechCoachRecorder() {
         quietStartedAt = null;
 
         if (level > 0.75) {
-          volumeMessage = 'A little too loud';
           stateClass = 'is-high';
-          cueMessage = 'Lower your volume slightly.';
         }
       }
 
-      if (
-        stateClass === 'is-good' &&
-        (timeMessage === 'Start wrapping up.' || timeMessage === 'Finish your final sentence.')
-      ) {
-        cueMessage = timeMessage;
-      }
-
-      setLiveCoachDisplay(volumeMessage, pauseMessage, stateClass, cueMessage, timeMessage);
+      setLiveCoachCue(stateClass, pauseMessage, timeMessage);
       liveCoachId = requestAnimationFrame(analyzeAudio);
     };
 
@@ -350,8 +367,8 @@ function initSpeechCoachRecorder() {
     });
     frame.classList.remove('has-recording');
     setStatus(currentMode === 'feedback'
-      ? 'AI Feedback mode records up to 1 minute and can be submitted for AI feedback.'
-      : 'Delivery Practice mode can run longer and stays on this device unless you download it.');
+      ? 'Ready to record a short speech for AI feedback.'
+      : 'Ready for live practice.');
   };
 
   const getSupportedMimeType = () => {
@@ -399,7 +416,7 @@ function initSpeechCoachRecorder() {
       setStatus('Recording complete. Review it here, then submit it for feedback.');
     } else {
       submitForm.hidden = true;
-      setStatus('Practice complete. Review your recording here or download it. Nothing was uploaded.');
+      setStatus('Live practice complete. Review your recording here or download it. Nothing was uploaded.');
     }
   };
 
@@ -434,7 +451,9 @@ function initSpeechCoachRecorder() {
       preview.hidden = false;
       await preview.play();
       frame.classList.add('is-previewing');
-      startLiveCoach();
+      if (currentMode === 'practice') {
+        startLiveCoach();
+      }
 
       const mimeType = getSupportedMimeType();
       mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
@@ -449,8 +468,8 @@ function initSpeechCoachRecorder() {
       mediaRecorder.start();
       stopButton.disabled = false;
       setStatus(currentMode === 'feedback'
-        ? 'Recording... it will stop automatically at 1 minute.'
-        : 'Practice recording... stop whenever you are ready.');
+        ? 'Recording for AI feedback... it will stop automatically at 1 minute.'
+        : 'Live practice running... stop whenever you are ready.');
 
       timerId = setInterval(() => {
         elapsedSeconds += 1;
