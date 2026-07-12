@@ -41,6 +41,7 @@ function initSpeechCoachRecorder() {
   const stopButton = recorder.querySelector('.coach-stop');
   const resetButton = recorder.querySelector('.coach-reset');
   const submitForm = recorder.querySelector('.coach-submit-form');
+  const resultActions = recorder.querySelector('.coach-result-actions');
   const submitButton = recorder.querySelector('.coach-submit');
   const status = recorder.querySelector('.coach-status');
   const timer = recorder.querySelector('.coach-timer');
@@ -199,6 +200,9 @@ function initSpeechCoachRecorder() {
     }
     if (mode === 'practice') {
       submitForm.hidden = true;
+      if (resultActions) {
+        resultActions.hidden = true;
+      }
       resetTurnstileWidget();
     }
     if (modeNote) {
@@ -206,9 +210,7 @@ function initSpeechCoachRecorder() {
         ? 'Record up to 1 minute, then submit for written AI feedback.'
         : 'Practice delivery with real-time coaching. No 1-minute limit and nothing uploads.';
     }
-    setStatus(mode === 'feedback'
-      ? 'Ready to record a short speech for AI feedback.'
-      : 'Ready for live practice.');
+    setStatus('');
   };
 
   const stopLiveCoach = () => {
@@ -361,6 +363,9 @@ function initSpeechCoachRecorder() {
     playback.hidden = true;
     playback.removeAttribute('src');
     submitForm.hidden = true;
+    if (resultActions) {
+      resultActions.hidden = true;
+    }
     resetTurnstileWidget();
     submitButton.disabled = false;
     download.hidden = true;
@@ -372,9 +377,7 @@ function initSpeechCoachRecorder() {
       button.disabled = false;
     });
     frame.classList.remove('has-recording');
-    setStatus(currentMode === 'feedback'
-      ? 'Ready to record a short speech for AI feedback.'
-      : 'Ready for live practice.');
+    setStatus('');
   };
 
   const getSupportedMimeType = () => {
@@ -418,10 +421,18 @@ function initSpeechCoachRecorder() {
 
     if (currentMode === 'feedback') {
       submitForm.hidden = false;
+      if (resultActions) {
+        resultActions.hidden = false;
+      }
+      submitButton.hidden = false;
       renderTurnstileWidget();
       setStatus('Recording complete. Review it here, then submit it for feedback.');
     } else {
       submitForm.hidden = true;
+      if (resultActions) {
+        resultActions.hidden = false;
+      }
+      submitButton.hidden = true;
       setStatus('Live practice complete. Review your recording here or download it. Nothing was uploaded.');
     }
   };
@@ -496,6 +507,7 @@ function initSpeechCoachRecorder() {
 
     if (currentMode !== 'feedback') {
       submitForm.hidden = true;
+      submitButton.hidden = true;
       setStatus('Live Practice does not upload or submit recordings.');
       return;
     }

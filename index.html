@@ -87,7 +87,7 @@
               <button type="button" class="btn-secondary coach-stop" disabled>Stop</button>
               <button type="button" class="btn-secondary coach-reset" disabled>Record Again</button>
             </div>
-            <form class="coach-submit-form" hidden>
+            <form class="coach-submit-form" id="coach-submit-form" hidden>
               <div class="coach-form-grid">
                 <label>
                   <span>Name</span>
@@ -104,10 +104,12 @@
               </label>
               <div class="coach-turnstile" data-sitekey="0x4AAAAAAD0c2bi7iPrZo6p9"></div>
               <input type="hidden" name="turnstile_token" class="coach-turnstile-token" required />
-              <button type="submit" class="btn-primary coach-submit">Submit for Feedback</button>
             </form>
-            <p class="coach-status" aria-live="polite">Ready when you are.</p>
-            <a class="coach-download" hidden>Download recording</a>
+            <div class="coach-result-actions" hidden>
+              <button type="submit" form="coach-submit-form" class="btn-primary coach-submit">Submit for Feedback</button>
+              <a class="coach-download" hidden>Download recording</a>
+            </div>
+            <p class="coach-status" aria-live="polite"></p>
           </div>
         </div>
       </div>
