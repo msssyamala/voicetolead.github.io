@@ -9,7 +9,20 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   initSpeechCoachRecorder();
+  registerServiceWorker();
 });
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) {
+    return;
+  }
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').catch(() => {
+      // Installation still works as a normal website if service workers are unavailable.
+    });
+  });
+}
 
 function initSpeechCoachRecorder() {
   const recorder = document.querySelector('.coach-recorder');
