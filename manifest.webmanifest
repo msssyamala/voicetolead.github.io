@@ -1,0 +1,18 @@
+{
+  "name": "VoiceToLead",
+  "short_name": "VoiceToLead",
+  "description": "Practice public speaking and get AI-powered speech feedback.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00205B",
+  "icons": [
+    {
+      "src": "/assets/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
