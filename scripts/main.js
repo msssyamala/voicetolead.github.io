@@ -430,10 +430,11 @@ function initSpeechCoachRecorder() {
     } else {
       submitForm.hidden = true;
       if (resultActions) {
-        resultActions.hidden = false;
+        resultActions.hidden = true;
       }
       submitButton.hidden = true;
-      setStatus('Live practice complete. Review your recording here or download it. Nothing was uploaded.');
+      download.hidden = true;
+      setStatus('Live practice complete. Review your recording here. Nothing was uploaded.');
     }
   };
 
