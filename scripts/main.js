@@ -77,6 +77,7 @@ function initSpeechCoachRecorder() {
   let recognizedWordCount = 0;
   let lastRecognizedWordCount = 0;
   let recognizedText = '';
+  let lastFillerText = '';
   let lastFillerCueAt = 0;
   let lastPaceCueAt = 0;
   let speechCueHoldUntil = 0;
@@ -300,6 +301,20 @@ function initSpeechCoachRecorder() {
     return fillerPatterns.some((pattern) => pattern.test(normalizedText));
   };
 
+  const getLatestSpeechText = (event) => {
+    let latestText = '';
+
+    for (let index = event.resultIndex; index < event.results.length; index += 1) {
+      const result = event.results[index];
+
+      if (result[0] && result[0].transcript) {
+        latestText += ` ${result[0].transcript}`;
+      }
+    }
+
+    return latestText.trim();
+  };
+
   const shouldHoldSpeechCue = (stateClass) => {
     return stateClass === 'is-filler' || stateClass === 'is-pace-fast' || stateClass === 'is-pace-slow';
   };
@@ -331,6 +346,7 @@ function initSpeechCoachRecorder() {
 
     const now = Date.now();
     let transcript = '';
+    const latestText = getLatestSpeechText(event);
 
     for (let index = 0; index < event.results.length; index += 1) {
       const result = event.results[index];
@@ -353,7 +369,12 @@ function initSpeechCoachRecorder() {
     const words = getWords(recognizedText);
     recognizedWordCount = Math.max(recognizedWordCount, words.length);
 
-    if (hasFillerWords(recognizedText) && now - lastFillerCueAt > 6000) {
+    if (
+      hasFillerWords(latestText || recognizedText) &&
+      latestText !== lastFillerText &&
+      now - lastFillerCueAt > 2500
+    ) {
+      lastFillerText = latestText;
       lastFillerCueAt = now;
       setLiveCoachCue('is-filler', '', getTimeMessage());
       return;
@@ -422,6 +443,7 @@ function initSpeechCoachRecorder() {
     recognizedWordCount = 0;
     lastRecognizedWordCount = 0;
     recognizedText = '';
+    lastFillerText = '';
     lastFillerCueAt = 0;
     lastPaceCueAt = 0;
     speechCueHoldUntil = 0;
@@ -472,8 +494,10 @@ function initSpeechCoachRecorder() {
   const setLiveCoachCue = (stateClass, pauseMessage, timeMessage) => {
     const nextCue = getCue(stateClass, pauseMessage, timeMessage);
     const now = Date.now();
+    const isPriorityCue = stateClass === 'is-filler';
     const shouldChangeCue =
-      nextCue.key !== lastCueKey && (lastCueKey === '' || now - lastCueChangeAt > 2200 || nextCue.key === 'pause');
+      isPriorityCue ||
+      (nextCue.key !== lastCueKey && (lastCueKey === '' || now - lastCueChangeAt > 2200 || nextCue.key === 'pause'));
 
     if (!shouldChangeCue) {
       return;
@@ -483,7 +507,7 @@ function initSpeechCoachRecorder() {
     lastCueChangeAt = now;
 
     if (shouldHoldSpeechCue(stateClass)) {
-      speechCueHoldUntil = now + 4200;
+      speechCueHoldUntil = now + (stateClass === 'is-filler' ? 5200 : 4200);
     }
 
     if (shouldHoldEyeContactCue(stateClass)) {
@@ -559,6 +583,7 @@ function initSpeechCoachRecorder() {
     recognizedWordCount = 0;
     lastRecognizedWordCount = 0;
     recognizedText = '';
+    lastFillerText = '';
     lastFillerCueAt = 0;
     lastPaceCueAt = 0;
     speechCueHoldUntil = 0;
@@ -614,6 +639,7 @@ function initSpeechCoachRecorder() {
     recognizedWordCount = 0;
     lastRecognizedWordCount = 0;
     recognizedText = '';
+    lastFillerText = '';
     lastFillerCueAt = 0;
     lastPaceCueAt = 0;
     speechCueHoldUntil = 0;
