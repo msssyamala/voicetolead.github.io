@@ -1,10 +1,10 @@
 const TRANSCRIPTION_MODEL = "gpt-4o-mini-transcribe";
 const FEEDBACK_MODEL = "gpt-4o-mini";
 const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
-const ALLOWED_VIDEO_TYPES = new Set([
+const ALLOWED_VIDEO_TYPES = [
   "video/webm",
   "video/mp4",
-]);
+];
 
 export default {
   async fetch(request, env, ctx) {
@@ -84,7 +84,7 @@ async function createSubmission(request, env, corsHeaders, ctx) {
       return json({ error: "Video file is too large." }, 413, corsHeaders);
     }
 
-    if (!ALLOWED_VIDEO_TYPES.has(video.type)) {
+    if (!isAllowedVideoType(video.type)) {
       return json({ error: "Unsupported video type." }, 415, corsHeaders);
     }
 
@@ -136,6 +136,14 @@ async function createSubmission(request, env, corsHeaders, ctx) {
       details: error.message,
     }, 500, corsHeaders);
   }
+}
+
+function isAllowedVideoType(type) {
+  const normalizedType = (type || "").toLowerCase();
+
+  return ALLOWED_VIDEO_TYPES.some((allowedType) =>
+    normalizedType === allowedType || normalizedType.startsWith(`${allowedType};`)
+  );
 }
 
 async function verifyTurnstileToken(token, request, env) {
