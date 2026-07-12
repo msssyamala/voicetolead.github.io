@@ -776,9 +776,8 @@ function initSpeechCoachRecorder() {
         resultActions.hidden = true;
       }
       if (drillPanel) {
-        drillPanel.hidden = false;
+        drillPanel.hidden = true;
       }
-      updateGuidedDrill();
       resetTurnstileWidget();
     } else {
       if (drillPanel) {

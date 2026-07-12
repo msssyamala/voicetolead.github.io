@@ -434,7 +434,8 @@ body {
   padding: 0.75rem;
 }
 
-.coach-drills[hidden] {
+.coach-drills[hidden],
+.coach-recorder.is-practice .coach-drills {
   display: none;
 }
 
