@@ -51,6 +51,12 @@ function initSpeechCoachRecorder() {
   const cueStatus = recorder.querySelector('.coach-cue-status');
   const cueEmoji = recorder.querySelector('.coach-cue-emoji');
   const cueWord = recorder.querySelector('.coach-cue-word');
+  const practiceSummary = recorder.querySelector('.coach-practice-summary');
+  const summaryTime = recorder.querySelector('[data-summary="time"]');
+  const summarySteady = recorder.querySelector('[data-summary="steady"]');
+  const summaryFiller = recorder.querySelector('[data-summary="filler"]');
+  const summaryEye = recorder.querySelector('[data-summary="eye"]');
+  const summaryFocus = recorder.querySelector('[data-summary="focus"]');
   const turnstileContainer = recorder.querySelector('.coach-turnstile');
   const turnstileToken = recorder.querySelector('.coach-turnstile-token');
 
@@ -92,6 +98,14 @@ function initSpeechCoachRecorder() {
   let recordingUrl;
   let recordingExtension = 'webm';
   let turnstileWidgetId = null;
+  let practiceMetrics = {
+    filler: 0,
+    eye: 0,
+    paceFast: 0,
+    paceSlow: 0,
+    pause: 0,
+    steady: 0
+  };
 
   const setStatus = (message) => {
     status.textContent = message;
@@ -107,6 +121,79 @@ function initSpeechCoachRecorder() {
     timer.textContent = currentMode === 'feedback'
       ? `${formatTime(elapsedSeconds)} / ${formatTime(maxSeconds)}`
       : formatTime(elapsedSeconds);
+  };
+
+  const resetPracticeMetrics = () => {
+    practiceMetrics = {
+      filler: 0,
+      eye: 0,
+      paceFast: 0,
+      paceSlow: 0,
+      pause: 0,
+      steady: 0
+    };
+  };
+
+  const hidePracticeSummary = () => {
+    if (practiceSummary) {
+      practiceSummary.hidden = true;
+    }
+  };
+
+  const getPracticeFocus = () => {
+    if (practiceMetrics.filler >= 3) {
+      return 'Next focus: try fewer filler words next round.';
+    }
+
+    if (practiceMetrics.paceFast > practiceMetrics.paceSlow && practiceMetrics.paceFast > 0) {
+      return 'Next focus: slow down slightly and let key ideas land.';
+    }
+
+    if (practiceMetrics.paceSlow > 0) {
+      return 'Next focus: add a little more energy to your pace.';
+    }
+
+    if (practiceMetrics.pause >= 2) {
+      return 'Next focus: shorten long pauses between thoughts.';
+    }
+
+    if (practiceMetrics.eye >= 3) {
+      return 'Next focus: keep connecting with your audience.';
+    }
+
+    if (practiceMetrics.steady > 0) {
+      return 'Next focus: keep that steady delivery going.';
+    }
+
+    return 'Next focus: try one more round and build your rhythm.';
+  };
+
+  const showPracticeSummary = () => {
+    if (!practiceSummary) {
+      return;
+    }
+
+    if (summaryTime) {
+      summaryTime.textContent = formatTime(elapsedSeconds);
+    }
+
+    if (summarySteady) {
+      summarySteady.textContent = String(practiceMetrics.steady);
+    }
+
+    if (summaryFiller) {
+      summaryFiller.textContent = String(practiceMetrics.filler);
+    }
+
+    if (summaryEye) {
+      summaryEye.textContent = String(practiceMetrics.eye);
+    }
+
+    if (summaryFocus) {
+      summaryFocus.textContent = getPracticeFocus();
+    }
+
+    practiceSummary.hidden = false;
   };
 
   const getTimeMessage = () => {
@@ -506,6 +593,22 @@ function initSpeechCoachRecorder() {
     lastCueKey = nextCue.key;
     lastCueChangeAt = now;
 
+    if (currentMode === 'practice') {
+      if (stateClass === 'is-filler') {
+        practiceMetrics.filler += 1;
+      } else if (stateClass === 'is-pace-fast') {
+        practiceMetrics.paceFast += 1;
+      } else if (stateClass === 'is-pace-slow') {
+        practiceMetrics.paceSlow += 1;
+      } else if (stateClass === 'is-eye-contact') {
+        practiceMetrics.eye += 1;
+      } else if (stateClass === 'is-streak') {
+        practiceMetrics.steady += 1;
+      } else if (nextCue.key === 'pause') {
+        practiceMetrics.pause += 1;
+      }
+    }
+
     if (shouldHoldSpeechCue(stateClass)) {
       speechCueHoldUntil = now + (stateClass === 'is-filler' ? 5200 : 4200);
     }
@@ -526,6 +629,7 @@ function initSpeechCoachRecorder() {
     currentMode = mode;
     recorder.classList.toggle('is-feedback', mode === 'feedback');
     recorder.classList.toggle('is-practice', mode === 'practice');
+    hidePracticeSummary();
 
     modeButtons.forEach((button) => {
       const isActive = button.dataset.mode === mode;
@@ -789,6 +893,8 @@ function initSpeechCoachRecorder() {
     mediaRecorder = null;
     stopLiveCoach();
     stopStream();
+    resetPracticeMetrics();
+    hidePracticeSummary();
     updateTimer();
     playback.hidden = true;
     playback.removeAttribute('src');
@@ -882,6 +988,7 @@ function initSpeechCoachRecorder() {
     modeButtons.forEach((button) => {
       button.disabled = false;
     });
+    showPracticeSummary();
     setStatus('Live practice complete. Nothing was recorded or uploaded.');
   };
 
@@ -903,6 +1010,8 @@ function initSpeechCoachRecorder() {
     }
 
     resetRecorder();
+    resetPracticeMetrics();
+    hidePracticeSummary();
     startButton.disabled = true;
     modeButtons.forEach((button) => {
       button.disabled = true;
