@@ -405,6 +405,26 @@ body {
   width: 100%;
 }
 
+.coach-consent {
+  align-items: start;
+  color: #333;
+  display: grid;
+  font-size: 0.92rem;
+  gap: 0.55rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  line-height: 1.45;
+}
+
+.coach-consent input {
+  margin-top: 0.2rem;
+  width: auto;
+}
+
+.coach-consent a {
+  color: var(--navy);
+  font-weight: 800;
+}
+
 .coach-submit {
   width: fit-content;
 }
@@ -529,6 +549,35 @@ body {
 .feedback-transcript p {
   margin-top: 0.8rem;
   white-space: pre-wrap;
+}
+
+.privacy-section {
+  width: min(100%, 840px);
+}
+
+.privacy-updated {
+  color: #555;
+  margin-bottom: 1.4rem;
+}
+
+.privacy-content {
+  display: grid;
+  gap: 1rem;
+}
+
+.privacy-content h2 {
+  color: var(--navy);
+  font-size: 1.15rem;
+  margin-top: 0.6rem;
+}
+
+.privacy-content p {
+  line-height: 1.7;
+}
+
+.privacy-content a {
+  color: var(--navy);
+  font-weight: 800;
 }
 
 .stat-strip {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AI Speech Coach Feedback | VoiceToLead</title>
+  <title>Privacy Policy | VoiceToLead</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="manifest" href="manifest.webmanifest" />
@@ -32,21 +32,33 @@
   </header>
 
   <main>
-    <section class="section feedback-section">
-      <p class="eyebrow">AI Speech Coach</p>
-      <h1 class="section-title">Speech Feedback</h1>
-      <p class="feedback-intro">Enter a submission ID to check whether feedback is ready.</p>
+    <section class="section privacy-section">
+      <p class="eyebrow">Privacy</p>
+      <h1 class="section-title">Privacy Policy</h1>
+      <p class="privacy-updated">Last updated: July 12, 2026</p>
 
-      <form class="feedback-lookup" data-api-base="https://speech-coach-api.voicetolead.workers.dev">
-        <label>
-          <span>Submission ID</span>
-          <input type="text" name="submission_id" autocomplete="off" placeholder="Paste submission ID" required />
-        </label>
-        <button type="submit" class="btn-primary">Load Feedback</button>
-      </form>
+      <div class="privacy-content">
+        <h2>What We Collect</h2>
+        <p>When you use the AI Speech Coach, VoiceToLead may collect the video and audio recording you submit, your name, your email address if provided, a transcript of your speech, and AI-generated feedback.</p>
 
-      <p class="feedback-status" aria-live="polite">Waiting for a submission ID.</p>
-      <div class="feedback-results" hidden></div>
+        <h2>How We Use It</h2>
+        <p>We use this information to process your recording, generate speech feedback, help you review your practice submission, and improve the learning experience we provide.</p>
+
+        <h2>Where It Is Stored</h2>
+        <p>Submitted videos are stored in Cloudflare R2. Submission details, transcript text, and feedback results are stored in Supabase. The website itself is hosted on GitHub Pages.</p>
+
+        <h2>AI Processing</h2>
+        <p>Recordings may be sent to OpenAI services to create a transcript and generate feedback about speech clarity, organization, filler words, and delivery. AI feedback can be helpful, but it may not always be perfect.</p>
+
+        <h2>Who Can Access It</h2>
+        <p>Access is limited to VoiceToLead team members and service providers who help operate the AI Speech Coach. We do not sell student recordings or personal information.</p>
+
+        <h2>Deleting A Submission</h2>
+        <p>To request deletion of a recording, transcript, or feedback result, email us at <a href="mailto:voicetolead@gmail.com">voicetolead@gmail.com</a>. Please include the submission ID if you have it.</p>
+
+        <h2>Questions</h2>
+        <p>For privacy questions, contact <a href="mailto:voicetolead@gmail.com">voicetolead@gmail.com</a>.</p>
+      </div>
     </section>
   </main>
 
@@ -59,9 +71,11 @@
         <img src="assets/icons/mail.png" alt="Email icon" />
       </a>
     </div>
+
     <div class="footer-links">
       <a href="privacy.html">PRIVACY POLICY</a>
     </div>
+
     <p>voicetolead@gmail.com</p>
     <p>Texas, USA</p>
     <p>VoiceToLead is a fiscally sponsored project of The Hack Foundation, a 501(c)(3) nonprofit (EIN 81-2908499).</p>
@@ -69,7 +83,6 @@
   </footer>
 
   <script src="scripts/main.js"></script>
-  <script src="scripts/feedback.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>

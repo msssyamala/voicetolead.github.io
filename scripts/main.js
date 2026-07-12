@@ -205,6 +205,10 @@ function initSpeechCoachRecorder() {
   const submitRecording = async (event) => {
     event.preventDefault();
 
+    if (!submitForm.reportValidity()) {
+      return;
+    }
+
     if (!recordingBlob) {
       setStatus('Please record a video before submitting.');
       return;
