@@ -40,6 +40,42 @@ document.addEventListener('DOMContentLoaded', function () {
     return `<div class="feedback-score"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}/10</strong></div>`;
   };
 
+  const renderLanguageFeedback = (language) => {
+    if (!language) {
+      return '';
+    }
+
+    const hasGrammar = Array.isArray(language.grammar_notes) && language.grammar_notes.length > 0;
+    const hasVocabulary = Array.isArray(language.vocabulary_suggestions) && language.vocabulary_suggestions.length > 0;
+    const hasRepeated = Array.isArray(language.repeated_or_vague_words) && language.repeated_or_vague_words.length > 0;
+    const hasClearerVersion = Boolean(language.clearer_version);
+
+    if (!hasGrammar && !hasVocabulary && !hasRepeated && !hasClearerVersion) {
+      return '';
+    }
+
+    return `
+      <section class="feedback-panel feedback-language">
+        <h2>Language & Vocabulary</h2>
+        <div class="feedback-grid feedback-language-grid">
+          <div>
+            <h3>Grammar Notes</h3>
+            ${renderList(language.grammar_notes)}
+          </div>
+          <div>
+            <h3>Stronger Word Choices</h3>
+            ${renderList(language.vocabulary_suggestions)}
+          </div>
+          <div>
+            <h3>Repeated or Vague Words</h3>
+            ${renderList(language.repeated_or_vague_words)}
+          </div>
+        </div>
+        ${language.clearer_version ? `<p><strong>Try saying it this way:</strong> ${escapeHtml(language.clearer_version)}</p>` : ''}
+      </section>
+    `;
+  };
+
   const renderFeedback = (submission) => {
     const feedback = submission.final_feedback || submission.speech_feedback;
     const drillReview = feedback && feedback.drill_review;
@@ -120,6 +156,8 @@ document.addEventListener('DOMContentLoaded', function () {
         <h2>Top 3 Next Steps</h2>
         ${renderList(feedback.top_3_next_steps)}
       </section>
+
+      ${renderLanguageFeedback(feedback.language_and_vocabulary)}
 
       ${submission.transcript ? `
         <details class="feedback-transcript">

@@ -859,16 +859,22 @@ body {
   border-color: rgba(0, 32, 91, 0.25);
 }
 
+.feedback-language {
+  border-color: rgba(213, 0, 50, 0.22);
+}
+
 .feedback-drill-review {
   border-color: rgba(0, 32, 91, 0.25);
 }
 
+.feedback-language h3,
 .feedback-drill-review h3 {
   color: var(--navy);
   font-size: 1rem;
   margin-bottom: 0.45rem;
 }
 
+.feedback-language-grid,
 .feedback-drill-grid {
   margin: 0.8rem 0;
 }

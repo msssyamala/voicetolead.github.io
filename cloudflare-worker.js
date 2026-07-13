@@ -486,6 +486,12 @@ Analyze this speech transcript and return only valid JSON with this exact shape:
   "opening_and_closing": {
     "notes": ""
   },
+  "language_and_vocabulary": {
+    "grammar_notes": [],
+    "vocabulary_suggestions": [],
+    "repeated_or_vague_words": [],
+    "clearer_version": ""
+  },
   "drill_review": {
     "drill_title": "",
     "rubric": "",
@@ -504,6 +510,10 @@ Guidelines:
 - The drill_review must evaluate the selected drill only, using its rubric and questions.
 - If a rubric item is not clearly present in the transcript, include it in missing_or_unclear.
 - The stronger_example should be a short sample sentence or structure the student could try next.
+- The language_and_vocabulary section should identify grammar issues, vague or repeated words, and stronger word choices.
+- Keep language_and_vocabulary feedback encouraging, especially for students and English learners.
+- Each vocabulary suggestion should include the student's wording and a stronger alternative in one short sentence.
+- The clearer_version should rewrite one short part of the speech in a clearer, more confident way.
 - Do not mention that you are an AI model.
 - Do not include markdown.
 - Return JSON only.
