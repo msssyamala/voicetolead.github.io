@@ -122,6 +122,83 @@
             </div>
           </section>
 
+          <section class="dashboard-panel dashboard-coach-panel">
+            <div class="dashboard-panel-heading">
+              <div>
+                <h2>Record Account Practice</h2>
+                <p>Record up to 1 minute. This version is prepared to save feedback to your signed-in account.</p>
+              </div>
+              <span>Account-aware recording</span>
+            </div>
+
+            <div class="coach-recorder is-feedback dashboard-recorder" data-max-seconds="60" data-upload-url="https://speech-coach-api.voicetolead.workers.dev/speech-submissions" data-require-auth="true">
+              <div class="coach-video-frame">
+                <video class="coach-preview" playsinline muted></video>
+                <video class="coach-playback" controls playsinline hidden></video>
+                <div class="coach-live-panel" hidden aria-live="polite">
+                  <div class="coach-live-cue">
+                    <span class="coach-cue-emoji" aria-hidden="true">✨</span>
+                    <span class="coach-cue-word" aria-hidden="true">Ready</span>
+                    <strong class="coach-cue-status">Start recording when you are ready.</strong>
+                  </div>
+                </div>
+                <div class="coach-placeholder">
+                  <strong>Camera preview will appear here</strong>
+                  <span>Allow camera and microphone access when prompted.</span>
+                </div>
+              </div>
+
+              <div class="coach-controls">
+                <p class="coach-mode-note">Record up to 1 minute, then submit for saved AI feedback.</p>
+                <div class="coach-drills">
+                  <label>
+                    <span>Guided drill</span>
+                    <select class="coach-drill-select">
+                      <option value="open">Open practice</option>
+                      <option value="intro">30-second introduction</option>
+                      <option value="elevator">Elevator pitch</option>
+                      <option value="story">Storytelling practice</option>
+                      <option value="interview">Tell me about yourself</option>
+                      <option value="debate">Debate opening</option>
+                    </select>
+                  </label>
+                  <div class="coach-drill-card">
+                    <strong class="coach-drill-title">Open practice</strong>
+                    <p class="coach-drill-prompt">Practice any speech, answer, or idea. Focus on speaking clearly and finishing strong.</p>
+                    <span class="coach-drill-focus">Focus: steady delivery</span>
+                  </div>
+                </div>
+                <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
+                <div class="coach-actions">
+                  <button type="button" class="btn-primary coach-start">Start Recording</button>
+                  <button type="button" class="btn-secondary coach-stop" disabled>Stop</button>
+                  <button type="button" class="btn-secondary coach-reset" disabled>Record Again</button>
+                </div>
+                <form class="coach-submit-form" id="dashboard-coach-submit-form" hidden>
+                  <label class="coach-consent">
+                    <input type="checkbox" name="consent" required />
+                    <span>I understand that this video and audio will be uploaded and processed to generate AI speech feedback for my account. <a href="privacy.html">Privacy details</a></span>
+                  </label>
+                </form>
+                <div class="coach-result-actions" hidden>
+                  <button type="submit" form="dashboard-coach-submit-form" class="btn-primary coach-submit">Submit for Feedback</button>
+                  <a class="coach-download" hidden>Download recording</a>
+                </div>
+                <p class="coach-status" aria-live="polite"></p>
+                <div class="coach-practice-summary" hidden aria-live="polite">
+                  <strong>Practice summary</strong>
+                  <div class="coach-summary-grid">
+                    <span><b data-summary="time">00:00</b> practiced</span>
+                    <span><b data-summary="steady">0</b> steady moments</span>
+                    <span><b data-summary="filler">0</b> filler cues</span>
+                    <span><b data-summary="eye">0</b> eye-contact reminders</span>
+                  </div>
+                  <p data-summary="focus">Next focus: keep practicing your delivery.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <div class="dashboard-grid">
             <article>
               <h2>Recommended Next Drill</h2>

@@ -76,6 +76,49 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
   };
 
+  const renderCoachingMetrics = (metrics) => {
+    if (!metrics) {
+      return '';
+    }
+
+    const metricItems = [
+      ['Pacing', metrics.pacing],
+      ['Conciseness', metrics.conciseness],
+      ['Eye Contact', metrics.eye_contact],
+      ['Demeanor', metrics.demeanor],
+      ['Tone', metrics.tone],
+    ];
+
+    const hasMetrics = metricItems.some((item) => item[1]);
+
+    if (!hasMetrics) {
+      return '';
+    }
+
+    return `
+      <section class="feedback-panel feedback-coaching-metrics">
+        <h2>Coaching Metrics</h2>
+        <div class="metric-grid feedback-metric-grid">
+          ${metricItems.map(([label, metric]) => {
+            const score = metric && metric.score !== undefined && metric.score !== null ? metric.score : '--';
+            const width = typeof score === 'number' ? Math.max(0, Math.min(100, score * 10)) : 0;
+
+            return `
+              <article class="metric-card">
+                <div class="metric-topline">
+                  <h3>${escapeHtml(label)}</h3>
+                  <strong>${escapeHtml(score)}</strong>
+                </div>
+                <div class="metric-bar" aria-hidden="true"><span style="width: ${width}%;"></span></div>
+                <p>${escapeHtml(metric && metric.notes)}</p>
+              </article>
+            `;
+          }).join('')}
+        </div>
+      </section>
+    `;
+  };
+
   const renderFeedback = (submission) => {
     const feedback = submission.final_feedback || submission.speech_feedback;
     const drillReview = feedback && feedback.drill_review;
@@ -116,6 +159,8 @@ document.addEventListener('DOMContentLoaded', function () {
           ${drillReview && drillReview.stronger_example ? `<p><strong>Try this:</strong> ${escapeHtml(drillReview.stronger_example)}</p>` : ''}
         </section>
       ` : ''}
+
+      ${renderCoachingMetrics(feedback.coaching_metrics)}
 
       <div class="feedback-grid">
         <section class="feedback-panel">

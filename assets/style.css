@@ -863,8 +863,16 @@ body {
   border-color: rgba(213, 0, 50, 0.22);
 }
 
+.feedback-coaching-metrics {
+  border-color: rgba(0, 32, 91, 0.25);
+}
+
 .feedback-drill-review {
   border-color: rgba(0, 32, 91, 0.25);
+}
+
+.feedback-metric-grid {
+  margin-top: 0.8rem;
 }
 
 .feedback-language h3,
@@ -1125,6 +1133,19 @@ body {
   display: inline-block;
   font-weight: 800;
   margin-top: 0.7rem;
+}
+
+.dashboard-coach-panel {
+  background: #fbfcff;
+}
+
+.dashboard-recorder {
+  box-shadow: none;
+  margin-top: 0.4rem;
+}
+
+.dashboard-recorder .coach-video-frame {
+  min-height: 320px;
 }
 
 .privacy-section {

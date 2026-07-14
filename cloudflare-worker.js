@@ -128,13 +128,23 @@ async function createSubmission(request, env, corsHeaders, ctx) {
     const studentEmail = formData.get("student_email") || null;
     const drill = getGuidedDrill(formData.get("drill_type"));
     const turnstileToken = formData.get("turnstile_token");
+    const hasAuthorizationHeader = Boolean(request.headers.get("Authorization"));
+    const authenticatedUser = await getAuthenticatedUser(request, env);
 
-    const turnstileResult = await verifyTurnstileToken(turnstileToken, request, env);
-
-    if (!turnstileResult.success) {
+    if (hasAuthorizationHeader && !authenticatedUser) {
       return json({
-        error: "Bot protection check failed. Please refresh and try again.",
-      }, 403, corsHeaders);
+        error: "Please sign in again before submitting from your dashboard.",
+      }, 401, corsHeaders);
+    }
+
+    if (!authenticatedUser) {
+      const turnstileResult = await verifyTurnstileToken(turnstileToken, request, env);
+
+      if (!turnstileResult.success) {
+        return json({
+          error: "Bot protection check failed. Please refresh and try again.",
+        }, 403, corsHeaders);
+      }
     }
 
     if (!video || typeof video === "string") {
@@ -160,23 +170,29 @@ async function createSubmission(request, env, corsHeaders, ctx) {
       },
     });
 
+    const submissionRecord = {
+      id: submissionId,
+      student_name: studentName || (authenticatedUser && authenticatedUser.email) || null,
+      student_email: studentEmail || (authenticatedUser && authenticatedUser.email) || null,
+      video_path: videoPath,
+      video_mime_type: videoMetadata.contentType,
+      video_size_bytes: video.size || null,
+      drill_type: drill.type,
+      drill_title: drill.title,
+      drill_rubric: drill.rubric,
+      status: "uploaded",
+    };
+
+    if (authenticatedUser && authenticatedUser.id) {
+      submissionRecord.owner_user_id = authenticatedUser.id;
+    }
+
     const supabaseResponse = await supabaseFetch(env, "/speech_submissions", {
       method: "POST",
       headers: {
         "Prefer": "return=representation",
       },
-      body: JSON.stringify({
-        id: submissionId,
-        student_name: studentName,
-        student_email: studentEmail,
-        video_path: videoPath,
-        video_mime_type: videoMetadata.contentType,
-        video_size_bytes: video.size || null,
-        drill_type: drill.type,
-        drill_title: drill.title,
-        drill_rubric: drill.rubric,
-        status: "uploaded",
-      }),
+      body: JSON.stringify(submissionRecord),
     });
 
     if (!supabaseResponse.ok) {
@@ -486,6 +502,28 @@ Analyze this speech transcript and return only valid JSON with this exact shape:
   "opening_and_closing": {
     "notes": ""
   },
+  "coaching_metrics": {
+    "pacing": {
+      "score": 1,
+      "notes": ""
+    },
+    "conciseness": {
+      "score": 1,
+      "notes": ""
+    },
+    "eye_contact": {
+      "score": null,
+      "notes": "Video analysis is not enabled yet."
+    },
+    "demeanor": {
+      "score": null,
+      "notes": "Video analysis is not enabled yet."
+    },
+    "tone": {
+      "score": 1,
+      "notes": ""
+    }
+  },
   "language_and_vocabulary": {
     "grammar_notes": [],
     "vocabulary_suggestions": [],
@@ -514,6 +552,8 @@ Guidelines:
 - Keep language_and_vocabulary feedback encouraging, especially for students and English learners.
 - Each vocabulary suggestion should include the student's wording and a stronger alternative in one short sentence.
 - The clearer_version should rewrite one short part of the speech in a clearer, more confident way.
+- The coaching_metrics section should score pacing, conciseness, and tone from the transcript.
+- For eye_contact and demeanor, use null scores and explain that video analysis is not enabled yet unless visual analysis is added later.
 - Do not mention that you are an AI model.
 - Do not include markdown.
 - Return JSON only.
@@ -591,8 +631,30 @@ function getSubmission(env, submissionId) {
   return supabaseFetch(env, `/speech_submissions?id=eq.${submissionId}&select=*`);
 }
 
+async function getAuthenticatedUser(request, env) {
+  const authorization = request.headers.get("Authorization") || "";
+  const token = authorization.replace(/^Bearer\s+/i, "").trim();
+
+  if (!token) {
+    return null;
+  }
+
+  const response = await fetch(`${getSupabaseBaseUrl(env)}/auth/v1/user`, {
+    headers: {
+      "apikey": env.SUPABASE_SERVICE_ROLE_KEY,
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json();
+}
+
 function supabaseFetch(env, path, options = {}) {
-  return fetch(`${env.SUPABASE_URL}/rest/v1${path}`, {
+  return fetch(`${getSupabaseBaseUrl(env)}/rest/v1${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -601,6 +663,10 @@ function supabaseFetch(env, path, options = {}) {
       ...(options.headers || {}),
     },
   });
+}
+
+function getSupabaseBaseUrl(env) {
+  return String(env.SUPABASE_URL || "").replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
 }
 
 function updateSubmission(env, submissionId, values) {
@@ -626,7 +692,7 @@ function getCorsHeaders(request, env) {
   return {
     "Access-Control-Allow-Origin": corsOrigin,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type",
   };
 }
 

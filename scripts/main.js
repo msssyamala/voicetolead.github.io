@@ -25,14 +25,19 @@ function registerServiceWorker() {
 }
 
 function initSpeechCoachRecorder() {
-  const recorder = document.querySelector('.coach-recorder');
+  const recorders = Array.from(document.querySelectorAll('.coach-recorder'));
 
-  if (!recorder) {
+  if (recorders.length === 0) {
     return;
   }
 
+  recorders.forEach(initSingleSpeechCoachRecorder);
+}
+
+function initSingleSpeechCoachRecorder(recorder) {
   const maxSeconds = Number(recorder.dataset.maxSeconds) || 60;
   const uploadUrl = recorder.dataset.uploadUrl;
+  const requiresAuth = recorder.dataset.requireAuth === 'true';
   const preview = recorder.querySelector('.coach-preview');
   const playback = recorder.querySelector('.coach-playback');
   const frame = recorder.querySelector('.coach-video-frame');
@@ -1227,6 +1232,19 @@ function initSpeechCoachRecorder() {
       return;
     }
 
+    const headers = {};
+
+    if (requiresAuth) {
+      const accessToken = window.VoiceToLeadAuth && await window.VoiceToLeadAuth.getAccessToken();
+
+      if (!accessToken) {
+        setStatus('Please sign in again before submitting from your dashboard.');
+        return;
+      }
+
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+
     const formData = new FormData(submitForm);
     const selectedDrill = getSelectedDrill();
     formData.append('drill_type', drillSelect && guidedDrills[drillSelect.value] ? drillSelect.value : 'open');
@@ -1242,6 +1260,7 @@ function initSpeechCoachRecorder() {
     try {
       const response = await fetch(uploadUrl, {
         method: 'POST',
+        headers,
         body: formData
       });
       const result = await response.json().catch(() => ({}));

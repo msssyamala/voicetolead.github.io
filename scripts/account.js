@@ -5,6 +5,13 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_lX69FPCqL6G0Yztxvn7U_g_KuOQySEb
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+window.VoiceToLeadAuth = {
+  async getAccessToken() {
+    const { data } = await supabase.auth.getSession();
+    return data && data.session ? data.session.access_token : null;
+  },
+};
+
 const authForm = document.querySelector('[data-auth-form]');
 const authStatus = document.querySelector('[data-auth-status]');
 const dashboardStatus = document.querySelector('[data-dashboard-status]');
