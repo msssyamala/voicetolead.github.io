@@ -36,7 +36,13 @@
     <section class="section account-section">
       <div class="account-card dashboard-card">
         <p class="eyebrow">Your Practice Space</p>
-        <h1 class="section-title">VoiceToLead Dashboard</h1>
+        <div class="dashboard-header">
+          <div>
+            <h1 class="section-title">VoiceToLead Dashboard</h1>
+            <p>Track your speaking growth across delivery, clarity, and confidence.</p>
+          </div>
+          <a class="btn-primary dashboard-cta" href="index.html#ai-speech-coach">Practice Now</a>
+        </div>
         <p class="account-status" data-dashboard-status aria-live="polite">Checking your sign-in status...</p>
 
         <div class="dashboard-content" data-dashboard-content hidden>
@@ -45,18 +51,90 @@
             <strong data-user-email></strong>
           </div>
 
-          <div class="dashboard-grid">
+          <div class="dashboard-stats" aria-label="Practice snapshot">
             <article>
-              <h2>Saved Feedback</h2>
-              <p>Your saved AI Speech Coach feedback will appear here after we connect submissions to accounts.</p>
+              <span>Practice sessions</span>
+              <strong>0</strong>
+              <p>Saved sessions will appear after we connect feedback to accounts.</p>
             </article>
             <article>
-              <h2>Progress</h2>
-              <p>Track strengths, improvement areas, drills, and practice history over time.</p>
+              <span>Current focus</span>
+              <strong>Baseline</strong>
+              <p>Record your first saved practice to unlock a personal focus area.</p>
+            </article>
+            <article>
+              <span>Mentor readiness</span>
+              <strong>Soon</strong>
+              <p>Mentor requests can use this history once coaching is enabled.</p>
+            </article>
+          </div>
+
+          <section class="dashboard-panel">
+            <div class="dashboard-panel-heading">
+              <div>
+                <h2>Core Coaching Metrics</h2>
+                <p>These are the areas your account will track over time.</p>
+              </div>
+              <span>Scores unlock after saved feedback</span>
+            </div>
+
+            <div class="metric-grid">
+              <article class="metric-card">
+                <div class="metric-topline">
+                  <h3>Pacing</h3>
+                  <strong>--</strong>
+                </div>
+                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
+                <p>Steady speed, useful pauses, and endings that do not feel rushed.</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-topline">
+                  <h3>Conciseness</h3>
+                  <strong>--</strong>
+                </div>
+                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
+                <p>Clear answers that avoid rambling, repetition, and extra filler ideas.</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-topline">
+                  <h3>Eye Contact</h3>
+                  <strong>--</strong>
+                </div>
+                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
+                <p>Camera/audience connection, fewer downward glances, and engaged presence.</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-topline">
+                  <h3>Demeanor</h3>
+                  <strong>--</strong>
+                </div>
+                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
+                <p>Confidence, calmness, facial expression, energy, and professional presence.</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-topline">
+                  <h3>Tone</h3>
+                  <strong>--</strong>
+                </div>
+                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
+                <p>Whether your voice sounds confident, friendly, persuasive, and appropriate for the drill.</p>
+              </article>
+            </div>
+          </section>
+
+          <div class="dashboard-grid">
+            <article>
+              <h2>Recommended Next Drill</h2>
+              <p>Start with a 30-second introduction so the coach can establish your baseline across all five metrics.</p>
+              <a href="index.html#ai-speech-coach">Open AI Speech Coach</a>
+            </article>
+            <article>
+              <h2>Saved Feedback</h2>
+              <p>Your saved AI Speech Coach feedback will appear here after we connect submissions to your account.</p>
             </article>
             <article>
               <h2>Mentor Coaching</h2>
-              <p>Request optional 1-on-1 support from an approved VoiceToLead mentor in a future step.</p>
+              <p>Later, you will be able to share selected feedback with an approved VoiceToLead mentor for 1-on-1 coaching.</p>
             </article>
           </div>
 
