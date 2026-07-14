@@ -20,6 +20,49 @@ const setText = (element, message) => {
 
 const getDashboardUrl = () => `${window.location.origin}/dashboard.html`;
 
+const isDashboardPage = () => window.location.pathname.endsWith('/dashboard.html');
+
+const getAuthUrlState = () => {
+  const searchParams = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+
+  return {
+    code: searchParams.get('code'),
+    accessToken: hashParams.get('access_token'),
+    refreshToken: hashParams.get('refresh_token'),
+    hasAuthError: searchParams.has('error') || hashParams.has('error'),
+  };
+};
+
+const handleAuthLanding = async () => {
+  const authState = getAuthUrlState();
+
+  if (isDashboardPage() || authState.hasAuthError) {
+    return;
+  }
+
+  if (authState.code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(authState.code);
+
+    if (!error) {
+      window.location.replace(getDashboardUrl());
+    }
+
+    return;
+  }
+
+  if (authState.accessToken && authState.refreshToken) {
+    const { error } = await supabase.auth.setSession({
+      access_token: authState.accessToken,
+      refresh_token: authState.refreshToken,
+    });
+
+    if (!error) {
+      window.location.replace(getDashboardUrl());
+    }
+  }
+};
+
 const showAuthPage = async () => {
   if (!authForm) {
     return;
@@ -104,5 +147,7 @@ if (signOutButton) {
   });
 }
 
-showAuthPage();
-showDashboard();
+handleAuthLanding().then(() => {
+  showAuthPage();
+  showDashboard();
+});
