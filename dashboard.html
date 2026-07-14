@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AI Speech Coach Feedback | VoiceToLead</title>
+  <title>Dashboard | VoiceToLead</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="manifest" href="manifest.webmanifest" />
@@ -27,27 +27,42 @@
       <a href="team.html">Our Team</a>
       <a href="gallery/">Gallery</a>
       <a href="contact.html">Contact</a>
-      <a href="auth.html">Account</a>
+      <a href="dashboard.html">Account</a>
       <a class="nav-cta" href="https://hcb.hackclub.com/donations/start/voicetolead" target="_blank" rel="noreferrer">Donate</a>
     </nav>
   </header>
 
   <main>
-    <section class="section feedback-section">
-      <p class="eyebrow">AI Speech Coach</p>
-      <h1 class="section-title">Speech Feedback</h1>
-      <p class="feedback-intro">Enter a submission ID to check whether feedback is ready.</p>
+    <section class="section account-section">
+      <div class="account-card dashboard-card">
+        <p class="eyebrow">Your Practice Space</p>
+        <h1 class="section-title">VoiceToLead Dashboard</h1>
+        <p class="account-status" data-dashboard-status aria-live="polite">Checking your sign-in status...</p>
 
-      <form class="feedback-lookup" data-api-base="https://speech-coach-api.voicetolead.workers.dev">
-        <label>
-          <span>Submission ID</span>
-          <input type="text" name="submission_id" autocomplete="off" placeholder="Paste submission ID" required />
-        </label>
-        <button type="submit" class="btn-primary">Load Feedback</button>
-      </form>
+        <div class="dashboard-content" data-dashboard-content hidden>
+          <div class="dashboard-user">
+            <span>Signed in as</span>
+            <strong data-user-email></strong>
+          </div>
 
-      <p class="feedback-status" aria-live="polite">Waiting for a submission ID.</p>
-      <div class="feedback-results" hidden></div>
+          <div class="dashboard-grid">
+            <article>
+              <h2>Saved Feedback</h2>
+              <p>Your saved AI Speech Coach feedback will appear here after we connect submissions to accounts.</p>
+            </article>
+            <article>
+              <h2>Progress</h2>
+              <p>Track strengths, improvement areas, drills, and practice history over time.</p>
+            </article>
+            <article>
+              <h2>Mentor Coaching</h2>
+              <p>Request optional 1-on-1 support from an approved VoiceToLead mentor in a future step.</p>
+            </article>
+          </div>
+
+          <button type="button" class="btn-secondary" data-sign-out>Sign out</button>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -70,7 +85,7 @@
   </footer>
 
   <script src="scripts/main.js"></script>
-  <script src="scripts/feedback.js"></script>
+  <script type="module" src="scripts/account.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>

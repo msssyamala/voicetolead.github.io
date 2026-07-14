@@ -1,4 +1,4 @@
-const CACHE_NAME = "voicetolead-shell-v36";
+const CACHE_NAME = "voicetolead-shell-v37";
 const SHELL_ASSETS = [
   "/",
   "/index.html",
@@ -10,10 +10,13 @@ const SHELL_ASSETS = [
   "/gallery/",
   "/contact.html",
   "/feedback.html",
+  "/auth.html",
+  "/dashboard.html",
   "/privacy.html",
   "/assets/style.css",
   "/scripts/main.js",
   "/scripts/feedback.js",
+  "/scripts/account.js",
   "/assets/logo.png",
   "/manifest.webmanifest"
 ];

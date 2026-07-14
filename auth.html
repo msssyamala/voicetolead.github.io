@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AI Speech Coach Feedback | VoiceToLead</title>
+  <title>Sign In | VoiceToLead</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="manifest" href="manifest.webmanifest" />
@@ -33,21 +33,23 @@
   </header>
 
   <main>
-    <section class="section feedback-section">
-      <p class="eyebrow">AI Speech Coach</p>
-      <h1 class="section-title">Speech Feedback</h1>
-      <p class="feedback-intro">Enter a submission ID to check whether feedback is ready.</p>
+    <section class="section account-section">
+      <div class="account-card">
+        <p class="eyebrow">VoiceToLead Account</p>
+        <h1 class="section-title">Sign in to save your growth.</h1>
+        <p class="account-intro">Enter your email and we will send a secure one-time sign-in link. No password needed.</p>
 
-      <form class="feedback-lookup" data-api-base="https://speech-coach-api.voicetolead.workers.dev">
-        <label>
-          <span>Submission ID</span>
-          <input type="text" name="submission_id" autocomplete="off" placeholder="Paste submission ID" required />
-        </label>
-        <button type="submit" class="btn-primary">Load Feedback</button>
-      </form>
+        <form class="account-form" data-auth-form>
+          <label>
+            <span>Email address</span>
+            <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+          </label>
+          <button type="submit" class="btn-primary">Send sign-in link</button>
+        </form>
 
-      <p class="feedback-status" aria-live="polite">Waiting for a submission ID.</p>
-      <div class="feedback-results" hidden></div>
+        <p class="account-status" data-auth-status aria-live="polite">Ready to send your sign-in link.</p>
+        <p class="account-note">After you click the email link, you will return to your VoiceToLead dashboard.</p>
+      </div>
     </section>
   </main>
 
@@ -70,7 +72,7 @@
   </footer>
 
   <script src="scripts/main.js"></script>
-  <script src="scripts/feedback.js"></script>
+  <script type="module" src="scripts/account.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
