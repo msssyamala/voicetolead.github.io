@@ -68,14 +68,14 @@
             </article>
           </div>
 
-          <section class="dashboard-panel">
-            <div class="dashboard-panel-heading">
+          <details class="dashboard-panel dashboard-disclosure">
+            <summary class="dashboard-panel-heading">
               <div>
                 <h2>Core Coaching Metrics</h2>
                 <p>These are the areas your account will track over time.</p>
               </div>
               <span>Scores unlock after saved feedback</span>
-            </div>
+            </summary>
 
             <div class="metric-grid" data-dashboard-metrics>
               <article class="metric-card" data-metric-card="pacing">
@@ -119,7 +119,7 @@
                 <p data-metric-note>Whether your voice sounds confident, friendly, persuasive, and appropriate for the drill.</p>
               </article>
             </div>
-          </section>
+          </details>
 
           <section class="dashboard-panel dashboard-coach-panel" id="account-practice-recorder">
             <div class="dashboard-panel-heading">
@@ -198,33 +198,43 @@
             </div>
           </section>
 
-          <div class="dashboard-grid">
-            <article>
+          <details class="dashboard-panel dashboard-disclosure">
+            <summary class="dashboard-panel-heading">
+              <div>
+                <h2>Next Steps & Mentor Coaching</h2>
+                <p>Open this when you want guidance beyond the recorder.</p>
+              </div>
+              <span>Planning tools</span>
+            </summary>
+
+            <div class="dashboard-grid">
+              <article>
               <h2>Recommended Next Drill</h2>
               <p>Start with a 30-second introduction so the coach can establish your baseline across all five metrics.</p>
-            </article>
-            <article>
+              </article>
+              <article>
               <h2>Saved Feedback</h2>
               <p data-dashboard-saved-summary>Your saved AI Speech Coach feedback will appear here after your first account recording is processed.</p>
-            </article>
-            <article>
+              </article>
+              <article>
               <h2>Mentor Coaching</h2>
               <p>Later, you will be able to share selected feedback with an approved VoiceToLead mentor for 1-on-1 coaching.</p>
-            </article>
-          </div>
+              </article>
+            </div>
+          </details>
 
-          <section class="dashboard-panel dashboard-history-panel">
-            <div class="dashboard-panel-heading">
+          <details class="dashboard-panel dashboard-history-panel dashboard-disclosure">
+            <summary class="dashboard-panel-heading">
               <div>
                 <h2>Saved Feedback History</h2>
                 <p>Review your account recordings without leaving the dashboard.</p>
               </div>
               <span data-dashboard-history-count>Loading</span>
-            </div>
+            </summary>
             <div class="dashboard-history" data-dashboard-history>
               <p class="dashboard-empty">Loading your saved feedback...</p>
             </div>
-          </section>
+          </details>
 
           <button type="button" class="btn-secondary" data-sign-out>Sign out</button>
         </div>

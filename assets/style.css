@@ -1041,8 +1041,52 @@ body {
   padding: 1.2rem;
 }
 
+.dashboard-disclosure {
+  padding: 0;
+}
+
 .dashboard-panel-heading {
   margin-bottom: 1rem;
+}
+
+.dashboard-disclosure > .dashboard-panel-heading {
+  cursor: pointer;
+  list-style: none;
+  margin-bottom: 0;
+  padding: 1.2rem;
+}
+
+.dashboard-disclosure > .dashboard-panel-heading::-webkit-details-marker {
+  display: none;
+}
+
+.dashboard-disclosure > .dashboard-panel-heading::after {
+  background: var(--navy);
+  border-radius: 999px;
+  color: #fff;
+  content: "+";
+  display: grid;
+  flex: 0 0 auto;
+  font-size: 1.15rem;
+  font-weight: 800;
+  height: 28px;
+  line-height: 1;
+  place-items: center;
+  width: 28px;
+}
+
+.dashboard-disclosure[open] > .dashboard-panel-heading {
+  border-bottom: 1px solid rgba(0, 32, 91, 0.1);
+}
+
+.dashboard-disclosure[open] > .dashboard-panel-heading::after {
+  content: "-";
+}
+
+.dashboard-disclosure > .metric-grid,
+.dashboard-disclosure > .dashboard-grid,
+.dashboard-disclosure > .dashboard-history {
+  padding: 1.2rem;
 }
 
 .dashboard-panel-heading h2 {
