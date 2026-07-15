@@ -958,23 +958,6 @@ body {
   padding: 0.75rem 0.85rem;
 }
 
-.account-form input[readonly] {
-  background: #f5f7fb;
-  color: #555;
-}
-
-.account-code-step[hidden] {
-  display: none;
-}
-
-.account-code-step input {
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  max-width: 220px;
-  text-align: center;
-}
-
 .account-status {
   color: var(--navy);
   font-weight: 800;

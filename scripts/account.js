@@ -15,7 +15,6 @@ window.VoiceToLeadAuth = {
 
 const authForm = document.querySelector('[data-auth-form]');
 const authStatus = document.querySelector('[data-auth-status]');
-const authCodeStep = document.querySelector('[data-auth-code-step]');
 const authSubmitButton = document.querySelector('[data-auth-submit]');
 const dashboardStatus = document.querySelector('[data-dashboard-status]');
 const dashboardContent = document.querySelector('[data-dashboard-content]');
@@ -72,7 +71,6 @@ const questGoals = {
 };
 let selectedQuestGoalKey = 'confidence';
 let dashboardSubmissionsCache = [];
-let pendingAuthEmail = '';
 
 const setText = (element, message) => {
   if (element) {
@@ -499,50 +497,13 @@ if (authForm) {
 
     const formData = new FormData(authForm);
     const email = String(formData.get('email') || '').trim();
-    const token = String(formData.get('token') || '').replace(/\D/g, '');
 
     if (!email) {
       setText(authStatus, 'Enter your email first.');
       return;
     }
 
-    if (pendingAuthEmail && !token) {
-      setText(authStatus, 'Enter the 6-digit code from your email.');
-      return;
-    }
-
-    if (pendingAuthEmail && token) {
-      if (token.length < 6) {
-        setText(authStatus, 'Enter the 6-digit code from your email.');
-        return;
-      }
-
-      setText(authStatus, 'Checking your code...');
-
-      if (authSubmitButton) {
-        authSubmitButton.disabled = true;
-      }
-
-      const { error } = await supabase.auth.verifyOtp({
-        email: pendingAuthEmail,
-        token,
-        type: 'email',
-      });
-
-      if (error) {
-        setText(authStatus, `That code did not work: ${error.message}`);
-        if (authSubmitButton) {
-          authSubmitButton.disabled = false;
-        }
-        return;
-      }
-
-      setText(authStatus, 'Code confirmed. Opening your dashboard...');
-      window.location.href = 'dashboard.html';
-      return;
-    }
-
-    setText(authStatus, 'Sending your code...');
+    setText(authStatus, 'Sending your dashboard link...');
 
     if (authSubmitButton) {
       authSubmitButton.disabled = true;
@@ -551,39 +512,26 @@ if (authForm) {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: true,
+        emailRedirectTo: getDashboardUrl(),
       },
     });
 
     if (error) {
       const isRateLimit = /rate limit/i.test(error.message || '');
       setText(authStatus, isRateLimit
-        ? 'Too many codes were requested. Wait a few minutes, then try again.'
-        : `Could not send the code: ${error.message}`);
+        ? 'Too many links were requested. Wait a few minutes, then try again.'
+        : `Could not send the link: ${error.message}`);
       if (authSubmitButton) {
         authSubmitButton.disabled = false;
       }
       return;
     }
 
-    pendingAuthEmail = email;
-    const emailInput = authForm.querySelector('input[name="email"]');
-    if (emailInput) {
-      emailInput.readOnly = true;
-    }
-    if (authCodeStep) {
-      authCodeStep.hidden = false;
-      const tokenInput = authCodeStep.querySelector('input[name="token"]');
-      if (tokenInput) {
-        tokenInput.required = true;
-        tokenInput.focus();
-      }
-    }
+    authForm.reset();
     if (authSubmitButton) {
-      authSubmitButton.textContent = 'Open my dashboard';
       authSubmitButton.disabled = false;
     }
-    setText(authStatus, 'Code sent. Check your email, then enter the 6-digit code here.');
+    setText(authStatus, 'Email sent. Open the link in your inbox to continue to your dashboard.');
   });
 }
 
