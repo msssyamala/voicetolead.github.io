@@ -473,7 +473,7 @@ const showDashboard = async () => {
   const session = data && data.session;
 
   if (!session) {
-    setText(dashboardStatus, 'Please sign in to view your dashboard.');
+    setText(dashboardStatus, 'Opening sign in so your practice can be saved.');
     window.setTimeout(() => {
       window.location.href = 'auth.html';
     }, 900);
@@ -494,15 +494,20 @@ if (authForm) {
   authForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
+    const submitButton = authForm.querySelector('button[type="submit"]');
     const formData = new FormData(authForm);
     const email = String(formData.get('email') || '').trim();
 
     if (!email) {
-      setText(authStatus, 'Enter your email address first.');
+      setText(authStatus, 'Enter your email first.');
       return;
     }
 
-    setText(authStatus, 'Sending your secure sign-in link...');
+    setText(authStatus, 'Sending your dashboard link...');
+
+    if (submitButton) {
+      submitButton.disabled = true;
+    }
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -512,12 +517,21 @@ if (authForm) {
     });
 
     if (error) {
-      setText(authStatus, `Could not send sign-in link: ${error.message}`);
+      const isRateLimit = /rate limit/i.test(error.message || '');
+      setText(authStatus, isRateLimit
+        ? 'Too many links were requested. Wait a few minutes, then try again.'
+        : `Could not send the link: ${error.message}`);
+      if (submitButton) {
+        submitButton.disabled = false;
+      }
       return;
     }
 
     authForm.reset();
-    setText(authStatus, 'Check your email for the VoiceToLead sign-in link.');
+    setText(authStatus, 'Email sent. Open the link in your inbox to continue to your dashboard.');
+    if (submitButton) {
+      submitButton.disabled = false;
+    }
   });
 }
 

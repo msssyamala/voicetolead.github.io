@@ -921,6 +921,23 @@ body {
   line-height: 1.6;
 }
 
+.account-help {
+  background: #f8fbff;
+  border: 1px solid rgba(0, 32, 91, 0.1);
+  border-radius: 8px;
+  color: #444;
+  line-height: 1.55;
+  padding: 1rem;
+}
+
+.account-help strong {
+  color: var(--navy);
+}
+
+.account-help p {
+  margin-top: 0.35rem;
+}
+
 .account-form {
   display: grid;
   gap: 1rem;
@@ -1497,6 +1514,13 @@ button, .btn-submit {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+}
+
+button:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
 }
 
 /* ============================= */
