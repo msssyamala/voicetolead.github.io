@@ -1274,7 +1274,11 @@ function initSingleSpeechCoachRecorder(recorder) {
       submitForm.hidden = true;
       resetButton.disabled = false;
       startButton.disabled = false;
-      status.innerHTML = `Submitted successfully. Save this ID: <strong>${submissionId}</strong>. Feedback is being prepared. <a href="${feedbackUrl}">View feedback</a>`;
+      if (requiresAuth) {
+        status.innerHTML = `Submitted successfully. Feedback is being prepared and will appear in your account once saved feedback history is connected. Submission ID: <strong>${submissionId}</strong>.`;
+      } else {
+        status.innerHTML = `Submitted successfully. Save this ID: <strong>${submissionId}</strong>. Feedback is being prepared. <a href="${feedbackUrl}">View feedback</a>`;
+      }
     } catch (error) {
       submitButton.disabled = false;
       resetButton.disabled = false;
