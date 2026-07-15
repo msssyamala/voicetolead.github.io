@@ -53,18 +53,18 @@
           <div class="dashboard-stats" aria-label="Practice snapshot">
             <article>
               <span>Practice sessions</span>
-              <strong>0</strong>
-              <p>Saved sessions will appear after we connect feedback to accounts.</p>
+              <strong data-dashboard-stat="sessions">0</strong>
+              <p data-dashboard-stat-note="sessions">Saved sessions will appear here.</p>
             </article>
             <article>
               <span>Current focus</span>
-              <strong>Baseline</strong>
-              <p>Record your first saved practice to unlock a personal focus area.</p>
+              <strong data-dashboard-stat="focus">Baseline</strong>
+              <p data-dashboard-stat-note="focus">Record your first saved practice to unlock a personal focus area.</p>
             </article>
             <article>
               <span>Mentor readiness</span>
-              <strong>Soon</strong>
-              <p>Mentor requests can use this history once coaching is enabled.</p>
+              <strong data-dashboard-stat="mentor">Soon</strong>
+              <p data-dashboard-stat-note="mentor">Mentor requests can use this history once coaching is enabled.</p>
             </article>
           </div>
 
@@ -77,46 +77,46 @@
               <span>Scores unlock after saved feedback</span>
             </div>
 
-            <div class="metric-grid">
-              <article class="metric-card">
+            <div class="metric-grid" data-dashboard-metrics>
+              <article class="metric-card" data-metric-card="pacing">
                 <div class="metric-topline">
                   <h3>Pacing</h3>
-                  <strong>--</strong>
+                  <strong data-metric-score>--</strong>
                 </div>
-                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
-                <p>Steady speed, useful pauses, and endings that do not feel rushed.</p>
+                <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                <p data-metric-note>Steady speed, useful pauses, and endings that do not feel rushed.</p>
               </article>
-              <article class="metric-card">
+              <article class="metric-card" data-metric-card="conciseness">
                 <div class="metric-topline">
                   <h3>Conciseness</h3>
-                  <strong>--</strong>
+                  <strong data-metric-score>--</strong>
                 </div>
-                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
-                <p>Clear answers that avoid rambling, repetition, and extra filler ideas.</p>
+                <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                <p data-metric-note>Clear answers that avoid rambling, repetition, and extra filler ideas.</p>
               </article>
-              <article class="metric-card">
+              <article class="metric-card" data-metric-card="eye_contact">
                 <div class="metric-topline">
                   <h3>Eye Contact</h3>
-                  <strong>--</strong>
+                  <strong data-metric-score>--</strong>
                 </div>
-                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
-                <p>Camera/audience connection, fewer downward glances, and engaged presence.</p>
+                <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                <p data-metric-note>Camera/audience connection, fewer downward glances, and engaged presence.</p>
               </article>
-              <article class="metric-card">
+              <article class="metric-card" data-metric-card="demeanor">
                 <div class="metric-topline">
                   <h3>Demeanor</h3>
-                  <strong>--</strong>
+                  <strong data-metric-score>--</strong>
                 </div>
-                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
-                <p>Confidence, calmness, facial expression, energy, and professional presence.</p>
+                <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                <p data-metric-note>Confidence, calmness, facial expression, energy, and professional presence.</p>
               </article>
-              <article class="metric-card">
+              <article class="metric-card" data-metric-card="tone">
                 <div class="metric-topline">
                   <h3>Tone</h3>
-                  <strong>--</strong>
+                  <strong data-metric-score>--</strong>
                 </div>
-                <div class="metric-bar" aria-hidden="true"><span style="width: 0%;"></span></div>
-                <p>Whether your voice sounds confident, friendly, persuasive, and appropriate for the drill.</p>
+                <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                <p data-metric-note>Whether your voice sounds confident, friendly, persuasive, and appropriate for the drill.</p>
               </article>
             </div>
           </section>
@@ -205,13 +205,26 @@
             </article>
             <article>
               <h2>Saved Feedback</h2>
-              <p>Your saved AI Speech Coach feedback will appear here after we connect submissions to your account.</p>
+              <p data-dashboard-saved-summary>Your saved AI Speech Coach feedback will appear here after your first account recording is processed.</p>
             </article>
             <article>
               <h2>Mentor Coaching</h2>
               <p>Later, you will be able to share selected feedback with an approved VoiceToLead mentor for 1-on-1 coaching.</p>
             </article>
           </div>
+
+          <section class="dashboard-panel dashboard-history-panel">
+            <div class="dashboard-panel-heading">
+              <div>
+                <h2>Saved Feedback History</h2>
+                <p>Review your account recordings without leaving the dashboard.</p>
+              </div>
+              <span data-dashboard-history-count>Loading</span>
+            </div>
+            <div class="dashboard-history" data-dashboard-history>
+              <p class="dashboard-empty">Loading your saved feedback...</p>
+            </div>
+          </section>
 
           <button type="button" class="btn-secondary" data-sign-out>Sign out</button>
         </div>

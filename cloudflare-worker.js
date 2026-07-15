@@ -77,6 +77,10 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === "GET") {
+      if (url.pathname === "/account/speech-submissions") {
+        return readAccountSubmissions(request, env, corsHeaders);
+      }
+
       const readMatch = url.pathname.match(/^\/speech-submissions\/([a-f0-9-]+)$/);
 
       if (readMatch) {
@@ -113,6 +117,32 @@ export default {
     return json({ error: "Not found" }, 404, corsHeaders);
   },
 };
+
+async function readAccountSubmissions(request, env, corsHeaders) {
+  const authenticatedUser = await getAuthenticatedUser(request, env);
+
+  if (!authenticatedUser || !authenticatedUser.id) {
+    return json({ error: "Please sign in again to load your dashboard." }, 401, corsHeaders);
+  }
+
+  const query = [
+    `owner_user_id=eq.${encodeURIComponent(authenticatedUser.id)}`,
+    "select=id,status,created_at,student_email,drill_type,drill_title,drill_rubric,transcript,speech_feedback,final_feedback,speech_feedback_at,error_message",
+    "order=created_at.desc",
+    "limit=20",
+  ].join("&");
+
+  const response = await supabaseFetch(env, `/speech_submissions?${query}`);
+
+  if (!response.ok) {
+    const details = await response.text();
+    return json({ error: "Could not load saved feedback.", details }, 500, corsHeaders);
+  }
+
+  const submissions = await response.json();
+
+  return json({ ok: true, submissions }, 200, corsHeaders);
+}
 
 async function createSubmission(request, env, corsHeaders, ctx) {
   try {

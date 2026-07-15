@@ -1148,6 +1148,75 @@ body {
   min-height: 320px;
 }
 
+.dashboard-history {
+  display: grid;
+  gap: 1rem;
+}
+
+.dashboard-history-card {
+  border: 1px solid rgba(0, 32, 91, 0.12);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.dashboard-history-card.is-processing {
+  background: #fbfcff;
+}
+
+.dashboard-history-topline {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+
+.dashboard-history-topline h3 {
+  color: var(--navy);
+  font-size: 1.05rem;
+}
+
+.dashboard-history-topline span,
+.dashboard-history-metrics,
+.dashboard-empty {
+  color: #555;
+}
+
+.dashboard-history-topline strong {
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+.dashboard-history-card p {
+  line-height: 1.55;
+}
+
+.dashboard-history-metrics {
+  font-weight: 800;
+  margin-top: 0.65rem;
+}
+
+.dashboard-history-card details {
+  margin-top: 0.8rem;
+}
+
+.dashboard-history-card summary {
+  color: var(--navy);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.dashboard-history-details {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.dashboard-history-details h4 {
+  color: var(--navy);
+  font-size: 0.95rem;
+}
+
 .privacy-section {
   width: min(100%, 840px);
 }
@@ -1343,6 +1412,10 @@ button, .btn-submit {
 
   .dashboard-header,
   .dashboard-panel-heading {
+    display: grid;
+  }
+
+  .dashboard-history-topline {
     display: grid;
   }
 
