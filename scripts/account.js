@@ -104,6 +104,20 @@ const updateDashboardFromSubmissions = (submissions) => {
 
     setStat('focus', latestReady.drill_title || 'Next step', nextStep);
     setStat('mentor', readySubmissions.length >= 3 ? 'Ready soon' : 'Building', 'Save a few feedback sessions before requesting mentor review.');
+    setStat(
+      'strength',
+      Array.isArray(latestFeedback.strengths) && latestFeedback.strengths[0] ? 'Identified' : 'Ready',
+      Array.isArray(latestFeedback.strengths) && latestFeedback.strengths[0]
+        ? latestFeedback.strengths[0]
+        : 'Your strengths are included in the latest saved feedback.'
+    );
+    setStat(
+      'growth',
+      Array.isArray(latestFeedback.improvements) && latestFeedback.improvements[0] ? 'Focus found' : 'Next step',
+      Array.isArray(latestFeedback.improvements) && latestFeedback.improvements[0]
+        ? latestFeedback.improvements[0]
+        : nextStep
+    );
 
     ['pacing', 'conciseness', 'eye_contact', 'demeanor', 'tone'].forEach((key) => {
       setMetricCard(key, getMetric(latestFeedback, key));
@@ -112,8 +126,12 @@ const updateDashboardFromSubmissions = (submissions) => {
     setText(savedSummary, `${readySubmissions.length} feedback report${readySubmissions.length === 1 ? '' : 's'} ready in your account.`);
   } else if (submissions.length > 0) {
     setStat('focus', 'Processing', 'Your newest recording is being transcribed and reviewed.');
+    setStat('strength', 'Processing', 'Strengths will appear when feedback is ready.');
+    setStat('growth', 'Processing', 'Growth area will appear when feedback is ready.');
     setText(savedSummary, 'Your recording was saved. Feedback is still being prepared.');
   } else {
+    setStat('strength', 'Not yet', 'Your strongest speaking habit will appear after feedback is ready.');
+    setStat('growth', 'Not yet', 'Your next improvement focus will appear after feedback is ready.');
     setText(savedSummary, 'Your saved AI Speech Coach feedback will appear here after your first account recording is processed.');
   }
 };
