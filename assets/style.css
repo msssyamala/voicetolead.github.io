@@ -997,6 +997,135 @@ body {
   overflow-wrap: anywhere;
 }
 
+.dashboard-mode-switch {
+  background: var(--gray);
+  border-radius: 999px;
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  width: fit-content;
+}
+
+.dashboard-mode-switch button {
+  background: transparent;
+  border-radius: 999px;
+  color: var(--navy);
+  padding: 0.55rem 0.9rem;
+}
+
+.dashboard-mode-switch button.is-active {
+  background: var(--gold);
+  color: #000;
+}
+
+.dashboard-mode-panel[hidden] {
+  display: none;
+}
+
+.dashboard-mode-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.quest-hero {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 191, 0, 0.28), rgba(0, 32, 91, 0.08));
+  border: 1px solid rgba(255, 191, 0, 0.42);
+  border-radius: 8px;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr auto;
+  padding: 1.2rem;
+}
+
+.quest-hero h2 {
+  color: var(--navy);
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+}
+
+.quest-hero p:not(.eyebrow) {
+  color: #333;
+  line-height: 1.55;
+  margin-top: 0.4rem;
+}
+
+.quest-ring {
+  align-items: center;
+  background: #fff;
+  border: 5px solid var(--gold);
+  border-radius: 999px;
+  color: var(--navy);
+  display: flex;
+  flex-direction: column;
+  height: 118px;
+  justify-content: center;
+  text-align: center;
+  width: 118px;
+}
+
+.quest-ring strong {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.quest-ring span {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.quest-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.quest-card {
+  border: 1px solid rgba(0, 32, 91, 0.12);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.quest-card span {
+  color: #555;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.quest-card strong {
+  color: var(--navy);
+  display: block;
+  font-size: 1.2rem;
+  margin: 0.45rem 0;
+}
+
+.quest-card p {
+  color: #444;
+  line-height: 1.5;
+}
+
+.quest-badges {
+  background: #fffdf4;
+}
+
+.badge-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  padding: 1.2rem;
+}
+
+.badge-shelf span {
+  background: #fff;
+  border: 1px solid rgba(0, 32, 91, 0.14);
+  border-radius: 999px;
+  color: var(--navy);
+  font-weight: 800;
+  padding: 0.55rem 0.8rem;
+}
+
 .dashboard-stats {
   display: grid;
   gap: 1rem;
@@ -1449,8 +1578,13 @@ button, .btn-submit {
   .feedback-lookup,
   .dashboard-grid,
   .dashboard-stats,
+  .quest-grid,
   .metric-grid,
   .feedback-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quest-hero {
     grid-template-columns: 1fr;
   }
 
