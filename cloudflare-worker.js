@@ -8,6 +8,7 @@ const ALLOWED_VIDEO_TYPES = [
 const GUIDED_DRILLS = {
   open: {
     title: "Open practice",
+    audience: "student",
     rubric: "clear point, steady delivery, strong finish",
     questions: [
       "Did the speaker make one clear point?",
@@ -17,6 +18,7 @@ const GUIDED_DRILLS = {
   },
   intro: {
     title: "30-second introduction",
+    audience: "student",
     rubric: "name, purpose, audience hook",
     questions: [
       "Did the speaker clearly introduce who they are?",
@@ -26,6 +28,7 @@ const GUIDED_DRILLS = {
   },
   elevator: {
     title: "Elevator pitch",
+    audience: "student",
     rubric: "problem, solution, why it matters",
     questions: [
       "Did the speaker clearly state the problem?",
@@ -36,6 +39,7 @@ const GUIDED_DRILLS = {
   },
   story: {
     title: "Storytelling practice",
+    audience: "student",
     rubric: "beginning, challenge, turning point, takeaway",
     questions: [
       "Did the story have a clear beginning?",
@@ -46,6 +50,7 @@ const GUIDED_DRILLS = {
   },
   interview: {
     title: "Tell me about yourself",
+    audience: "student",
     rubric: "present, strengths, goal connection",
     questions: [
       "Did the speaker present who they are?",
@@ -56,12 +61,90 @@ const GUIDED_DRILLS = {
   },
   debate: {
     title: "Debate opening",
+    audience: "student",
     rubric: "claim, reason, evidence preview, impact",
     questions: [
       "Did the speaker make a clear claim?",
       "Did they provide a reason?",
       "Did they preview evidence?",
       "Did they close with impact?",
+    ],
+  },
+  school_presentation: {
+    title: "Class presentation",
+    audience: "student",
+    rubric: "topic, example, takeaway",
+    questions: [
+      "Did the speaker clearly introduce the topic?",
+      "Did they explain one useful example?",
+      "Did they end with what the audience should remember?",
+      "Was the explanation easy for classmates to follow?",
+    ],
+  },
+  leadership_idea: {
+    title: "Leadership idea",
+    audience: "student",
+    rubric: "problem, idea, invitation",
+    questions: [
+      "Did the speaker explain the problem or opportunity?",
+      "Did they describe a clear idea?",
+      "Did they invite others to help or take action?",
+      "Did the message sound inspiring and practical?",
+    ],
+  },
+  hiring_interview: {
+    title: "Hiring manager interview",
+    audience: "professional",
+    rubric: "role fit, evidence, concise close",
+    questions: [
+      "Did the speaker connect their background to the role or opportunity?",
+      "Did they include a relevant strength or experience?",
+      "Did they provide one specific example or proof point?",
+      "Did the answer close clearly and professionally?",
+    ],
+  },
+  pronunciation: {
+    title: "Pronunciation training",
+    audience: "professional",
+    rubric: "articulation, pace, ending sounds",
+    questions: [
+      "Was the speech clear and easy to understand?",
+      "Did the speaker use a pace that supported pronunciation?",
+      "Were key word endings and transitions articulated clearly?",
+      "Did the delivery sound natural rather than over-rehearsed?",
+    ],
+  },
+  sales_pitch: {
+    title: "Shark Tank style sales pitch",
+    audience: "professional",
+    rubric: "problem, solution, proof, ask",
+    questions: [
+      "Did the speaker clearly state the problem?",
+      "Did they explain the solution or offer?",
+      "Did they provide proof, traction, or a reason to believe?",
+      "Did they make a clear ask or next step?",
+    ],
+  },
+  networking_intro: {
+    title: "Networking event intro and conversation",
+    audience: "professional",
+    rubric: "intro, purpose, follow-up question",
+    questions: [
+      "Did the speaker introduce themselves clearly?",
+      "Did they explain what they are exploring or looking for?",
+      "Did they create a natural opening for conversation?",
+      "Did they include a friendly follow-up question or next step?",
+    ],
+  },
+  audience_presentation: {
+    title: "Presentation to an audience",
+    audience: "professional",
+    rubric: "opening, support, takeaway",
+    questions: [
+      "Did the speaker open with a clear main point?",
+      "Did they support the point with organized ideas or examples?",
+      "Did they use transitions that helped the audience follow?",
+      "Did they close with a memorable takeaway?",
     ],
   },
 };
@@ -508,8 +591,15 @@ async function generateSpeechFeedback(submissionId, env, corsHeaders) {
     });
 
     const drill = getGuidedDrill(submission.drill_type);
+    const isProfessionalDrill = drill.audience === "professional";
+    const coachPersona = isProfessionalDrill
+      ? "a professional communication coach for VoiceToLead"
+      : "an encouraging youth public speaking coach for VoiceToLead";
+    const audienceGuidance = isProfessionalDrill
+      ? "Use professional, practical feedback appropriate for interviews, networking, presentations, and workplace-style communication."
+      : "Use student-friendly, confidence-building feedback appropriate for kids and teens.";
     const prompt = `
-You are an encouraging youth public speaking coach for VoiceToLead.
+You are ${coachPersona}.
 
 Analyze this speech transcript and return only valid JSON with this exact shape:
 {
@@ -575,6 +665,7 @@ Analyze this speech transcript and return only valid JSON with this exact shape:
 Guidelines:
 - Use scores from 1 to 10.
 - Be specific, kind, and age-appropriate.
+- ${audienceGuidance}
 - The drill_review must evaluate the selected drill only, using its rubric and questions.
 - If a rubric item is not clearly present in the transcript, include it in missing_or_unclear.
 - The stronger_example should be a short sample sentence or structure the student could try next.
@@ -591,6 +682,7 @@ Guidelines:
 Selected drill:
 - Title: ${drill.title}
 - Rubric: ${drill.rubric}
+- Coaching audience: ${isProfessionalDrill ? "professional/adult" : "student/youth"}
 - Review questions:
 ${drill.questions.map((question) => `  - ${question}`).join("\n")}
 
@@ -610,7 +702,7 @@ ${submission.transcript}
         messages: [
           {
             role: "system",
-            content: "You are a youth public speaking coach. Return only valid JSON.",
+            content: `${coachPersona}. Return only valid JSON.`,
           },
           {
             role: "user",
