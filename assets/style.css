@@ -326,6 +326,36 @@ body {
   line-height: 1.6;
 }
 
+.coach-account-cta {
+  align-items: center;
+  background: #f8fbff;
+  border: 1px solid rgba(0, 32, 91, 0.12);
+  border-radius: 8px;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding: 0.9rem;
+}
+
+.coach-account-cta strong {
+  color: var(--navy);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.coach-account-cta p {
+  color: #444;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.coach-account-cta .btn-primary {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 .eyebrow {
   color: var(--navy);
   font-size: 0.8rem;
@@ -1614,6 +1644,10 @@ button:disabled,
   }
   .ai-coach-section {
     grid-template-columns: 1fr;
+  }
+  .coach-account-cta {
+    align-items: flex-start;
+    display: grid;
   }
   .coach-mode-switch {
     grid-template-columns: 1fr;
