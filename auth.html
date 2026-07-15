@@ -36,21 +36,25 @@
     <section class="section account-section">
       <div class="account-card">
         <p class="eyebrow">Student Practice Space</p>
-        <h1 class="section-title">Save your practice with one email link.</h1>
-        <p class="account-intro">No password to remember. Enter your email, open the link we send, and you will land in your VoiceToLead dashboard.</p>
+        <h1 class="section-title">Save your practice with one email code.</h1>
+        <p class="account-intro">No password to remember. Enter your email, then type the short code we send you.</p>
 
         <form class="account-form" data-auth-form>
           <label>
             <span>Your email</span>
             <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
           </label>
-          <button type="submit" class="btn-primary">Email me my dashboard link</button>
+          <label class="account-code-step" data-auth-code-step hidden>
+            <span>Code from email</span>
+            <input type="text" name="token" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="123456" />
+          </label>
+          <button type="submit" class="btn-primary" data-auth-submit>Send my code</button>
         </form>
 
         <p class="account-status" data-auth-status aria-live="polite">Enter your email to continue.</p>
         <div class="account-help">
           <strong>What happens next?</strong>
-          <p>We send a private sign-in link. It keeps your practice history connected to you without creating another password.</p>
+          <p>We send a short code to your inbox. Keep this page open, enter the code here, and your dashboard will open.</p>
         </div>
       </div>
     </section>
