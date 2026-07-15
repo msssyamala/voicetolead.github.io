@@ -160,6 +160,10 @@ export default {
     const url = new URL(request.url);
 
     if (request.method === "GET") {
+      if (url.pathname === "/account/profile") {
+        return readAccountProfile(request, env, corsHeaders);
+      }
+
       if (url.pathname === "/account/speech-submissions") {
         return readAccountSubmissions(request, env, corsHeaders);
       }
@@ -181,6 +185,10 @@ export default {
       return createSubmission(request, env, corsHeaders, ctx);
     }
 
+    if (url.pathname === "/account/profile") {
+      return saveAccountProfile(request, env, corsHeaders);
+    }
+
     const transcribeMatch = url.pathname.match(
       /^\/speech-submissions\/([a-f0-9-]+)\/transcribe$/
     );
@@ -200,6 +208,68 @@ export default {
     return json({ error: "Not found" }, 404, corsHeaders);
   },
 };
+
+async function readAccountProfile(request, env, corsHeaders) {
+  const authenticatedUser = await getAuthenticatedUser(request, env);
+
+  if (!authenticatedUser || !authenticatedUser.id) {
+    return json({ error: "Please sign in again to load your profile." }, 401, corsHeaders);
+  }
+
+  const query = [
+    `user_id=eq.${encodeURIComponent(authenticatedUser.id)}`,
+    "select=user_role,age_range,main_goal,experience_level,hardest_part,mentor_interest,updated_at",
+    "limit=1",
+  ].join("&");
+
+  const response = await supabaseFetch(env, `/user_profiles?${query}`);
+
+  if (!response.ok) {
+    const details = await response.text();
+    return json({ error: "Could not load profile.", details }, 500, corsHeaders);
+  }
+
+  const rows = await response.json();
+
+  return json({ ok: true, profile: rows[0] || null }, 200, corsHeaders);
+}
+
+async function saveAccountProfile(request, env, corsHeaders) {
+  const authenticatedUser = await getAuthenticatedUser(request, env);
+
+  if (!authenticatedUser || !authenticatedUser.id) {
+    return json({ error: "Please sign in again to save your profile." }, 401, corsHeaders);
+  }
+
+  const body = await request.json().catch(() => ({}));
+  const profile = {
+    user_id: authenticatedUser.id,
+    user_role: getAllowedValue(body.user_role, ["student", "parent", "adult_learner", "mentor_teacher"]),
+    age_range: getAllowedValue(body.age_range, ["under_10", "10_13", "14_18", "adult"]),
+    main_goal: getAllowedValue(body.main_goal, ["confidence", "fillers", "speech_debate", "interviews", "presentations", "stories"]),
+    experience_level: getAllowedValue(body.experience_level, ["new", "some_practice", "speech_debate", "advanced"]),
+    hardest_part: getAllowedValue(body.hardest_part, ["starting", "organizing", "clarity", "eye_contact", "nervousness", "ending"]),
+    mentor_interest: getAllowedValue(body.mentor_interest, ["yes", "maybe", "not_now"]),
+    updated_at: new Date().toISOString(),
+  };
+
+  const response = await supabaseFetch(env, "/user_profiles", {
+    method: "POST",
+    headers: {
+      "Prefer": "resolution=merge-duplicates,return=representation",
+    },
+    body: JSON.stringify(profile),
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    return json({ error: "Could not save profile.", details }, 500, corsHeaders);
+  }
+
+  const rows = await response.json();
+
+  return json({ ok: true, profile: rows[0] || profile }, 200, corsHeaders);
+}
 
 async function readAccountSubmissions(request, env, corsHeaders) {
   const authenticatedUser = await getAuthenticatedUser(request, env);

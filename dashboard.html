@@ -50,6 +50,86 @@
             <strong data-user-email></strong>
           </div>
 
+          <details class="dashboard-panel dashboard-disclosure onboarding-panel" data-onboarding-panel open>
+            <summary class="dashboard-panel-heading">
+              <div>
+                <h2>Personalize Your Coaching</h2>
+                <p>Answer a few optional questions so VoiceToLead can recommend better practice goals.</p>
+              </div>
+              <span data-profile-status>Optional</span>
+            </summary>
+
+            <form class="onboarding-form" data-profile-form>
+              <label>
+                <span>Who is using VoiceToLead?</span>
+                <select name="user_role">
+                  <option value="">Choose one</option>
+                  <option value="student">Student</option>
+                  <option value="parent">Parent helping a student</option>
+                  <option value="adult_learner">Adult learner</option>
+                  <option value="mentor_teacher">Mentor or teacher</option>
+                </select>
+              </label>
+              <label>
+                <span>Age range</span>
+                <select name="age_range">
+                  <option value="">Choose one</option>
+                  <option value="under_10">Under 10</option>
+                  <option value="10_13">10-13</option>
+                  <option value="14_18">14-18</option>
+                  <option value="adult">Adult</option>
+                </select>
+              </label>
+              <label>
+                <span>Main goal</span>
+                <select name="main_goal">
+                  <option value="">Choose one</option>
+                  <option value="confidence">Build confidence</option>
+                  <option value="fillers">Reduce filler words</option>
+                  <option value="speech_debate">Prepare for speech or debate</option>
+                  <option value="interviews">Practice interviews</option>
+                  <option value="presentations">Improve presentations</option>
+                  <option value="stories">Tell better stories</option>
+                </select>
+              </label>
+              <label>
+                <span>Experience level</span>
+                <select name="experience_level">
+                  <option value="">Choose one</option>
+                  <option value="new">New to public speaking</option>
+                  <option value="some_practice">Some practice</option>
+                  <option value="speech_debate">Speech or debate experience</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </label>
+              <label>
+                <span>What feels hardest right now?</span>
+                <select name="hardest_part">
+                  <option value="">Choose one</option>
+                  <option value="starting">Starting strong</option>
+                  <option value="organizing">Organizing ideas</option>
+                  <option value="clarity">Speaking clearly</option>
+                  <option value="eye_contact">Eye contact</option>
+                  <option value="nervousness">Nervousness</option>
+                  <option value="ending">Ending well</option>
+                </select>
+              </label>
+              <label>
+                <span>Interested in mentor coaching later?</span>
+                <select name="mentor_interest">
+                  <option value="">Choose one</option>
+                  <option value="yes">Yes</option>
+                  <option value="maybe">Maybe</option>
+                  <option value="not_now">Not now</option>
+                </select>
+              </label>
+              <div class="onboarding-actions">
+                <button type="submit" class="btn-primary">Save preferences</button>
+                <p data-profile-message>We only use this to guide coaching recommendations.</p>
+              </div>
+            </form>
+          </details>
+
           <div class="dashboard-mode-switch" aria-label="Choose dashboard mode">
             <button type="button" class="is-active" data-dashboard-mode-button="quest" aria-pressed="true">Voice Quest</button>
             <button type="button" data-dashboard-mode-button="coach" aria-pressed="false">Coach Mode</button>

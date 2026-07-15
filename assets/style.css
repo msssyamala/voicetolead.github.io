@@ -1254,6 +1254,45 @@ body {
   padding: 0;
 }
 
+.onboarding-panel {
+  background: #f8fbff;
+}
+
+.onboarding-form {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 1.2rem;
+}
+
+.onboarding-form label {
+  color: var(--navy);
+  display: grid;
+  font-weight: 800;
+  gap: 0.45rem;
+}
+
+.onboarding-form select {
+  background: #fff;
+  border: 1px solid #cfd6e3;
+  border-radius: 8px;
+  color: #333;
+  font: inherit;
+  padding: 0.72rem 0.8rem;
+}
+
+.onboarding-actions {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  grid-column: 1 / -1;
+}
+
+.onboarding-actions p {
+  color: #444;
+  line-height: 1.45;
+}
+
 .dashboard-panel-heading {
   margin-bottom: 1rem;
 }
@@ -1662,6 +1701,13 @@ button:disabled,
   }
   .coach-form-grid {
     grid-template-columns: 1fr;
+  }
+  .onboarding-form {
+    grid-template-columns: 1fr;
+  }
+  .onboarding-actions {
+    align-items: flex-start;
+    display: grid;
   }
   .coach-submit {
     width: 100%;

@@ -23,6 +23,10 @@ const signOutButton = document.querySelector('[data-sign-out]');
 const dashboardHistory = document.querySelector('[data-dashboard-history]');
 const dashboardHistoryCount = document.querySelector('[data-dashboard-history-count]');
 const savedSummary = document.querySelector('[data-dashboard-saved-summary]');
+const profileForm = document.querySelector('[data-profile-form]');
+const profileStatus = document.querySelector('[data-profile-status]');
+const profileMessage = document.querySelector('[data-profile-message]');
+const onboardingPanel = document.querySelector('[data-onboarding-panel]');
 const modeButtons = Array.from(document.querySelectorAll('[data-dashboard-mode-button]'));
 const modePanels = Array.from(document.querySelectorAll('[data-dashboard-mode-panel]'));
 const questGoalButtons = Array.from(document.querySelectorAll('[data-quest-goal]'));
@@ -355,6 +359,144 @@ const renderSubmissionCard = (submission) => {
   `;
 };
 
+const getProfilePayload = () => {
+  if (!profileForm) {
+    return {};
+  }
+
+  const formData = new FormData(profileForm);
+
+  return {
+    user_role: String(formData.get('user_role') || ''),
+    age_range: String(formData.get('age_range') || ''),
+    main_goal: String(formData.get('main_goal') || ''),
+    experience_level: String(formData.get('experience_level') || ''),
+    hardest_part: String(formData.get('hardest_part') || ''),
+    mentor_interest: String(formData.get('mentor_interest') || ''),
+  };
+};
+
+const fillProfileForm = (profile) => {
+  if (!profileForm || !profile) {
+    return;
+  }
+
+  ['user_role', 'age_range', 'main_goal', 'experience_level', 'hardest_part', 'mentor_interest'].forEach((key) => {
+    const field = profileForm.elements[key];
+    if (field && profile[key]) {
+      field.value = profile[key];
+    }
+  });
+};
+
+const loadAccountProfile = async () => {
+  if (!profileForm) {
+    return;
+  }
+
+  setText(profileStatus, 'Optional');
+
+  try {
+    const accessToken = await window.VoiceToLeadAuth.getAccessToken();
+
+    if (!accessToken) {
+      return;
+    }
+
+    const response = await fetch(`${SPEECH_COACH_API_BASE}/account/profile`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        setText(profileStatus, 'Optional');
+        setText(profileMessage, 'Profile questions are being set up and will be available soon.');
+        return;
+      }
+
+      throw new Error(data.error || 'Could not load profile.');
+    }
+
+    if (data.profile) {
+      fillProfileForm(data.profile);
+      setText(profileStatus, 'Saved');
+      setText(profileMessage, 'Your coaching preferences are saved. You can update them anytime.');
+
+      if (onboardingPanel) {
+        onboardingPanel.open = false;
+      }
+
+      if (data.profile.main_goal && questGoals[data.profile.main_goal]) {
+        setQuestGoal(data.profile.main_goal, { save: true });
+        updateDashboardFromSubmissions(dashboardSubmissionsCache);
+      }
+    }
+  } catch (error) {
+    setText(profileStatus, 'Optional');
+    setText(profileMessage, `Could not load preferences: ${error.message}`);
+  }
+};
+
+const saveAccountProfile = async () => {
+  if (!profileForm) {
+    return;
+  }
+
+  const submitButton = profileForm.querySelector('button[type="submit"]');
+
+  try {
+    const accessToken = await window.VoiceToLeadAuth.getAccessToken();
+
+    if (!accessToken) {
+      throw new Error('Please sign in again.');
+    }
+
+    if (submitButton) {
+      submitButton.disabled = true;
+    }
+
+    setText(profileStatus, 'Saving');
+    setText(profileMessage, 'Saving your coaching preferences...');
+
+    const payload = getProfilePayload();
+    const response = await fetch(`${SPEECH_COACH_API_BASE}/account/profile`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Profile questions are still being set up. Please try again later.');
+      }
+
+      throw new Error(data.error || 'Could not save profile.');
+    }
+
+    setText(profileStatus, 'Saved');
+    setText(profileMessage, 'Saved. We will use this to personalize your coaching.');
+
+    if (payload.main_goal && questGoals[payload.main_goal]) {
+      setQuestGoal(payload.main_goal);
+      updateDashboardFromSubmissions(dashboardSubmissionsCache);
+    }
+  } catch (error) {
+    setText(profileStatus, 'Try again');
+    setText(profileMessage, `Could not save preferences: ${error.message}`);
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+    }
+  }
+};
+
 const loadDashboardSubmissions = async () => {
   if (!dashboardHistory) {
     return;
@@ -488,6 +630,7 @@ const showDashboard = async () => {
     dashboardContent.hidden = false;
   }
 
+  loadAccountProfile();
   loadDashboardSubmissions();
 };
 
@@ -540,6 +683,13 @@ if (signOutButton) {
     setText(dashboardStatus, 'Signing you out...');
     await supabase.auth.signOut();
     window.location.href = 'auth.html';
+  });
+}
+
+if (profileForm) {
+  profileForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    saveAccountProfile();
   });
 }
 
