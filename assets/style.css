@@ -755,6 +755,29 @@ body {
   font-weight: 800;
 }
 
+.coach-celebration {
+  background: #fff8df;
+  border: 1px solid rgba(246, 194, 62, 0.6);
+  border-radius: 8px;
+  color: #253142;
+  display: grid;
+  gap: 0.35rem;
+  line-height: 1.45;
+  padding: 0.85rem;
+}
+
+.coach-celebration[hidden] {
+  display: none;
+}
+
+.coach-celebration strong {
+  color: var(--navy);
+}
+
+.coach-celebration p {
+  color: #444;
+}
+
 .coach-practice-summary {
   background: #f7f9fc;
   border: 1px solid #dce6f5;

@@ -69,6 +69,9 @@ function initSingleSpeechCoachRecorder(recorder) {
   const summaryFocus = recorder.querySelector('[data-summary="focus"]');
   const turnstileContainer = recorder.querySelector('.coach-turnstile');
   const turnstileToken = recorder.querySelector('.coach-turnstile-token');
+  const celebration = recorder.querySelector('.coach-celebration');
+  const celebrationTitle = recorder.querySelector('[data-celebration-title]');
+  const celebrationMessage = recorder.querySelector('[data-celebration-message]');
 
   let mediaRecorder;
   let stream;
@@ -390,6 +393,38 @@ function initSingleSpeechCoachRecorder(recorder) {
 
   const setStatus = (message) => {
     status.textContent = message;
+  };
+
+  const isDashboardQuestMode = () => {
+    if (!recorder.classList.contains('dashboard-recorder')) {
+      return false;
+    }
+
+    const activeDashboardMode = document.querySelector('[data-dashboard-mode-button].is-active');
+    return !activeDashboardMode || activeDashboardMode.dataset.dashboardModeButton !== 'coach';
+  };
+
+  const hideCelebration = () => {
+    if (celebration) {
+      celebration.hidden = true;
+    }
+  };
+
+  const showCelebration = () => {
+    if (!celebration || !isDashboardQuestMode()) {
+      return;
+    }
+
+    if (celebrationTitle) {
+      celebrationTitle.textContent = 'Nice work showing up.';
+    }
+
+    if (celebrationMessage) {
+      const selectedDrill = getSelectedDrill();
+      celebrationMessage.textContent = `You completed ${selectedDrill.title.toLowerCase()}. Your coach notes are being prepared.`;
+    }
+
+    celebration.hidden = false;
   };
 
   const formatTime = (seconds) => {
@@ -934,6 +969,7 @@ function initSingleSpeechCoachRecorder(recorder) {
     recorder.classList.toggle('is-feedback', mode === 'feedback');
     recorder.classList.toggle('is-practice', mode === 'practice');
     hidePracticeSummary();
+    hideCelebration();
 
     modeButtons.forEach((button) => {
       const isActive = button.dataset.mode === mode;
@@ -1208,6 +1244,7 @@ function initSingleSpeechCoachRecorder(recorder) {
     stopStream();
     resetPracticeMetrics();
     hidePracticeSummary();
+    hideCelebration();
     updateTimer();
     playback.hidden = true;
     playback.removeAttribute('src');
@@ -1464,6 +1501,7 @@ function initSingleSpeechCoachRecorder(recorder) {
       startButton.disabled = false;
       if (requiresAuth) {
         status.innerHTML = `Submitted successfully. Feedback is being prepared and will appear in your saved feedback history. Submission ID: <strong>${submissionId}</strong>.`;
+        showCelebration();
         window.dispatchEvent(new CustomEvent('voicetolead:account-submission-saved'));
       } else {
         status.innerHTML = `Submitted successfully. Save this ID: <strong>${submissionId}</strong>. Feedback is being prepared. <a href="${feedbackUrl}">View feedback</a>`;
