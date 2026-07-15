@@ -1,4 +1,4 @@
-const CACHE_NAME = "voicetolead-shell-v44";
+const CACHE_NAME = "voicetolead-shell-v45";
 const SHELL_ASSETS = [
   "/",
   "/index.html",
@@ -46,6 +46,29 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
 
   if (request.method !== "GET" || url.origin !== self.location.origin) {
+    return;
+  }
+
+  const isHtmlRequest = request.mode === "navigate" ||
+    request.headers.get("Accept")?.includes("text/html") ||
+    url.pathname.endsWith(".html") ||
+    url.pathname === "/";
+
+  if (isHtmlRequest) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+
+          return networkResponse;
+        })
+        .catch(() => caches.match(request))
+    );
     return;
   }
 
