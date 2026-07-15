@@ -204,6 +204,7 @@ function initSingleSpeechCoachRecorder(recorder) {
   const questDrills = {
     open: publicDrills.open,
     intro: publicDrills.intro,
+    interview: publicDrills.interview,
     story: publicDrills.story,
     debate: publicDrills.debate,
     school_presentation: {
@@ -320,6 +321,13 @@ function initSingleSpeechCoachRecorder(recorder) {
     quest: questDrills,
     coach: coachDrills
   };
+  const questGoalDrills = {
+    confidence: 'intro',
+    interviews: 'interview',
+    speech_debate: 'debate',
+    stories: 'story',
+    fillers: 'open'
+  };
   const getInitialDrillSet = () => {
     if (recorder.classList.contains('dashboard-recorder')) {
       const activeDashboardMode = document.querySelector('[data-dashboard-mode-button].is-active');
@@ -330,6 +338,14 @@ function initSingleSpeechCoachRecorder(recorder) {
   };
   let activeDrillSet = getInitialDrillSet();
   let guidedDrills = drillSets[activeDrillSet];
+  const getInitialPreferredDrill = () => {
+    if (!recorder.classList.contains('dashboard-recorder') || activeDrillSet !== 'quest') {
+      return drillSelect ? drillSelect.value : undefined;
+    }
+
+    const savedGoal = window.localStorage.getItem('voiceToLeadQuestGoal');
+    return questGoalDrills[savedGoal] || 'intro';
+  };
   let practiceMetrics = {
     filler: 0,
     eye: 0,
@@ -1448,7 +1464,7 @@ function initSingleSpeechCoachRecorder(recorder) {
   };
 
   updateTimer();
-  populateDrillOptions(drillSelect ? drillSelect.value : undefined);
+  populateDrillOptions(getInitialPreferredDrill());
   modeButtons.forEach((button) => {
     button.addEventListener('click', () => {
       if (button.dataset.mode && button.dataset.mode !== currentMode) {
@@ -1471,5 +1487,17 @@ function initSingleSpeechCoachRecorder(recorder) {
     }
 
     setDrillSet(event.detail && event.detail.mode === 'coach' ? 'coach' : 'quest');
+  });
+  document.addEventListener('voicetolead:quest-goal-change', (event) => {
+    if (!recorder.classList.contains('dashboard-recorder') || activeDrillSet !== 'quest') {
+      return;
+    }
+
+    const selectedDrill = event.detail && event.detail.drill;
+
+    if (selectedDrill && guidedDrills[selectedDrill] && drillSelect) {
+      drillSelect.value = selectedDrill;
+      updateGuidedDrill();
+    }
   });
 }

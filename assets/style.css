@@ -1106,6 +1106,39 @@ body {
   line-height: 1.5;
 }
 
+.quest-goal-card {
+  background: #f8fbff;
+  border-color: rgba(0, 32, 91, 0.12);
+}
+
+.quest-goal-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  padding: 1.2rem 1.2rem 0;
+}
+
+.quest-goal-options button {
+  background: #fff;
+  border: 1px solid rgba(0, 32, 91, 0.15);
+  border-radius: 999px;
+  color: var(--navy);
+  font-weight: 800;
+  padding: 0.65rem 0.9rem;
+}
+
+.quest-goal-options button.is-active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.quest-goal-note {
+  color: #444;
+  line-height: 1.55;
+  padding: 0.8rem 1.2rem 1.2rem;
+}
+
 .quest-badges {
   background: #fffdf4;
 }

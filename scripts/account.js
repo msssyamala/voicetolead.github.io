@@ -24,6 +24,7 @@ const dashboardHistoryCount = document.querySelector('[data-dashboard-history-co
 const savedSummary = document.querySelector('[data-dashboard-saved-summary]');
 const modeButtons = Array.from(document.querySelectorAll('[data-dashboard-mode-button]'));
 const modePanels = Array.from(document.querySelectorAll('[data-dashboard-mode-panel]'));
+const questGoalButtons = Array.from(document.querySelectorAll('[data-quest-goal]'));
 const recorderTitle = document.querySelector('[data-recorder-title]');
 const recorderNote = document.querySelector('[data-recorder-note]');
 const recorderBadge = document.querySelector('[data-recorder-badge]');
@@ -35,6 +36,40 @@ const questLevels = [
   'Story Builder',
   'Voice Leader',
 ];
+const questGoals = {
+  confidence: {
+    name: 'Speak with confidence',
+    challenge: '30-second intro',
+    note: 'Start with a short introduction and practice sounding steady from the first sentence.',
+    drill: 'intro',
+  },
+  interviews: {
+    name: 'Get ready for interviews',
+    challenge: 'Tell me about yourself',
+    note: 'Practice who you are, one strength, and one goal you are working toward.',
+    drill: 'interview',
+  },
+  speech_debate: {
+    name: 'Prepare for speech/debate',
+    challenge: 'Debate opening',
+    note: 'Make one clear claim, give a reason, and end with impact.',
+    drill: 'debate',
+  },
+  stories: {
+    name: 'Tell better stories',
+    challenge: 'Storytelling practice',
+    note: 'Tell a short story with a beginning, challenge, turning point, and takeaway.',
+    drill: 'story',
+  },
+  fillers: {
+    name: 'Reduce filler words',
+    challenge: 'Fewer fillers challenge',
+    note: 'Try one short answer where every pause is silent instead of filled with filler words.',
+    drill: 'open',
+  },
+};
+let selectedQuestGoalKey = 'confidence';
+let dashboardSubmissionsCache = [];
 
 const setText = (element, message) => {
   if (element) {
@@ -99,6 +134,33 @@ const setMetricCard = (key, metric) => {
   }
 };
 
+const getSelectedQuestGoal = () => questGoals[selectedQuestGoalKey] || questGoals.confidence;
+
+const setQuestGoal = (goalKey, options = {}) => {
+  selectedQuestGoalKey = questGoals[goalKey] ? goalKey : 'confidence';
+  const goal = getSelectedQuestGoal();
+
+  questGoalButtons.forEach((button) => {
+    const isActive = button.dataset.questGoal === selectedQuestGoalKey;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+  });
+
+  setText(document.querySelector('[data-quest-goal-name]'), goal.name);
+  setText(document.querySelector('[data-quest-goal-note]'), goal.note);
+
+  if (options.save !== false) {
+    window.localStorage.setItem('voiceToLeadQuestGoal', selectedQuestGoalKey);
+  }
+
+  document.dispatchEvent(new CustomEvent('voicetolead:quest-goal-change', {
+    detail: {
+      goal: selectedQuestGoalKey,
+      drill: goal.drill,
+    },
+  }));
+};
+
 const setDashboardMode = (mode) => {
   const nextMode = mode === 'coach' ? 'coach' : 'quest';
   const isCoachMode = nextMode === 'coach';
@@ -128,6 +190,10 @@ const setDashboardMode = (mode) => {
     detail: { mode: nextMode },
   }));
 
+  if (!isCoachMode) {
+    setQuestGoal(selectedQuestGoalKey, { save: false });
+  }
+
   window.localStorage.setItem('voiceToLeadDashboardMode', nextMode);
 };
 
@@ -141,6 +207,7 @@ const updateQuestMode = (submissions, latestFeedback) => {
   const firstNextStep = latestFeedback && Array.isArray(latestFeedback.top_3_next_steps) && latestFeedback.top_3_next_steps[0]
     ? latestFeedback.top_3_next_steps[0]
     : 'Tell us who you are and one thing you care about.';
+  const goal = getSelectedQuestGoal();
   const earnedBadges = ['First Practice'];
 
   if (readyCount >= 1) {
@@ -161,8 +228,8 @@ const updateQuestMode = (submissions, latestFeedback) => {
     : 'Start your first quest by recording a short practice. Every try counts.');
   setText(document.querySelector('[data-quest-count]'), String(readyCount));
   setText(document.querySelector('[data-quest-strength]'), firstStrength);
-  setText(document.querySelector('[data-quest-challenge]'), latestFeedback ? 'Your next quest' : '30-second intro');
-  setText(document.querySelector('[data-quest-challenge-note]'), firstNextStep);
+  setText(document.querySelector('[data-quest-challenge]'), latestFeedback ? 'Your next quest' : goal.challenge);
+  setText(document.querySelector('[data-quest-challenge-note]'), latestFeedback ? firstNextStep : goal.note);
   setText(document.querySelector('[data-quest-badge]'), earnedBadges[earnedBadges.length - 1]);
   setText(document.querySelector('[data-quest-badge-count]'), `${earnedBadges.length} earned`);
 
@@ -315,6 +382,7 @@ const loadDashboardSubmissions = async () => {
 
     const submissions = Array.isArray(data.submissions) ? data.submissions : [];
 
+    dashboardSubmissionsCache = submissions;
     updateDashboardFromSubmissions(submissions);
     setText(dashboardHistoryCount, `${submissions.length} saved`);
 
@@ -467,6 +535,16 @@ if (modeButtons.length > 0) {
   modeButtons.forEach((button) => {
     button.addEventListener('click', () => {
       setDashboardMode(button.dataset.dashboardModeButton);
+    });
+  });
+}
+
+if (questGoalButtons.length > 0) {
+  setQuestGoal(window.localStorage.getItem('voiceToLeadQuestGoal') || 'confidence', { save: false });
+  questGoalButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      setQuestGoal(button.dataset.questGoal);
+      updateDashboardFromSubmissions(dashboardSubmissionsCache);
     });
   });
 }
