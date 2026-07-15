@@ -210,7 +210,7 @@ async function readAccountSubmissions(request, env, corsHeaders) {
 
   const query = [
     `owner_user_id=eq.${encodeURIComponent(authenticatedUser.id)}`,
-    "select=id,status,created_at,student_email,drill_type,drill_title,drill_rubric,transcript,speech_feedback,final_feedback,speech_feedback_at,error_message",
+    "select=id,status,created_at,student_email,dashboard_mode,quest_goal,drill_type,drill_title,drill_rubric,transcript,speech_feedback,final_feedback,speech_feedback_at,error_message",
     "order=created_at.desc",
     "limit=20",
   ].join("&");
@@ -240,6 +240,16 @@ async function createSubmission(request, env, corsHeaders, ctx) {
     const studentName = formData.get("student_name") || null;
     const studentEmail = formData.get("student_email") || null;
     const drill = getGuidedDrill(formData.get("drill_type"));
+    const dashboardMode = getAllowedValue(formData.get("dashboard_mode"), ["quest", "coach"]);
+    const questGoal = dashboardMode === "quest"
+      ? getAllowedValue(formData.get("quest_goal"), [
+        "confidence",
+        "interviews",
+        "speech_debate",
+        "stories",
+        "fillers",
+      ])
+      : null;
     const turnstileToken = formData.get("turnstile_token");
     const hasAuthorizationHeader = Boolean(request.headers.get("Authorization"));
     const authenticatedUser = await getAuthenticatedUser(request, env);
@@ -290,6 +300,8 @@ async function createSubmission(request, env, corsHeaders, ctx) {
       video_path: videoPath,
       video_mime_type: videoMetadata.contentType,
       video_size_bytes: video.size || null,
+      dashboard_mode: dashboardMode,
+      quest_goal: questGoal,
       drill_type: drill.type,
       drill_title: drill.title,
       drill_rubric: drill.rubric,
@@ -370,6 +382,10 @@ function getGuidedDrill(value) {
     type: drillType,
     ...drill,
   };
+}
+
+function getAllowedValue(value, allowedValues) {
+  return typeof value === "string" && allowedValues.includes(value) ? value : null;
 }
 
 async function detectVideoType(video) {
@@ -468,6 +484,8 @@ async function readSubmission(submissionId, env, corsHeaders) {
         created_at: submission.created_at,
         status: submission.status,
         transcript: submission.transcript,
+        dashboard_mode: submission.dashboard_mode,
+        quest_goal: submission.quest_goal,
         drill_type: submission.drill_type,
         drill_title: submission.drill_title,
         drill_rubric: submission.drill_rubric,

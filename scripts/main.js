@@ -1424,6 +1424,20 @@ function initSingleSpeechCoachRecorder(recorder) {
     formData.append('drill_type', drillSelect && guidedDrills[drillSelect.value] ? drillSelect.value : 'open');
     formData.append('drill_title', selectedDrill.title);
     formData.append('drill_rubric', selectedDrill.rubric);
+
+    if (recorder.classList.contains('dashboard-recorder')) {
+      const activeDashboardMode = document.querySelector('[data-dashboard-mode-button].is-active');
+      const dashboardMode = activeDashboardMode && activeDashboardMode.dataset.dashboardModeButton === 'coach'
+        ? 'coach'
+        : 'quest';
+
+      formData.append('dashboard_mode', dashboardMode);
+
+      if (dashboardMode === 'quest') {
+        formData.append('quest_goal', window.localStorage.getItem('voiceToLeadQuestGoal') || 'confidence');
+      }
+    }
+
     formData.append('video', recordingBlob, `speech.${recordingExtension}`);
 
     submitButton.disabled = true;
