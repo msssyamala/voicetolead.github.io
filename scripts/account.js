@@ -124,6 +124,10 @@ const setDashboardMode = (mode) => {
     ? 'Record up to 1 minute, then submit for saved AI feedback.'
     : 'Pick a challenge, record your practice, then submit it for saved AI feedback.');
 
+  document.dispatchEvent(new CustomEvent('voicetolead:dashboard-mode-change', {
+    detail: { mode: nextMode },
+  }));
+
   window.localStorage.setItem('voiceToLeadDashboardMode', nextMode);
 };
 

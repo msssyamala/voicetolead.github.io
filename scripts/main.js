@@ -108,21 +108,22 @@ function initSingleSpeechCoachRecorder(recorder) {
   let recordingUrl;
   let recordingExtension = 'webm';
   let turnstileWidgetId = null;
-  const guidedDrills = {
+  const sharedNextSteps = {
+    default: 'Next focus: make one clear point and close with a strong final sentence.',
+    filler: 'Next focus: repeat the same idea with fewer filler words.',
+    paceFast: 'Next focus: slow down before your most important point.',
+    paceSlow: 'Next focus: add a little more energy and move confidently into the next idea.',
+    pause: 'Next focus: shorten the pause between ideas.',
+    eye: 'Next focus: look up at the audience during your strongest line.',
+    steady: 'Nice work: your delivery stayed steady. Next, sharpen the ending.'
+  };
+  const publicDrills = {
     open: {
       title: 'Open practice',
       prompt: 'Practice any speech, answer, or idea. Focus on speaking clearly and finishing strong.',
       focus: 'steady delivery',
       rubric: 'clear point, steady delivery, strong finish',
-      nextSteps: {
-        default: 'Next focus: make one clear point and close with a strong final sentence.',
-        filler: 'Next focus: repeat the same idea with fewer filler words.',
-        paceFast: 'Next focus: slow down before your most important point.',
-        paceSlow: 'Next focus: add a little more energy and move confidently into the next idea.',
-        pause: 'Next focus: shorten the pause between ideas.',
-        eye: 'Next focus: look up at the audience during your strongest line.',
-        steady: 'Nice work: your delivery stayed steady. Next, sharpen the ending.'
-      }
+      nextSteps: sharedNextSteps
     },
     intro: {
       title: '30-second introduction',
@@ -200,6 +201,135 @@ function initSingleSpeechCoachRecorder(recorder) {
       }
     }
   };
+  const questDrills = {
+    open: publicDrills.open,
+    intro: publicDrills.intro,
+    story: publicDrills.story,
+    debate: publicDrills.debate,
+    school_presentation: {
+      title: 'Class presentation',
+      prompt: 'Teach the audience one idea from school. Explain the topic, give one example, and finish with what they should remember.',
+      focus: 'clear teaching',
+      rubric: 'topic, example, takeaway',
+      nextSteps: {
+        default: 'Next focus: name the topic, give one clear example, and end with the takeaway.',
+        filler: 'Next focus: use a short pause instead of filler words while explaining the example.',
+        paceFast: 'Next focus: slow down when explaining the most important idea.',
+        paceSlow: 'Next focus: add more energy when you introduce the topic.',
+        pause: 'Next focus: move from the topic into the example with less waiting time.',
+        eye: 'Next focus: look up when you say what the audience should remember.',
+        steady: 'Nice work: your teaching voice sounded steady. Next, make the takeaway stronger.'
+      }
+    },
+    leadership_idea: {
+      title: 'Leadership idea',
+      prompt: 'Share one idea that could help your school, club, or community. Say the problem, your idea, and how others can help.',
+      focus: 'inspiring action',
+      rubric: 'problem, idea, invitation',
+      nextSteps: {
+        default: 'Next focus: explain the problem, your idea, and how others can help.',
+        filler: 'Next focus: make your idea sound stronger by replacing filler words with pauses.',
+        paceFast: 'Next focus: slow down when asking others to help.',
+        paceSlow: 'Next focus: add more energy when describing the change you want to make.',
+        pause: 'Next focus: connect the problem to your idea without a long pause.',
+        eye: 'Next focus: look up when inviting others to help.',
+        steady: 'Nice work: your leadership idea sounded steady. Next, make the invitation clearer.'
+      }
+    }
+  };
+  const coachDrills = {
+    open: publicDrills.open,
+    hiring_interview: {
+      title: 'Hiring manager interview',
+      prompt: 'Answer a job or internship interview question. Share your background, a relevant strength, and one specific example.',
+      focus: 'credible interview answer',
+      rubric: 'role fit, evidence, concise close',
+      nextSteps: {
+        default: 'Next focus: connect your experience to the role and include one specific example.',
+        filler: 'Next focus: sound more decisive by replacing filler words with short pauses.',
+        paceFast: 'Next focus: slow down when describing your strongest example.',
+        paceSlow: 'Next focus: add more energy when explaining why you are a strong fit.',
+        pause: 'Next focus: move from background to evidence without a long pause.',
+        eye: 'Next focus: look up when naming your strongest qualification.',
+        steady: 'Nice work: your interview answer sounded steady. Next, make the example more concrete.'
+      }
+    },
+    pronunciation: {
+      title: 'Pronunciation training',
+      prompt: 'Read or repeat a short passage slowly and clearly. Focus on articulation, ending sounds, and confident pacing.',
+      focus: 'clear pronunciation',
+      rubric: 'articulation, pace, ending sounds',
+      nextSteps: {
+        default: 'Next focus: slow down and pronounce the ending sounds of important words clearly.',
+        filler: 'Next focus: pause between phrases instead of adding filler words.',
+        paceFast: 'Next focus: slow down enough for each word ending to land.',
+        paceSlow: 'Next focus: keep the clarity while adding a little more natural rhythm.',
+        pause: 'Next focus: use shorter pauses between phrases.',
+        eye: 'Next focus: look up between phrases to keep connection with the audience.',
+        steady: 'Nice work: your voice sounded steady. Next, make key word endings crisper.'
+      }
+    },
+    sales_pitch: {
+      title: 'Shark Tank style sales pitch',
+      prompt: 'Pitch a product, service, or idea. State the problem, your solution, proof it matters, and your ask.',
+      focus: 'persuasive pitch',
+      rubric: 'problem, solution, proof, ask',
+      nextSteps: {
+        default: 'Next focus: include the problem, solution, proof, and a clear ask.',
+        filler: 'Next focus: make the pitch tighter by replacing filler words with pauses.',
+        paceFast: 'Next focus: slow down when explaining the solution and the ask.',
+        paceSlow: 'Next focus: bring more energy to the proof and ask.',
+        pause: 'Next focus: connect the problem to the solution without losing momentum.',
+        eye: 'Next focus: look up when making your ask.',
+        steady: 'Nice work: your pitch sounded steady. Next, make the proof more compelling.'
+      }
+    },
+    networking_intro: {
+      title: 'Networking event intro and conversation',
+      prompt: 'Introduce yourself at a networking event. Say who you are, what you are exploring, and ask one friendly follow-up question.',
+      focus: 'warm connection',
+      rubric: 'intro, purpose, follow-up question',
+      nextSteps: {
+        default: 'Next focus: include who you are, what you are exploring, and one follow-up question.',
+        filler: 'Next focus: sound more polished by reducing filler words in the opening.',
+        paceFast: 'Next focus: slow down on your name and purpose.',
+        paceSlow: 'Next focus: add more warmth and energy to the first sentence.',
+        pause: 'Next focus: move naturally from your intro to your question.',
+        eye: 'Next focus: look up when asking your follow-up question.',
+        steady: 'Nice work: your intro sounded steady. Next, make the question more conversational.'
+      }
+    },
+    audience_presentation: {
+      title: 'Presentation to an audience',
+      prompt: 'Present a topic to a group. Open with the main point, explain two supporting ideas, and close with a clear takeaway.',
+      focus: 'audience-ready structure',
+      rubric: 'opening, support, takeaway',
+      nextSteps: {
+        default: 'Next focus: open with the main point, support it, and close with a takeaway.',
+        filler: 'Next focus: use short pauses instead of filler words between supporting ideas.',
+        paceFast: 'Next focus: slow down on the main point and final takeaway.',
+        paceSlow: 'Next focus: add more energy when moving into each supporting idea.',
+        pause: 'Next focus: keep transitions between points shorter and smoother.',
+        eye: 'Next focus: look up when delivering the final takeaway.',
+        steady: 'Nice work: your presentation sounded steady. Next, sharpen the opening point.'
+      }
+    }
+  };
+  const drillSets = {
+    public: publicDrills,
+    quest: questDrills,
+    coach: coachDrills
+  };
+  const getInitialDrillSet = () => {
+    if (recorder.classList.contains('dashboard-recorder')) {
+      const activeDashboardMode = document.querySelector('[data-dashboard-mode-button].is-active');
+      return activeDashboardMode && activeDashboardMode.dataset.dashboardModeButton === 'coach' ? 'coach' : 'quest';
+    }
+
+    return drillSets[recorder.dataset.drillSet] ? recorder.dataset.drillSet : 'public';
+  };
+  let activeDrillSet = getInitialDrillSet();
+  let guidedDrills = drillSets[activeDrillSet];
   let practiceMetrics = {
     filler: 0,
     eye: 0,
@@ -212,6 +342,34 @@ function initSingleSpeechCoachRecorder(recorder) {
   const getSelectedDrill = () => {
     const selectedKey = drillSelect && guidedDrills[drillSelect.value] ? drillSelect.value : 'open';
     return guidedDrills[selectedKey];
+  };
+
+  const populateDrillOptions = (preferredValue) => {
+    if (!drillSelect) {
+      return;
+    }
+
+    const options = Object.entries(guidedDrills);
+    const nextValue = preferredValue && guidedDrills[preferredValue] ? preferredValue : options[0][0];
+
+    drillSelect.innerHTML = options
+      .map(([value, drill]) => `<option value="${value}">${drill.title}</option>`)
+      .join('');
+    drillSelect.value = nextValue;
+  };
+
+  const setDrillSet = (drillSet) => {
+    const nextSet = drillSets[drillSet] ? drillSet : 'public';
+
+    if (nextSet === activeDrillSet) {
+      updateGuidedDrill();
+      return;
+    }
+
+    activeDrillSet = nextSet;
+    guidedDrills = drillSets[activeDrillSet];
+    populateDrillOptions();
+    updateGuidedDrill();
   };
 
   const setStatus = (message) => {
@@ -1290,6 +1448,7 @@ function initSingleSpeechCoachRecorder(recorder) {
   };
 
   updateTimer();
+  populateDrillOptions(drillSelect ? drillSelect.value : undefined);
   modeButtons.forEach((button) => {
     button.addEventListener('click', () => {
       if (button.dataset.mode && button.dataset.mode !== currentMode) {
@@ -1306,4 +1465,11 @@ function initSingleSpeechCoachRecorder(recorder) {
   if (drillSelect) {
     drillSelect.addEventListener('change', updateGuidedDrill);
   }
+  document.addEventListener('voicetolead:dashboard-mode-change', (event) => {
+    if (!recorder.classList.contains('dashboard-recorder')) {
+      return;
+    }
+
+    setDrillSet(event.detail && event.detail.mode === 'coach' ? 'coach' : 'quest');
+  });
 }
