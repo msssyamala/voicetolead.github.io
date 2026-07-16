@@ -1113,111 +1113,45 @@ body {
   gap: 0.9rem;
 }
 
-.quest-board,
-.coach-board {
-  display: grid;
-  gap: 0.85rem;
-  grid-template-columns: 1.35fr 1fr 0.72fr 1fr 1fr;
-}
-
-.coach-board {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.studio-tile {
-  background: #fff;
-  border: 1px solid rgba(0, 32, 91, 0.1);
-  border-radius: 8px;
-  box-shadow: 0 10px 24px rgba(0, 32, 91, 0.07);
-  display: grid;
-  gap: 0.35rem;
-  min-height: 126px;
-  min-width: 0;
-  overflow: hidden;
-  padding: 1rem;
-  position: relative;
-}
-
-.studio-tile::before {
-  background: var(--gold);
-  border-radius: 999px;
-  content: "";
-  height: 9px;
-  position: absolute;
-  right: 0.9rem;
-  top: 0.9rem;
-  width: 9px;
-}
-
-.studio-tile span {
-  color: #596376;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.studio-tile strong {
-  color: var(--navy);
-  display: block;
-  font-size: clamp(1.2rem, 2.4vw, 1.75rem);
-  line-height: 1.08;
-  padding-right: 0.6rem;
-}
-
-.studio-tile p {
-  color: #4a4f5c;
-  font-size: 0.92rem;
-  line-height: 1.35;
-}
-
-.mission-tile {
-  background:
-    radial-gradient(circle at top right, rgba(255, 191, 0, 0.3), transparent 34%),
-    linear-gradient(135deg, #fff8df, #f6f9ff);
-  border-color: rgba(255, 191, 0, 0.5);
-}
-
-.mission-tile strong {
-  font-size: clamp(1.35rem, 3vw, 2rem);
-}
-
-.level-tile {
-  background: #f8fbff;
-}
-
-.count-tile {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: #fff;
-  place-content: center;
-  text-align: center;
-}
-
-.count-tile::before {
-  background: rgba(255, 255, 255, 0.45);
-}
-
-.count-tile span,
-.count-tile strong,
-.count-tile p {
-  color: #fff;
-}
-
-.count-tile strong {
-  font-size: 3rem;
-  padding-right: 0;
-}
-
-.badge-tile {
-  background: #fffdf4;
-}
-
 .dashboard-practice-layout {
   align-items: start;
   display: grid;
   gap: 1rem;
   grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+}
+
+.practice-focus-strip {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 0.9rem;
+}
+
+.practice-focus-strip article {
+  background: #fff;
+  border: 1px solid rgba(0, 32, 91, 0.1);
+  border-left: 4px solid var(--gold);
+  border-radius: 8px;
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+.practice-focus-strip span {
+  color: #596376;
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+.practice-focus-strip strong {
+  color: var(--navy);
+  display: block;
+  font-size: 1rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .dashboard-side-panel {
@@ -1600,6 +1534,10 @@ body {
   grid-template-columns: repeat(3, 1fr);
 }
 
+.dashboard-side-panel .dashboard-grid {
+  grid-template-columns: 1fr;
+}
+
 .dashboard-grid article {
   border: 1px solid rgba(0, 32, 91, 0.12);
   border-radius: 8px;
@@ -1899,19 +1837,8 @@ button:disabled,
     display: grid;
     grid-template-columns: 1fr;
   }
-  .quest-board,
-  .coach-board {
+  .practice-focus-strip {
     grid-template-columns: 1fr;
-  }
-  .studio-tile {
-    min-height: auto;
-  }
-  .count-tile {
-    place-content: start;
-    text-align: left;
-  }
-  .count-tile strong {
-    font-size: 2.4rem;
   }
   .dashboard-mode-switch {
     width: 100%;

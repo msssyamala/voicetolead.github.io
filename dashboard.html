@@ -136,57 +136,6 @@
             </form>
           </details>
 
-          <section class="dashboard-mode-panel quest-board is-active" data-dashboard-mode-panel="quest" aria-label="Voice Quest snapshot">
-            <article class="studio-tile mission-tile">
-              <span>Today's Mission</span>
-              <strong data-quest-challenge>30-second intro</strong>
-              <p data-quest-challenge-note>Tell us who you are and one thing you care about.</p>
-            </article>
-            <article class="studio-tile level-tile">
-              <span>Level</span>
-              <strong data-quest-level>Brave Starter</strong>
-              <p data-quest-message>Start your first quest. Every try counts.</p>
-            </article>
-            <article class="studio-tile count-tile">
-              <span>Quests</span>
-              <strong data-quest-count>0</strong>
-              <p>completed</p>
-            </article>
-            <article class="studio-tile">
-              <span>Power Skill</span>
-              <strong data-quest-strength>First quest waiting</strong>
-              <p>Your strongest habit appears here.</p>
-            </article>
-            <article class="studio-tile badge-tile">
-              <span>Latest Badge</span>
-              <strong data-quest-badge>First Practice</strong>
-              <p>Earned by showing up.</p>
-            </article>
-          </section>
-
-          <section class="dashboard-mode-panel coach-board" data-dashboard-mode-panel="coach" hidden aria-label="Coach mode snapshot">
-            <article class="studio-tile">
-              <span>Sessions</span>
-              <strong data-dashboard-stat="sessions">0</strong>
-              <p data-dashboard-stat-note="sessions">Saved sessions appear here.</p>
-            </article>
-            <article class="studio-tile mission-tile">
-              <span>Current Focus</span>
-              <strong data-dashboard-stat="focus">Baseline</strong>
-              <p data-dashboard-stat-note="focus">Record once to unlock a focus area.</p>
-            </article>
-            <article class="studio-tile">
-              <span>Strength</span>
-              <strong data-dashboard-stat="strength">Not yet</strong>
-              <p data-dashboard-stat-note="strength">Feedback will identify this.</p>
-            </article>
-            <article class="studio-tile">
-              <span>Growth Area</span>
-              <strong data-dashboard-stat="growth">Not yet</strong>
-              <p data-dashboard-stat-note="growth">Your next focus appears here.</p>
-            </article>
-          </section>
-
           <div class="dashboard-practice-layout">
             <section class="dashboard-panel dashboard-coach-panel" id="account-practice-recorder">
               <div class="dashboard-panel-heading">
@@ -195,6 +144,36 @@
                   <p data-recorder-note>Pick a mission. Record up to 1 minute. Submit for coach notes.</p>
                 </div>
                 <span data-recorder-badge>Student recording</span>
+              </div>
+
+              <div class="practice-focus-strip dashboard-mode-panel is-active" data-dashboard-mode-panel="quest" aria-label="Voice Quest focus">
+                <article>
+                  <span>Mission</span>
+                  <strong data-quest-challenge>30-second intro</strong>
+                </article>
+                <article>
+                  <span>Level</span>
+                  <strong data-quest-level>Brave Starter</strong>
+                </article>
+                <article>
+                  <span>Quests</span>
+                  <strong data-quest-count>0</strong>
+                </article>
+              </div>
+
+              <div class="practice-focus-strip dashboard-mode-panel" data-dashboard-mode-panel="coach" hidden aria-label="Coach mode focus">
+                <article>
+                  <span>Focus</span>
+                  <strong data-dashboard-stat="focus">Baseline</strong>
+                </article>
+                <article>
+                  <span>Sessions</span>
+                  <strong data-dashboard-stat="sessions">0</strong>
+                </article>
+                <article>
+                  <span>Strength</span>
+                  <strong data-dashboard-stat="strength">Not yet</strong>
+                </article>
               </div>
 
               <div class="coach-recorder is-feedback dashboard-recorder" data-max-seconds="60" data-drill-set="quest" data-upload-url="https://speech-coach-api.voicetolead.workers.dev/speech-submissions" data-require-auth="true">
@@ -301,6 +280,30 @@
                     <span>First Practice</span>
                     <span>Clear Voice</span>
                     <span>Strong Finish</span>
+                  </div>
+                </details>
+
+                <details class="dashboard-panel dashboard-disclosure">
+                  <summary class="dashboard-panel-heading">
+                    <div>
+                      <h2>Progress</h2>
+                      <p>Level, strengths, and next focus.</p>
+                    </div>
+                    <span data-quest-badge>First Practice</span>
+                  </summary>
+                  <div class="dashboard-grid quest-progress-details">
+                    <article>
+                      <h2>Level</h2>
+                      <p data-quest-message>Start your first quest. Every try counts.</p>
+                    </article>
+                    <article>
+                      <h2>Power Skill</h2>
+                      <p data-quest-strength>First quest waiting</p>
+                    </article>
+                    <article>
+                      <h2>Next Step</h2>
+                      <p data-quest-challenge-note>Tell us who you are and one thing you care about.</p>
+                    </article>
                   </div>
                 </details>
               </section>
