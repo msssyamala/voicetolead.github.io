@@ -1018,13 +1018,14 @@ body {
 }
 
 .dashboard-card {
-  max-width: 1040px;
-  width: min(100%, 1040px);
+  max-width: 1180px;
+  padding: 1.6rem;
+  width: min(100%, 1180px);
 }
 
 .dashboard-content {
   display: grid;
-  gap: 1.3rem;
+  gap: 1rem;
 }
 
 .dashboard-header,
@@ -1049,11 +1050,13 @@ body {
 }
 
 .dashboard-user {
-  background: var(--gray);
+  background: #f8fbff;
+  border: 1px solid rgba(0, 32, 91, 0.1);
   border-radius: 8px;
   display: grid;
   gap: 0.25rem;
-  padding: 1rem;
+  min-width: 0;
+  padding: 0.75rem 0.9rem;
 }
 
 .dashboard-user span {
@@ -1067,8 +1070,16 @@ body {
   overflow-wrap: anywhere;
 }
 
+.dashboard-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
 .dashboard-mode-switch {
-  background: var(--gray);
+  background: #f2f5fb;
+  border: 1px solid rgba(0, 32, 91, 0.08);
   border-radius: 999px;
   display: flex;
   gap: 0.35rem;
@@ -1085,6 +1096,7 @@ body {
 
 .dashboard-mode-switch button.is-active {
   background: var(--gold);
+  box-shadow: 0 4px 12px rgba(0, 32, 91, 0.12);
   color: #000;
 }
 
@@ -1094,23 +1106,55 @@ body {
 
 .dashboard-mode-panel {
   display: grid;
+  gap: 0.9rem;
+}
+
+.dashboard-practice-layout {
+  align-items: start;
+  display: grid;
   gap: 1rem;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+}
+
+.dashboard-side-panel {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
 }
 
 .quest-hero {
   align-items: center;
-  background: linear-gradient(135deg, rgba(255, 191, 0, 0.28), rgba(0, 32, 91, 0.08));
-  border: 1px solid rgba(255, 191, 0, 0.42);
+  background:
+    radial-gradient(circle at top right, rgba(255, 191, 0, 0.36), transparent 32%),
+    linear-gradient(135deg, #fff8df, #f4f8ff);
+  border: 1px solid rgba(255, 191, 0, 0.5);
   border-radius: 8px;
   display: grid;
-  gap: 1rem;
+  gap: 0.85rem;
   grid-template-columns: 1fr auto;
-  padding: 1.2rem;
+  overflow: hidden;
+  padding: 1rem;
+  position: relative;
+}
+
+.quest-hero::before {
+  background: var(--gold);
+  border-radius: 999px;
+  content: "";
+  height: 10px;
+  left: 1rem;
+  position: absolute;
+  top: 1rem;
+  width: 10px;
+}
+
+.quest-hero .eyebrow {
+  margin-left: 1rem;
 }
 
 .quest-hero h2 {
   color: var(--navy);
-  font-size: clamp(1.7rem, 4vw, 2.3rem);
+  font-size: clamp(1.45rem, 3vw, 2rem);
 }
 
 .quest-hero p:not(.eyebrow) {
@@ -1127,10 +1171,11 @@ body {
   color: var(--navy);
   display: flex;
   flex-direction: column;
-  height: 118px;
+  height: 104px;
   justify-content: center;
+  box-shadow: 0 10px 24px rgba(0, 32, 91, 0.12);
   text-align: center;
-  width: 118px;
+  width: 104px;
 }
 
 .quest-ring strong {
@@ -1146,14 +1191,16 @@ body {
 
 .quest-grid {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
 }
 
 .quest-card {
-  border: 1px solid rgba(0, 32, 91, 0.12);
+  background: #fff;
+  border: 1px solid rgba(0, 32, 91, 0.1);
   border-radius: 8px;
-  padding: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 32, 91, 0.06);
+  padding: 0.85rem;
 }
 
 .quest-card span {
@@ -1167,8 +1214,8 @@ body {
 .quest-card strong {
   color: var(--navy);
   display: block;
-  font-size: 1.2rem;
-  margin: 0.45rem 0;
+  font-size: 1.05rem;
+  margin: 0.3rem 0;
 }
 
 .quest-card p {
@@ -1177,15 +1224,15 @@ body {
 }
 
 .quest-goal-card {
-  background: #f8fbff;
+  background: #fbfcff;
   border-color: rgba(0, 32, 91, 0.12);
 }
 
 .quest-goal-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.7rem;
-  padding: 1.2rem 1.2rem 0;
+  gap: 0.45rem;
+  padding: 0 1rem;
 }
 
 .quest-goal-options button {
@@ -1194,7 +1241,7 @@ body {
   border-radius: 999px;
   color: var(--navy);
   font-weight: 800;
-  padding: 0.65rem 0.9rem;
+  padding: 0.52rem 0.7rem;
 }
 
 .quest-goal-options button.is-active {
@@ -1206,7 +1253,7 @@ body {
 .quest-goal-note {
   color: #444;
   line-height: 1.55;
-  padding: 0.8rem 1.2rem 1.2rem;
+  padding: 0.7rem 1rem 1rem;
 }
 
 .quest-badges {
@@ -1216,8 +1263,8 @@ body {
 .badge-shelf {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.7rem;
-  padding: 1.2rem;
+  gap: 0.55rem;
+  padding: 1rem;
 }
 
 .badge-shelf span {
@@ -1231,8 +1278,8 @@ body {
 
 .dashboard-stats {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .dashboard-stats article,
@@ -1245,7 +1292,7 @@ body {
   background: var(--navy);
   border-radius: 8px;
   color: #fff;
-  padding: 1rem;
+  padding: 0.9rem;
 }
 
 .dashboard-stats span,
@@ -1258,7 +1305,7 @@ body {
 
 .dashboard-stats strong {
   display: block;
-  font-size: 1.55rem;
+  font-size: 1.25rem;
   margin: 0.35rem 0;
 }
 
@@ -1270,7 +1317,7 @@ body {
 .dashboard-panel {
   border: 1px solid rgba(0, 32, 91, 0.12);
   border-radius: 8px;
-  padding: 1.2rem;
+  padding: 1rem;
 }
 
 .dashboard-disclosure {
@@ -1278,14 +1325,14 @@ body {
 }
 
 .onboarding-panel {
-  background: #f8fbff;
+  background: #fbfcff;
 }
 
 .onboarding-form {
   display: grid;
-  gap: 1rem;
+  gap: 0.85rem;
   grid-template-columns: repeat(2, 1fr);
-  padding: 1.2rem;
+  padding: 1rem;
 }
 
 .onboarding-form label {
@@ -1317,14 +1364,14 @@ body {
 }
 
 .dashboard-panel-heading {
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .dashboard-disclosure > .dashboard-panel-heading {
   cursor: pointer;
   list-style: none;
   margin-bottom: 0;
-  padding: 1.2rem;
+  padding: 1rem;
 }
 
 .dashboard-disclosure > .dashboard-panel-heading::-webkit-details-marker {
@@ -1357,12 +1404,12 @@ body {
 .dashboard-disclosure > .metric-grid,
 .dashboard-disclosure > .dashboard-grid,
 .dashboard-disclosure > .dashboard-history {
-  padding: 1.2rem;
+  padding: 1rem;
 }
 
 .dashboard-panel-heading h2 {
   color: var(--navy);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 
 .dashboard-panel-heading span {
@@ -1375,8 +1422,8 @@ body {
 
 .metric-grid {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
 }
 
 .metric-card {
@@ -1452,6 +1499,8 @@ body {
 
 .dashboard-coach-panel {
   background: #fbfcff;
+  position: sticky;
+  top: 1rem;
 }
 
 .dashboard-recorder {
@@ -1460,7 +1509,11 @@ body {
 }
 
 .dashboard-recorder .coach-video-frame {
-  min-height: 320px;
+  min-height: 340px;
+}
+
+.dashboard-sign-out {
+  justify-self: start;
 }
 
 .dashboard-history {
@@ -1710,6 +1763,20 @@ button:disabled,
   .coach-account-cta {
     align-items: flex-start;
     display: grid;
+  }
+  .dashboard-toolbar,
+  .dashboard-practice-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .dashboard-mode-switch {
+    width: 100%;
+  }
+  .dashboard-mode-switch button {
+    flex: 1;
+  }
+  .dashboard-coach-panel {
+    position: static;
   }
   .coach-mode-switch {
     grid-template-columns: 1fr;

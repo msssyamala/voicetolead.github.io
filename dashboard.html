@@ -38,23 +38,29 @@
         <p class="eyebrow">Your Practice Space</p>
         <div class="dashboard-header">
           <div>
-            <h1 class="section-title">VoiceToLead Dashboard</h1>
-            <p>Track your speaking growth across delivery, clarity, and confidence.</p>
+            <h1 class="section-title">Your Speaking Studio</h1>
+            <p>Practice, save feedback, and build speaking confidence one short session at a time.</p>
           </div>
         </div>
         <p class="account-status" data-dashboard-status aria-live="polite">Checking your sign-in status...</p>
 
         <div class="dashboard-content" data-dashboard-content hidden>
-          <div class="dashboard-user">
-            <span>Signed in as</span>
-            <strong data-user-email></strong>
+          <div class="dashboard-toolbar">
+            <div class="dashboard-user">
+              <span>Signed in as</span>
+              <strong data-user-email></strong>
+            </div>
+            <div class="dashboard-mode-switch" aria-label="Choose dashboard mode">
+              <button type="button" class="is-active" data-dashboard-mode-button="quest" aria-pressed="true">Voice Quest</button>
+              <button type="button" data-dashboard-mode-button="coach" aria-pressed="false">Coach Mode</button>
+            </div>
           </div>
 
-          <details class="dashboard-panel dashboard-disclosure onboarding-panel" data-onboarding-panel open>
+          <details class="dashboard-panel dashboard-disclosure onboarding-panel" data-onboarding-panel>
             <summary class="dashboard-panel-heading">
               <div>
-                <h2>Personalize Your Coaching</h2>
-                <p>Answer a few optional questions so VoiceToLead can recommend better practice goals.</p>
+                <h2>Quick Setup</h2>
+                <p>Optional questions that help VoiceToLead recommend better goals.</p>
               </div>
               <span data-profile-status>Optional</span>
             </summary>
@@ -130,239 +136,238 @@
             </form>
           </details>
 
-          <div class="dashboard-mode-switch" aria-label="Choose dashboard mode">
-            <button type="button" class="is-active" data-dashboard-mode-button="quest" aria-pressed="true">Voice Quest</button>
-            <button type="button" data-dashboard-mode-button="coach" aria-pressed="false">Coach Mode</button>
-          </div>
-
-          <section class="dashboard-mode-panel dashboard-quest-panel is-active" data-dashboard-mode-panel="quest">
-            <div class="quest-hero">
-              <div>
-                <p class="eyebrow">Default student mode</p>
-                <h2 data-quest-level>Brave Starter</h2>
-                <p data-quest-message>Start your first quest by recording a short practice. Every try counts.</p>
-              </div>
-              <div class="quest-ring" aria-label="Voice Quest progress">
-                <strong data-quest-count>0</strong>
-                <span>quests</span>
-              </div>
-            </div>
-
-            <div class="quest-grid">
-              <article class="quest-card">
-                <span>Power skill</span>
-                <strong data-quest-strength>Waiting for your first quest</strong>
-                <p>Your strongest speaking habit will show up here.</p>
-              </article>
-              <article class="quest-card">
-                <span>Next challenge</span>
-                <strong data-quest-challenge>30-second intro</strong>
-                <p data-quest-challenge-note>Tell us who you are and one thing you care about.</p>
-              </article>
-              <article class="quest-card">
-                <span>Growth badge</span>
-                <strong data-quest-badge>First Practice</strong>
-                <p>Badges celebrate effort, not perfection.</p>
-              </article>
-            </div>
-
-            <section class="dashboard-panel quest-goal-card" aria-labelledby="quest-goal-heading">
+          <div class="dashboard-practice-layout">
+            <section class="dashboard-panel dashboard-coach-panel" id="account-practice-recorder">
               <div class="dashboard-panel-heading">
                 <div>
-                  <h2 id="quest-goal-heading">Choose Your Goal</h2>
-                  <p>Pick what you want to build next. You can change this anytime.</p>
+                  <h2 data-recorder-title>Start a Voice Quest</h2>
+                  <p data-recorder-note>Record up to 1 minute. Your coach will help you find one win and one next step.</p>
                 </div>
-                <span data-quest-goal-name>Speak with confidence</span>
+                <span data-recorder-badge>Student recording</span>
               </div>
-              <div class="quest-goal-options" role="group" aria-label="Choose your speaking goal">
-                <button type="button" class="is-active" data-quest-goal="confidence" aria-pressed="true">Speak with confidence</button>
-                <button type="button" data-quest-goal="interviews" aria-pressed="false">Get ready for interviews</button>
-                <button type="button" data-quest-goal="speech_debate" aria-pressed="false">Prepare for speech/debate</button>
-                <button type="button" data-quest-goal="stories" aria-pressed="false">Tell better stories</button>
-                <button type="button" data-quest-goal="fillers" aria-pressed="false">Reduce filler words</button>
+
+              <div class="coach-recorder is-feedback dashboard-recorder" data-max-seconds="60" data-drill-set="quest" data-upload-url="https://speech-coach-api.voicetolead.workers.dev/speech-submissions" data-require-auth="true">
+                <div class="coach-video-frame">
+                  <video class="coach-preview" playsinline muted></video>
+                  <video class="coach-playback" controls playsinline hidden></video>
+                  <div class="coach-live-panel" hidden aria-live="polite">
+                    <div class="coach-live-cue">
+                      <span class="coach-cue-emoji" aria-hidden="true">✨</span>
+                      <span class="coach-cue-word" aria-hidden="true">Ready</span>
+                      <strong class="coach-cue-status">Start recording when you are ready.</strong>
+                    </div>
+                  </div>
+                  <div class="coach-placeholder">
+                    <strong>Camera preview will appear here</strong>
+                    <span>Allow camera and microphone access when prompted.</span>
+                  </div>
+                </div>
+
+                <div class="coach-controls">
+                  <p class="coach-mode-note" data-recorder-mode-note>Pick a challenge, record your practice, then submit it for saved AI feedback.</p>
+                  <div class="coach-drills">
+                    <label>
+                      <span>Guided drill</span>
+                      <select class="coach-drill-select">
+                        <option value="open">Open practice</option>
+                        <option value="intro">30-second introduction</option>
+                        <option value="elevator">Elevator pitch</option>
+                        <option value="story">Storytelling practice</option>
+                        <option value="interview">Tell me about yourself</option>
+                        <option value="debate">Debate opening</option>
+                      </select>
+                    </label>
+                    <div class="coach-drill-card">
+                      <strong class="coach-drill-title">Open practice</strong>
+                      <p class="coach-drill-prompt">Practice any speech, answer, or idea. Focus on speaking clearly and finishing strong.</p>
+                      <span class="coach-drill-focus">Focus: steady delivery</span>
+                    </div>
+                  </div>
+                  <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
+                  <div class="coach-actions">
+                    <button type="button" class="btn-primary coach-start">Start Recording</button>
+                    <button type="button" class="btn-secondary coach-stop" disabled>Stop</button>
+                    <button type="button" class="btn-secondary coach-reset" disabled>Record Again</button>
+                  </div>
+                  <form class="coach-submit-form" id="dashboard-coach-submit-form" hidden>
+                    <label class="coach-consent">
+                      <input type="checkbox" name="consent" required />
+                      <span>I understand that this video and audio will be uploaded and processed to generate AI speech feedback for my account. <a href="privacy.html">Privacy details</a></span>
+                    </label>
+                  </form>
+                  <div class="coach-result-actions" hidden>
+                    <button type="submit" form="dashboard-coach-submit-form" class="btn-primary coach-submit">Submit for Feedback</button>
+                    <a class="coach-download" hidden>Download recording</a>
+                  </div>
+                  <p class="coach-status" aria-live="polite"></p>
+                  <div class="coach-celebration" hidden aria-live="polite">
+                    <strong data-celebration-title>Nice work showing up.</strong>
+                    <p data-celebration-message>You just built your speaking muscle. Your coach notes are being prepared.</p>
+                  </div>
+                  <div class="coach-practice-summary" hidden aria-live="polite">
+                    <strong>Practice summary</strong>
+                    <div class="coach-summary-grid">
+                      <span><b data-summary="time">00:00</b> practiced</span>
+                      <span><b data-summary="steady">0</b> steady moments</span>
+                      <span><b data-summary="filler">0</b> filler cues</span>
+                      <span><b data-summary="eye">0</b> eye-contact reminders</span>
+                    </div>
+                    <p data-summary="focus">Next focus: keep practicing your delivery.</p>
+                  </div>
+                </div>
               </div>
-              <p class="quest-goal-note" data-quest-goal-note>Start with a short introduction and practice sounding steady from the first sentence.</p>
             </section>
 
-            <details class="dashboard-panel dashboard-disclosure quest-badges">
-              <summary class="dashboard-panel-heading">
-                <div>
-                  <h2>Badge Shelf</h2>
-                  <p>Small wins that make practice feel rewarding.</p>
+            <aside class="dashboard-side-panel" aria-label="Progress and coaching details">
+              <section class="dashboard-mode-panel dashboard-quest-panel is-active" data-dashboard-mode-panel="quest">
+                <div class="quest-hero">
+                  <div>
+                    <p class="eyebrow">Student quest</p>
+                    <h2 data-quest-level>Brave Starter</h2>
+                    <p data-quest-message>Start your first quest by recording a short practice. Every try counts.</p>
+                  </div>
+                  <div class="quest-ring" aria-label="Voice Quest progress">
+                    <strong data-quest-count>0</strong>
+                    <span>quests</span>
+                  </div>
                 </div>
-                <span data-quest-badge-count>0 earned</span>
-              </summary>
-              <div class="badge-shelf" data-badge-shelf>
-                <span>First Practice</span>
-                <span>Clear Voice</span>
-                <span>Strong Finish</span>
-              </div>
-            </details>
-          </section>
 
-          <section class="dashboard-mode-panel dashboard-coach-mode" data-dashboard-mode-panel="coach" hidden>
-            <div class="dashboard-stats" aria-label="Practice snapshot">
-              <article>
-                <span>Practice sessions</span>
-                <strong data-dashboard-stat="sessions">0</strong>
-                <p data-dashboard-stat-note="sessions">Saved sessions will appear here.</p>
-              </article>
-              <article>
-                <span>Current focus</span>
-                <strong data-dashboard-stat="focus">Baseline</strong>
-                <p data-dashboard-stat-note="focus">Record your first saved practice to unlock a personal focus area.</p>
-              </article>
-              <article>
-                <span>Mentor readiness</span>
-                <strong data-dashboard-stat="mentor">Soon</strong>
-                <p data-dashboard-stat-note="mentor">Mentor requests can use this history once coaching is enabled.</p>
-              </article>
-              <article>
-                <span>Strengths</span>
-                <strong data-dashboard-stat="strength">Not yet</strong>
-                <p data-dashboard-stat-note="strength">Your strongest speaking habit will appear after feedback is ready.</p>
-              </article>
-              <article>
-                <span>Growth area</span>
-                <strong data-dashboard-stat="growth">Not yet</strong>
-                <p data-dashboard-stat-note="growth">Your next improvement focus will appear after feedback is ready.</p>
-              </article>
-            </div>
+                <div class="quest-grid">
+                  <article class="quest-card">
+                    <span>Power skill</span>
+                    <strong data-quest-strength>Waiting for your first quest</strong>
+                    <p>Your strongest speaking habit will show up here.</p>
+                  </article>
+                  <article class="quest-card">
+                    <span>Next mission</span>
+                    <strong data-quest-challenge>30-second intro</strong>
+                    <p data-quest-challenge-note>Tell us who you are and one thing you care about.</p>
+                  </article>
+                  <article class="quest-card">
+                    <span>Latest badge</span>
+                    <strong data-quest-badge>First Practice</strong>
+                    <p>Badges celebrate effort, not perfection.</p>
+                  </article>
+                </div>
 
-            <details class="dashboard-panel dashboard-disclosure">
-              <summary class="dashboard-panel-heading">
-                <div>
-                  <h2>Core Coaching Metrics</h2>
-                  <p>These are the areas your account will track over time.</p>
-                </div>
-                <span>Scores unlock after saved feedback</span>
-              </summary>
+                <section class="dashboard-panel quest-goal-card" aria-labelledby="quest-goal-heading">
+                  <div class="dashboard-panel-heading">
+                    <div>
+                      <h2 id="quest-goal-heading">Choose Your Goal</h2>
+                      <p>Pick one focus for today. You can change it anytime.</p>
+                    </div>
+                    <span data-quest-goal-name>Speak with confidence</span>
+                  </div>
+                  <div class="quest-goal-options" role="group" aria-label="Choose your speaking goal">
+                    <button type="button" class="is-active" data-quest-goal="confidence" aria-pressed="true">Confidence</button>
+                    <button type="button" data-quest-goal="interviews" aria-pressed="false">Interviews</button>
+                    <button type="button" data-quest-goal="speech_debate" aria-pressed="false">Speech/debate</button>
+                    <button type="button" data-quest-goal="stories" aria-pressed="false">Stories</button>
+                    <button type="button" data-quest-goal="fillers" aria-pressed="false">Fewer fillers</button>
+                  </div>
+                  <p class="quest-goal-note" data-quest-goal-note>Start with a short introduction and practice sounding steady from the first sentence.</p>
+                </section>
 
-              <div class="metric-grid" data-dashboard-metrics>
-                <article class="metric-card" data-metric-card="pacing">
-                  <div class="metric-topline">
-                    <h3>Pacing</h3>
-                    <strong data-metric-score>--</strong>
+                <details class="dashboard-panel dashboard-disclosure quest-badges">
+                  <summary class="dashboard-panel-heading">
+                    <div>
+                      <h2>Badge Shelf</h2>
+                      <p>Small wins that make practice feel rewarding.</p>
+                    </div>
+                    <span data-quest-badge-count>0 earned</span>
+                  </summary>
+                  <div class="badge-shelf" data-badge-shelf>
+                    <span>First Practice</span>
+                    <span>Clear Voice</span>
+                    <span>Strong Finish</span>
                   </div>
-                  <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
-                  <p data-metric-note>Steady speed, useful pauses, and endings that do not feel rushed.</p>
-                </article>
-                <article class="metric-card" data-metric-card="conciseness">
-                  <div class="metric-topline">
-                    <h3>Conciseness</h3>
-                    <strong data-metric-score>--</strong>
-                  </div>
-                  <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
-                  <p data-metric-note>Clear answers that avoid rambling, repetition, and extra filler ideas.</p>
-                </article>
-                <article class="metric-card" data-metric-card="eye_contact">
-                  <div class="metric-topline">
-                    <h3>Eye Contact</h3>
-                    <strong data-metric-score>--</strong>
-                  </div>
-                  <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
-                  <p data-metric-note>Camera/audience connection, fewer downward glances, and engaged presence.</p>
-                </article>
-                <article class="metric-card" data-metric-card="demeanor">
-                  <div class="metric-topline">
-                    <h3>Demeanor</h3>
-                    <strong data-metric-score>--</strong>
-                  </div>
-                  <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
-                  <p data-metric-note>Confidence, calmness, facial expression, energy, and professional presence.</p>
-                </article>
-                <article class="metric-card" data-metric-card="tone">
-                  <div class="metric-topline">
-                    <h3>Tone</h3>
-                    <strong data-metric-score>--</strong>
-                  </div>
-                  <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
-                  <p data-metric-note>Whether your voice sounds confident, friendly, persuasive, and appropriate for the drill.</p>
-                </article>
-              </div>
-            </details>
-          </section>
+                </details>
+              </section>
 
-          <section class="dashboard-panel dashboard-coach-panel" id="account-practice-recorder">
-            <div class="dashboard-panel-heading">
-              <div>
-                <h2 data-recorder-title>Start a Voice Quest</h2>
-                <p data-recorder-note>Record up to 1 minute. Your coach will help you find one win and one next step.</p>
-              </div>
-              <span data-recorder-badge>Student recording</span>
-            </div>
+              <section class="dashboard-mode-panel dashboard-coach-mode" data-dashboard-mode-panel="coach" hidden>
+                <div class="dashboard-stats" aria-label="Practice snapshot">
+                  <article>
+                    <span>Practice sessions</span>
+                    <strong data-dashboard-stat="sessions">0</strong>
+                    <p data-dashboard-stat-note="sessions">Saved sessions will appear here.</p>
+                  </article>
+                  <article>
+                    <span>Current focus</span>
+                    <strong data-dashboard-stat="focus">Baseline</strong>
+                    <p data-dashboard-stat-note="focus">Record your first saved practice to unlock a personal focus area.</p>
+                  </article>
+                  <article>
+                    <span>Mentor readiness</span>
+                    <strong data-dashboard-stat="mentor">Soon</strong>
+                    <p data-dashboard-stat-note="mentor">Mentor requests can use this history once coaching is enabled.</p>
+                  </article>
+                  <article>
+                    <span>Strengths</span>
+                    <strong data-dashboard-stat="strength">Not yet</strong>
+                    <p data-dashboard-stat-note="strength">Your strongest speaking habit will appear after feedback is ready.</p>
+                  </article>
+                  <article>
+                    <span>Growth area</span>
+                    <strong data-dashboard-stat="growth">Not yet</strong>
+                    <p data-dashboard-stat-note="growth">Your next improvement focus will appear after feedback is ready.</p>
+                  </article>
+                </div>
 
-            <div class="coach-recorder is-feedback dashboard-recorder" data-max-seconds="60" data-drill-set="quest" data-upload-url="https://speech-coach-api.voicetolead.workers.dev/speech-submissions" data-require-auth="true">
-              <div class="coach-video-frame">
-                <video class="coach-preview" playsinline muted></video>
-                <video class="coach-playback" controls playsinline hidden></video>
-                <div class="coach-live-panel" hidden aria-live="polite">
-                  <div class="coach-live-cue">
-                    <span class="coach-cue-emoji" aria-hidden="true">✨</span>
-                    <span class="coach-cue-word" aria-hidden="true">Ready</span>
-                    <strong class="coach-cue-status">Start recording when you are ready.</strong>
-                  </div>
-                </div>
-                <div class="coach-placeholder">
-                  <strong>Camera preview will appear here</strong>
-                  <span>Allow camera and microphone access when prompted.</span>
-                </div>
-              </div>
+                <details class="dashboard-panel dashboard-disclosure">
+                  <summary class="dashboard-panel-heading">
+                    <div>
+                      <h2>Core Coaching Metrics</h2>
+                      <p>These are the areas your account will track over time.</p>
+                    </div>
+                    <span>Scores unlock after saved feedback</span>
+                  </summary>
 
-              <div class="coach-controls">
-                <p class="coach-mode-note" data-recorder-mode-note>Pick a challenge, record your practice, then submit it for saved AI feedback.</p>
-                <div class="coach-drills">
-                  <label>
-                    <span>Guided drill</span>
-                    <select class="coach-drill-select">
-                      <option value="open">Open practice</option>
-                      <option value="intro">30-second introduction</option>
-                      <option value="elevator">Elevator pitch</option>
-                      <option value="story">Storytelling practice</option>
-                      <option value="interview">Tell me about yourself</option>
-                      <option value="debate">Debate opening</option>
-                    </select>
-                  </label>
-                  <div class="coach-drill-card">
-                    <strong class="coach-drill-title">Open practice</strong>
-                    <p class="coach-drill-prompt">Practice any speech, answer, or idea. Focus on speaking clearly and finishing strong.</p>
-                    <span class="coach-drill-focus">Focus: steady delivery</span>
+                  <div class="metric-grid" data-dashboard-metrics>
+                    <article class="metric-card" data-metric-card="pacing">
+                      <div class="metric-topline">
+                        <h3>Pacing</h3>
+                        <strong data-metric-score>--</strong>
+                      </div>
+                      <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                      <p data-metric-note>Steady speed, useful pauses, and endings that do not feel rushed.</p>
+                    </article>
+                    <article class="metric-card" data-metric-card="conciseness">
+                      <div class="metric-topline">
+                        <h3>Conciseness</h3>
+                        <strong data-metric-score>--</strong>
+                      </div>
+                      <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                      <p data-metric-note>Clear answers that avoid rambling, repetition, and extra filler ideas.</p>
+                    </article>
+                    <article class="metric-card" data-metric-card="eye_contact">
+                      <div class="metric-topline">
+                        <h3>Eye Contact</h3>
+                        <strong data-metric-score>--</strong>
+                      </div>
+                      <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                      <p data-metric-note>Camera/audience connection, fewer downward glances, and engaged presence.</p>
+                    </article>
+                    <article class="metric-card" data-metric-card="demeanor">
+                      <div class="metric-topline">
+                        <h3>Demeanor</h3>
+                        <strong data-metric-score>--</strong>
+                      </div>
+                      <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                      <p data-metric-note>Confidence, calmness, facial expression, energy, and professional presence.</p>
+                    </article>
+                    <article class="metric-card" data-metric-card="tone">
+                      <div class="metric-topline">
+                        <h3>Tone</h3>
+                        <strong data-metric-score>--</strong>
+                      </div>
+                      <div class="metric-bar" aria-hidden="true"><span data-metric-bar style="width: 0%;"></span></div>
+                      <p data-metric-note>Whether your voice sounds confident, friendly, persuasive, and appropriate for the drill.</p>
+                    </article>
                   </div>
-                </div>
-                <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
-                <div class="coach-actions">
-                  <button type="button" class="btn-primary coach-start">Start Recording</button>
-                  <button type="button" class="btn-secondary coach-stop" disabled>Stop</button>
-                  <button type="button" class="btn-secondary coach-reset" disabled>Record Again</button>
-                </div>
-                <form class="coach-submit-form" id="dashboard-coach-submit-form" hidden>
-                  <label class="coach-consent">
-                    <input type="checkbox" name="consent" required />
-                    <span>I understand that this video and audio will be uploaded and processed to generate AI speech feedback for my account. <a href="privacy.html">Privacy details</a></span>
-                  </label>
-                </form>
-                <div class="coach-result-actions" hidden>
-                  <button type="submit" form="dashboard-coach-submit-form" class="btn-primary coach-submit">Submit for Feedback</button>
-                  <a class="coach-download" hidden>Download recording</a>
-                </div>
-                <p class="coach-status" aria-live="polite"></p>
-                <div class="coach-celebration" hidden aria-live="polite">
-                  <strong data-celebration-title>Nice work showing up.</strong>
-                  <p data-celebration-message>You just built your speaking muscle. Your coach notes are being prepared.</p>
-                </div>
-                <div class="coach-practice-summary" hidden aria-live="polite">
-                  <strong>Practice summary</strong>
-                  <div class="coach-summary-grid">
-                    <span><b data-summary="time">00:00</b> practiced</span>
-                    <span><b data-summary="steady">0</b> steady moments</span>
-                    <span><b data-summary="filler">0</b> filler cues</span>
-                    <span><b data-summary="eye">0</b> eye-contact reminders</span>
-                  </div>
-                  <p data-summary="focus">Next focus: keep practicing your delivery.</p>
-                </div>
-              </div>
-            </div>
-          </section>
+                </details>
+              </section>
+            </aside>
+          </div>
 
           <details class="dashboard-panel dashboard-disclosure">
             <summary class="dashboard-panel-heading">
@@ -402,7 +407,7 @@
             </div>
           </details>
 
-          <button type="button" class="btn-secondary" data-sign-out>Sign out</button>
+          <button type="button" class="btn-secondary dashboard-sign-out" data-sign-out>Sign out</button>
         </div>
       </div>
     </section>
