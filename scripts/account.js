@@ -192,7 +192,10 @@ const setDashboardMode = (mode) => {
   setText(recorderNote, isCoachMode
     ? 'Record up to 1 minute. This version saves feedback to your signed-in account.'
     : 'Pick a mission. Record up to 1 minute. Submit for coach notes.');
-  setText(recorderBadge, isCoachMode ? 'Account-aware recording' : 'Student recording');
+  setText(recorderBadge, isCoachMode ? '' : 'Student recording');
+  if (recorderBadge) {
+    recorderBadge.hidden = isCoachMode;
+  }
   setText(recorderModeNote, isCoachMode
     ? 'Record up to 1 minute, then submit for saved AI feedback.'
     : 'Choose a drill, record, then submit.');
