@@ -1018,6 +1018,10 @@ body {
 }
 
 .dashboard-card {
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, rgba(255, 191, 0, 0.55), rgba(0, 32, 91, 0.18)) border-box;
+  border: 1px solid transparent;
   max-width: 1180px;
   padding: 1.6rem;
   width: min(100%, 1180px);
@@ -1109,6 +1113,106 @@ body {
   gap: 0.9rem;
 }
 
+.quest-board,
+.coach-board {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: 1.35fr 1fr 0.72fr 1fr 1fr;
+}
+
+.coach-board {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.studio-tile {
+  background: #fff;
+  border: 1px solid rgba(0, 32, 91, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0, 32, 91, 0.07);
+  display: grid;
+  gap: 0.35rem;
+  min-height: 126px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 1rem;
+  position: relative;
+}
+
+.studio-tile::before {
+  background: var(--gold);
+  border-radius: 999px;
+  content: "";
+  height: 9px;
+  position: absolute;
+  right: 0.9rem;
+  top: 0.9rem;
+  width: 9px;
+}
+
+.studio-tile span {
+  color: #596376;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.studio-tile strong {
+  color: var(--navy);
+  display: block;
+  font-size: clamp(1.2rem, 2.4vw, 1.75rem);
+  line-height: 1.08;
+  padding-right: 0.6rem;
+}
+
+.studio-tile p {
+  color: #4a4f5c;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.mission-tile {
+  background:
+    radial-gradient(circle at top right, rgba(255, 191, 0, 0.3), transparent 34%),
+    linear-gradient(135deg, #fff8df, #f6f9ff);
+  border-color: rgba(255, 191, 0, 0.5);
+}
+
+.mission-tile strong {
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
+.level-tile {
+  background: #f8fbff;
+}
+
+.count-tile {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+  place-content: center;
+  text-align: center;
+}
+
+.count-tile::before {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.count-tile span,
+.count-tile strong,
+.count-tile p {
+  color: #fff;
+}
+
+.count-tile strong {
+  font-size: 3rem;
+  padding-right: 0;
+}
+
+.badge-tile {
+  background: #fffdf4;
+}
+
 .dashboard-practice-layout {
   align-items: start;
   display: grid;
@@ -1135,6 +1239,11 @@ body {
   overflow: hidden;
   padding: 1rem;
   position: relative;
+}
+
+.dashboard-quest-panel .quest-hero,
+.dashboard-quest-panel .quest-grid {
+  display: none;
 }
 
 .quest-hero::before {
@@ -1228,20 +1337,31 @@ body {
   border-color: rgba(0, 32, 91, 0.12);
 }
 
+.quest-goal-card .dashboard-panel-heading {
+  align-items: center;
+  margin-bottom: 0.7rem;
+}
+
+.quest-goal-card .dashboard-panel-heading p {
+  display: none;
+}
+
 .quest-goal-options {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 0.45rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   padding: 0 1rem;
 }
 
 .quest-goal-options button {
   background: #fff;
   border: 1px solid rgba(0, 32, 91, 0.15);
-  border-radius: 999px;
+  border-radius: 8px;
   color: var(--navy);
   font-weight: 800;
+  min-height: 48px;
   padding: 0.52rem 0.7rem;
+  text-align: left;
 }
 
 .quest-goal-options button.is-active {
@@ -1251,8 +1371,11 @@ body {
 }
 
 .quest-goal-note {
+  background: #fff;
+  border-left: 4px solid var(--gold);
   color: #444;
-  line-height: 1.55;
+  line-height: 1.45;
+  margin: 0.8rem 1rem 1rem;
   padding: 0.7rem 1rem 1rem;
 }
 
@@ -1280,6 +1403,10 @@ body {
   display: grid;
   gap: 0.75rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.coach-side-stats {
+  display: none;
 }
 
 .dashboard-stats article,
@@ -1498,7 +1625,10 @@ body {
 }
 
 .dashboard-coach-panel {
-  background: #fbfcff;
+  background:
+    linear-gradient(#fbfcff, #fbfcff) padding-box,
+    linear-gradient(135deg, rgba(0, 32, 91, 0.18), rgba(255, 191, 0, 0.36)) border-box;
+  border: 1px solid transparent;
   position: sticky;
   top: 1rem;
 }
@@ -1769,6 +1899,20 @@ button:disabled,
     display: grid;
     grid-template-columns: 1fr;
   }
+  .quest-board,
+  .coach-board {
+    grid-template-columns: 1fr;
+  }
+  .studio-tile {
+    min-height: auto;
+  }
+  .count-tile {
+    place-content: start;
+    text-align: left;
+  }
+  .count-tile strong {
+    font-size: 2.4rem;
+  }
   .dashboard-mode-switch {
     width: 100%;
   }
@@ -1777,6 +1921,9 @@ button:disabled,
   }
   .dashboard-coach-panel {
     position: static;
+  }
+  .quest-goal-options {
+    grid-template-columns: 1fr;
   }
   .coach-mode-switch {
     grid-template-columns: 1fr;

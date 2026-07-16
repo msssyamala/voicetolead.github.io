@@ -82,6 +82,12 @@ const setText = (element, message) => {
   }
 };
 
+const setTextAll = (selector, message) => {
+  document.querySelectorAll(selector).forEach((element) => {
+    element.textContent = message;
+  });
+};
+
 const escapeHtml = (value) => String(value || '')
   .replace(/&/g, '&amp;')
   .replace(/</g, '&lt;')
@@ -114,8 +120,8 @@ const getMetric = (feedback, key) => feedback && feedback.coaching_metrics
   : null;
 
 const setStat = (key, value, note) => {
-  setText(document.querySelector(`[data-dashboard-stat="${key}"]`), value);
-  setText(document.querySelector(`[data-dashboard-stat-note="${key}"]`), note);
+  setTextAll(`[data-dashboard-stat="${key}"]`, value);
+  setTextAll(`[data-dashboard-stat-note="${key}"]`, note);
 };
 
 const setMetricCard = (key, metric) => {
@@ -185,11 +191,11 @@ const setDashboardMode = (mode) => {
   setText(recorderTitle, isCoachMode ? 'Record Account Practice' : 'Start a Voice Quest');
   setText(recorderNote, isCoachMode
     ? 'Record up to 1 minute. This version saves feedback to your signed-in account.'
-    : 'Record up to 1 minute. Your coach will help you find one win and one next step.');
+    : 'Pick a mission. Record up to 1 minute. Submit for coach notes.');
   setText(recorderBadge, isCoachMode ? 'Account-aware recording' : 'Student recording');
   setText(recorderModeNote, isCoachMode
     ? 'Record up to 1 minute, then submit for saved AI feedback.'
-    : 'Pick a challenge, record your practice, then submit it for saved AI feedback.');
+    : 'Choose a drill, record, then submit.');
 
   document.dispatchEvent(new CustomEvent('voicetolead:dashboard-mode-change', {
     detail: { mode: nextMode },
@@ -227,16 +233,16 @@ const updateQuestMode = (submissions, latestFeedback) => {
     earnedBadges.push('Practice Streak');
   }
 
-  setText(document.querySelector('[data-quest-level]'), level);
-  setText(document.querySelector('[data-quest-message]'), readyCount > 0
+  setTextAll('[data-quest-level]', level);
+  setTextAll('[data-quest-message]', readyCount > 0
     ? `You have completed ${readyCount} quest${readyCount === 1 ? '' : 's'}. Keep building your voice.`
-    : 'Start your first quest by recording a short practice. Every try counts.');
-  setText(document.querySelector('[data-quest-count]'), String(readyCount));
-  setText(document.querySelector('[data-quest-strength]'), firstStrength);
-  setText(document.querySelector('[data-quest-challenge]'), latestFeedback ? 'Your next quest' : goal.challenge);
-  setText(document.querySelector('[data-quest-challenge-note]'), latestFeedback ? firstNextStep : goal.note);
-  setText(document.querySelector('[data-quest-badge]'), earnedBadges[earnedBadges.length - 1]);
-  setText(document.querySelector('[data-quest-badge-count]'), `${earnedBadges.length} earned`);
+    : 'Start your first quest. Every try counts.');
+  setTextAll('[data-quest-count]', String(readyCount));
+  setTextAll('[data-quest-strength]', firstStrength);
+  setTextAll('[data-quest-challenge]', latestFeedback ? 'Your next quest' : goal.challenge);
+  setTextAll('[data-quest-challenge-note]', latestFeedback ? firstNextStep : goal.note);
+  setTextAll('[data-quest-badge]', earnedBadges[earnedBadges.length - 1]);
+  setTextAll('[data-quest-badge-count]', `${earnedBadges.length} earned`);
 
   const badgeShelf = document.querySelector('[data-badge-shelf]');
 
