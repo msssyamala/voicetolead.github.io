@@ -1,6 +1,8 @@
 const TRANSCRIPTION_MODEL = "gpt-4o-mini-transcribe";
 const FEEDBACK_MODEL = "gpt-4o-mini";
 const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
+const GUEST_ACCESS_DAYS = 30;
+const CONSENT_VERSION = "2026-09-08";
 const ALLOWED_VIDEO_TYPES = [
   "video/webm",
   "video/mp4",
@@ -171,7 +173,7 @@ export default {
       const readMatch = url.pathname.match(/^\/speech-submissions\/([a-f0-9-]+)$/);
 
       if (readMatch) {
-        return readSubmission(readMatch[1], env, corsHeaders);
+        return readSubmission(readMatch[1], request, env, corsHeaders);
       }
 
       return json({ error: "Not found" }, 404, corsHeaders);
@@ -189,23 +191,11 @@ export default {
       return saveAccountProfile(request, env, corsHeaders);
     }
 
-    const transcribeMatch = url.pathname.match(
-      /^\/speech-submissions\/([a-f0-9-]+)\/transcribe$/
-    );
-
-    if (transcribeMatch) {
-      return transcribeSubmission(transcribeMatch[1], env, corsHeaders);
-    }
-
-    const feedbackMatch = url.pathname.match(
-      /^\/speech-submissions\/([a-f0-9-]+)\/speech-feedback$/
-    );
-
-    if (feedbackMatch) {
-      return generateSpeechFeedback(feedbackMatch[1], env, corsHeaders);
-    }
-
     return json({ error: "Not found" }, 404, corsHeaders);
+  },
+
+  async scheduled(_controller, env, ctx) {
+    ctx.waitUntil(deleteExpiredGuestSubmissions(env));
   },
 };
 
@@ -245,7 +235,14 @@ async function saveAccountProfile(request, env, corsHeaders) {
   const profile = {
     user_id: authenticatedUser.id,
     user_role: getAllowedValue(body.user_role, ["student", "parent", "adult_learner", "mentor_teacher"]),
-    age_range: getAllowedValue(body.age_range, ["under_10", "10_13", "14_18", "adult"]),
+    age_range: getAllowedValue(body.age_range, [
+      "under_13",
+      "13_17",
+      "adult",
+      "under_10",
+      "10_13",
+      "14_18",
+    ]),
     main_goal: getAllowedValue(body.main_goal, ["confidence", "fillers", "speech_debate", "interviews", "presentations", "stories"]),
     experience_level: getAllowedValue(body.experience_level, ["new", "some_practice", "speech_debate", "advanced"]),
     hardest_part: getAllowedValue(body.hardest_part, ["starting", "organizing", "clarity", "eye_contact", "nervousness", "ending"]),
@@ -297,7 +294,19 @@ async function readAccountSubmissions(request, env, corsHeaders) {
   return json({ ok: true, submissions }, 200, corsHeaders);
 }
 
+function normalizeEmail(value) {
+  const email = String(value || "").trim().toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
+}
+
+function cleanShortText(value, maxLength) {
+  const text = String(value || "").trim();
+  return text ? text.slice(0, maxLength) : "";
+}
+
 async function createSubmission(request, env, corsHeaders, ctx) {
+  let uploadedVideoPath = null;
+
   try {
     const contentLength = Number(request.headers.get("Content-Length") || 0);
 
@@ -309,6 +318,8 @@ async function createSubmission(request, env, corsHeaders, ctx) {
     const video = formData.get("video");
     const studentName = formData.get("student_name") || null;
     const studentEmail = formData.get("student_email") || null;
+    const ageRange = getAllowedValue(formData.get("age_range"), ["13_17", "18_plus"]);
+    const consentAccepted = formData.get("consent") === "accepted";
     const drill = getGuidedDrill(formData.get("drill_type"));
     const dashboardMode = getAllowedValue(formData.get("dashboard_mode"), ["quest", "coach"]);
     const questGoal = dashboardMode === "quest"
@@ -323,6 +334,17 @@ async function createSubmission(request, env, corsHeaders, ctx) {
     const turnstileToken = formData.get("turnstile_token");
     const hasAuthorizationHeader = Boolean(request.headers.get("Authorization"));
     const authenticatedUser = await getAuthenticatedUser(request, env);
+    if (!ageRange) {
+      return json({
+        error: "The AI Speech Coach is currently available only to speakers age 13 or older.",
+      }, 400, corsHeaders);
+    }
+
+    if (!consentAccepted) {
+      return json({
+        error: "Please review and accept the recording and AI-processing notice.",
+      }, 400, corsHeaders);
+    }
 
     if (hasAuthorizationHeader && !authenticatedUser) {
       return json({
@@ -356,6 +378,14 @@ async function createSubmission(request, env, corsHeaders, ctx) {
 
     const submissionId = crypto.randomUUID();
     const videoPath = `submissions/${submissionId}/speech.${videoMetadata.extension}`;
+    uploadedVideoPath = videoPath;
+    const guestAccessToken = authenticatedUser ? null : createAccessToken();
+    const guestAccessTokenHash = guestAccessToken
+      ? await hashAccessToken(guestAccessToken)
+      : null;
+    const guestAccessExpiresAt = guestAccessToken
+      ? new Date(Date.now() + GUEST_ACCESS_DAYS * 24 * 60 * 60 * 1000).toISOString()
+      : null;
 
     await env.SPEECH_VIDEOS.put(videoPath, video.stream(), {
       httpMetadata: {
@@ -370,6 +400,11 @@ async function createSubmission(request, env, corsHeaders, ctx) {
       video_path: videoPath,
       video_mime_type: videoMetadata.contentType,
       video_size_bytes: video.size || null,
+      age_range: ageRange,
+      consent_version: CONSENT_VERSION,
+      consented_at: new Date().toISOString(),
+      guest_access_token_hash: guestAccessTokenHash,
+      guest_access_expires_at: guestAccessExpiresAt,
       dashboard_mode: dashboardMode,
       quest_goal: questGoal,
       drill_type: drill.type,
@@ -392,6 +427,8 @@ async function createSubmission(request, env, corsHeaders, ctx) {
 
     if (!supabaseResponse.ok) {
       const details = await supabaseResponse.text();
+      await env.SPEECH_VIDEOS.delete(videoPath).catch(() => null);
+      uploadedVideoPath = null;
       return json({ error: "Supabase insert failed", details }, 500, corsHeaders);
     }
 
@@ -404,9 +441,19 @@ async function createSubmission(request, env, corsHeaders, ctx) {
 
     return json({
       ok: true,
-      submission,
+      submission: {
+        id: submission.id,
+        status: submission.status,
+        created_at: submission.created_at,
+      },
+      guest_access_token: guestAccessToken,
+      guest_access_expires_at: guestAccessExpiresAt,
     }, 200, corsHeaders);
   } catch (error) {
+    if (uploadedVideoPath) {
+      await env.SPEECH_VIDEOS.delete(uploadedVideoPath).catch(() => null);
+    }
+
     return json({
       error: "Upload failed",
       details: error.message,
@@ -456,6 +503,64 @@ function getGuidedDrill(value) {
 
 function getAllowedValue(value, allowedValues) {
   return typeof value === "string" && allowedValues.includes(value) ? value : null;
+}
+
+function createAccessToken() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+async function hashAccessToken(token) {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(token)
+  );
+
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function verifyAccessTokenHash(token, expectedHash) {
+  if (!token || !expectedHash) {
+    return false;
+  }
+
+  const tokenHash = await hashAccessToken(token);
+  return constantTimeEqual(tokenHash, expectedHash);
+}
+
+async function verifyGuestAccessToken(submission, token) {
+  if (!token || !submission.guest_access_token_hash || !submission.guest_access_expires_at) {
+    return false;
+  }
+
+  const expiresAt = Date.parse(submission.guest_access_expires_at);
+
+  if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+    return false;
+  }
+
+  return verifyAccessTokenHash(token, submission.guest_access_token_hash);
+}
+
+function constantTimeEqual(left, right) {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  let difference = 0;
+
+  for (let index = 0; index < left.length; index += 1) {
+    difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+
+  return difference === 0;
 }
 
 async function detectVideoType(video) {
@@ -531,7 +636,40 @@ async function processSubmission(submissionId, env) {
   await generateSpeechFeedback(submissionId, env, {});
 }
 
-async function readSubmission(submissionId, env, corsHeaders) {
+async function deleteExpiredGuestSubmissions(env) {
+  const now = new Date().toISOString();
+  const query = [
+    "owner_user_id=is.null",
+    `guest_access_expires_at=lt.${encodeURIComponent(now)}`,
+    "select=id,video_path",
+    "limit=100",
+  ].join("&");
+  const response = await supabaseFetch(env, `/speech_submissions?${query}`);
+
+  if (!response.ok) {
+    throw new Error("Could not find expired guest submissions.");
+  }
+
+  const submissions = await response.json();
+
+  for (const submission of submissions) {
+    if (submission.video_path) {
+      await env.SPEECH_VIDEOS.delete(submission.video_path);
+    }
+
+    const deleteResponse = await supabaseFetch(
+      env,
+      `/speech_submissions?id=eq.${encodeURIComponent(submission.id)}`,
+      { method: "DELETE" }
+    );
+
+    if (!deleteResponse.ok) {
+      throw new Error("Could not delete an expired guest submission.");
+    }
+  }
+}
+
+async function readSubmission(submissionId, request, env, corsHeaders) {
   try {
     const lookupResponse = await getSubmission(env, submissionId);
 
@@ -545,6 +683,20 @@ async function readSubmission(submissionId, env, corsHeaders) {
 
     if (!submission) {
       return json({ error: "Submission not found" }, 404, corsHeaders);
+    }
+
+    const authenticatedUser = await getAuthenticatedUser(request, env);
+    const isOwner = Boolean(
+      authenticatedUser &&
+      authenticatedUser.id &&
+      submission.owner_user_id === authenticatedUser.id
+    );
+    const guestAccessToken = request.headers.get("X-Submission-Token") || "";
+    const guestAccessAllowed = !submission.owner_user_id &&
+      await verifyGuestAccessToken(submission, guestAccessToken);
+
+    if (!isOwner && !guestAccessAllowed) {
+      return json({ error: "Submission not found or access has expired." }, 404, corsHeaders);
     }
 
     return json({
@@ -634,13 +786,27 @@ async function transcribeSubmission(submissionId, env, corsHeaders) {
       error_message: null,
     });
 
-    const updatedRows = await updateResponse.json();
+    if (!updateResponse.ok) {
+      const details = await updateResponse.text();
+      throw new Error(`Could not save transcript: ${details}`);
+    }
+
+    let updatedRows = await updateResponse.json();
+
+    if (submission.video_path) {
+      const deletionResponse = await deleteRawMedia(submissionId, submission.video_path, env);
+
+      if (deletionResponse && deletionResponse.ok) {
+        updatedRows = await deletionResponse.json();
+      }
+    }
 
     return json({
       ok: true,
       submission: updatedRows[0],
     }, 200, corsHeaders);
   } catch (error) {
+    await deleteRawMediaForSubmission(submissionId, env).catch(() => null);
     await updateSubmission(env, submissionId, {
       status: "failed",
       error_message: error.message,
@@ -651,6 +817,32 @@ async function transcribeSubmission(submissionId, env, corsHeaders) {
       details: error.message,
     }, 500, corsHeaders);
   }
+}
+
+async function deleteRawMediaForSubmission(submissionId, env) {
+  const lookupResponse = await getSubmission(env, submissionId);
+
+  if (!lookupResponse.ok) {
+    return null;
+  }
+
+  const rows = await lookupResponse.json();
+  const submission = rows[0];
+
+  if (!submission || !submission.video_path) {
+    return null;
+  }
+
+  return deleteRawMedia(submissionId, submission.video_path, env);
+}
+
+async function deleteRawMedia(submissionId, videoPath, env) {
+  await env.SPEECH_VIDEOS.delete(videoPath);
+
+  return updateSubmission(env, submissionId, {
+    video_path: null,
+    raw_media_deleted_at: new Date().toISOString(),
+  });
 }
 
 async function generateSpeechFeedback(submissionId, env, corsHeaders) {
@@ -902,7 +1094,7 @@ function getCorsHeaders(request, env) {
   return {
     "Access-Control-Allow-Origin": corsOrigin,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type, X-Submission-Token",
   };
 }
 

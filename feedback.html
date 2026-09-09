@@ -36,7 +36,7 @@
     <section class="section feedback-section">
       <p class="eyebrow">AI Speech Coach</p>
       <h1 class="section-title">Speech Feedback</h1>
-      <p class="feedback-intro">Enter a submission ID to check whether feedback is ready.</p>
+      <p class="feedback-intro">Open the private link created when you submitted your recording. Signed-in users can also load feedback from their dashboard.</p>
 
       <form class="feedback-lookup" data-api-base="https://speech-coach-api.voicetolead.workers.dev">
         <label>
@@ -70,7 +70,7 @@
   </footer>
 
   <script src="scripts/main.js"></script>
-  <script src="scripts/feedback.js"></script>
+  <script type="module" src="scripts/feedback.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>

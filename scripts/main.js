@@ -69,6 +69,11 @@ function initSingleSpeechCoachRecorder(recorder) {
   const summaryFocus = recorder.querySelector('[data-summary="focus"]');
   const turnstileContainer = recorder.querySelector('.coach-turnstile');
   const turnstileToken = recorder.querySelector('.coach-turnstile-token');
+  const privacyGate = recorder.querySelector('.coach-privacy-gate');
+  const ageRange = recorder.querySelector('.coach-age-range');
+  const consentInput = recorder.querySelector('.coach-consent-input');
+  const ageMessage = recorder.querySelector('.coach-age-message');
+  const teenNotice = recorder.querySelector('.coach-teen-notice');
   const celebration = recorder.querySelector('.coach-celebration');
   const celebrationTitle = recorder.querySelector('[data-celebration-title]');
   const celebrationMessage = recorder.querySelector('[data-celebration-message]');
@@ -985,6 +990,9 @@ function initSingleSpeechCoachRecorder(recorder) {
     if (livePanel) {
       livePanel.hidden = mode !== 'practice';
     }
+    if (privacyGate) {
+      privacyGate.hidden = mode !== 'feedback';
+    }
     if (mode === 'practice') {
       submitForm.hidden = true;
       if (resultActions) {
@@ -1231,6 +1239,19 @@ function initSingleSpeechCoachRecorder(recorder) {
     });
   };
 
+  const updateAgeState = () => {
+    const selectedAge = ageRange ? ageRange.value : '';
+
+    if (ageMessage) {
+      ageMessage.hidden = selectedAge !== 'under_13';
+    }
+
+    if (teenNotice) {
+      teenNotice.hidden = selectedAge !== '13_17';
+    }
+
+  };
+
   const resetRecorder = () => {
     clearInterval(timerId);
     timerId = null;
@@ -1354,6 +1375,32 @@ function initSingleSpeechCoachRecorder(recorder) {
   };
 
   const startRecording = async () => {
+    if (currentMode === 'feedback') {
+      if (ageRange && ageRange.value === 'under_13') {
+        if (ageMessage) {
+          ageMessage.hidden = false;
+        }
+        setStatus('The AI Speech Coach is currently available only to speakers age 13 or older.');
+        ageRange.focus();
+        return;
+      }
+
+      if (ageMessage) {
+        ageMessage.hidden = true;
+      }
+
+      const ageIsValid = !ageRange || ageRange.reportValidity();
+      const consentIsValid = !consentInput || consentInput.reportValidity();
+
+      if (!ageIsValid || !consentIsValid) {
+        setStatus('Please complete the age and privacy choices before recording.');
+        if (privacyGate) {
+          privacyGate.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        return;
+      }
+    }
+
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || (currentMode === 'feedback' && !window.MediaRecorder)) {
       setStatus('Video recording is not supported in this browser. Please try the latest Chrome, Edge, Firefox, or Safari.');
       return;
@@ -1425,6 +1472,12 @@ function initSingleSpeechCoachRecorder(recorder) {
     }
 
     if (!submitForm.reportValidity()) {
+      return;
+    }
+
+    if (ageRange && ageRange.value === 'under_13') {
+      setStatus('The AI Speech Coach is currently available only to speakers age 13 or older.');
+      ageRange.focus();
       return;
     }
 
@@ -1504,7 +1557,11 @@ function initSingleSpeechCoachRecorder(recorder) {
         showCelebration();
         window.dispatchEvent(new CustomEvent('voicetolead:account-submission-saved'));
       } else {
-        status.innerHTML = `Submitted successfully. Save this ID: <strong>${submissionId}</strong>. Feedback is being prepared. <a href="${feedbackUrl}">View feedback</a>`;
+        const guestAccessToken = result.guest_access_token || '';
+        const privateFeedbackUrl = guestAccessToken
+          ? `${feedbackUrl}#guest=${encodeURIComponent(guestAccessToken)}`
+          : feedbackUrl;
+        status.innerHTML = `Submitted successfully. Keep this private feedback link safe. Feedback is being prepared. <a href="${privateFeedbackUrl}">View feedback</a>`;
       }
     } catch (error) {
       submitButton.disabled = false;
@@ -1516,6 +1573,10 @@ function initSingleSpeechCoachRecorder(recorder) {
   };
 
   updateTimer();
+  if (ageRange) {
+    ageRange.addEventListener('change', updateAgeState);
+  }
+  updateAgeState();
   populateDrillOptions(getInitialPreferredDrill());
   modeButtons.forEach((button) => {
     button.addEventListener('click', () => {

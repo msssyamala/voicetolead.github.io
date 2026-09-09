@@ -125,6 +125,26 @@
               </div>
             </div>
             <div class="coach-timer" aria-live="polite">00:00 / 01:00</div>
+            <fieldset class="coach-privacy-gate">
+              <legend>Before you record for AI feedback</legend>
+              <label>
+                <span>Age range</span>
+                <select class="coach-age-range" name="age_range" form="coach-submit-form" required>
+                  <option value="">Choose an age range</option>
+                  <option value="under_13">Under 13</option>
+                  <option value="13_17">13–17</option>
+                  <option value="18_plus">18 or older</option>
+                </select>
+              </label>
+              <label class="coach-consent">
+                <input class="coach-consent-input" type="checkbox" name="consent" value="accepted" form="coach-submit-form" required />
+                <span>I understand that my recording will be uploaded, transcribed by OpenAI, and used to create AI feedback. Raw media is deleted after transcription. <a href="privacy.html">Privacy details</a></span>
+              </label>
+              <p class="coach-teen-notice" hidden><strong>Ages 13–17:</strong> The speaker may provide their own consent. Parents and guardians can review the <a href="privacy.html">privacy details</a> and request access, correction, or deletion by contacting VoiceToLead.</p>
+              <p class="coach-age-message" hidden>The AI Speech Coach is currently available only to speakers age 13 or older.</p>
+              <div class="coach-turnstile" data-sitekey="0x4AAAAAAD0c2bi7iPrZo6p9"></div>
+              <input type="hidden" name="turnstile_token" class="coach-turnstile-token" form="coach-submit-form" required />
+            </fieldset>
             <div class="coach-actions">
               <button type="button" class="btn-primary coach-start">Start Recording</button>
               <button type="button" class="btn-secondary coach-stop" disabled>Stop</button>
@@ -141,12 +161,6 @@
                   <input type="email" name="student_email" autocomplete="email" placeholder="Email for updates" />
                 </label>
               </div>
-              <label class="coach-consent">
-                <input type="checkbox" name="consent" required />
-                <span>I understand that my video and audio will be uploaded and processed to generate AI speech feedback. <a href="privacy.html">Privacy details</a></span>
-              </label>
-              <div class="coach-turnstile" data-sitekey="0x4AAAAAAD0c2bi7iPrZo6p9"></div>
-              <input type="hidden" name="turnstile_token" class="coach-turnstile-token" required />
             </form>
             <div class="coach-result-actions" hidden>
               <button type="submit" form="coach-submit-form" class="btn-primary coach-submit">Submit for Feedback</button>

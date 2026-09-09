@@ -1,3 +1,9 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SUPABASE_URL = 'https://gdyxyvhshltlshyfwdqd.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_lX69FPCqL6G0Yztxvn7U_g_KuOQySEb';
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('.feedback-lookup');
 
@@ -12,6 +18,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const params = new URLSearchParams(window.location.search);
   const idFromUrl = params.get('id');
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const guestTokenFromUrl = hashParams.get('guest');
+
+  if (idFromUrl && guestTokenFromUrl) {
+    window.sessionStorage.setItem(`voiceToLeadFeedbackToken:${idFromUrl}`, guestTokenFromUrl);
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+  }
 
   const setStatus = (message) => {
     status.textContent = message;
@@ -227,7 +240,22 @@ document.addEventListener('DOMContentLoaded', function () {
     results.hidden = true;
 
     try {
-      const response = await fetch(`${apiBase}/speech-submissions/${encodeURIComponent(cleanId)}`);
+      const headers = {};
+      const { data } = await supabase.auth.getSession();
+      const accountAccessToken = data && data.session ? data.session.access_token : null;
+      const guestAccessToken = window.sessionStorage.getItem(`voiceToLeadFeedbackToken:${cleanId}`);
+
+      if (accountAccessToken) {
+        headers.Authorization = `Bearer ${accountAccessToken}`;
+      }
+
+      if (guestAccessToken) {
+        headers['X-Submission-Token'] = guestAccessToken;
+      }
+
+      const response = await fetch(`${apiBase}/speech-submissions/${encodeURIComponent(cleanId)}`, {
+        headers,
+      });
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
@@ -236,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       renderFeedback(data.submission);
     } catch (error) {
-      setStatus(`Could not load feedback: ${error.message}`);
+      setStatus(`Could not load feedback: ${error.message} Open the private link from your submission, or sign in to your account.`);
       results.hidden = true;
     }
   };
