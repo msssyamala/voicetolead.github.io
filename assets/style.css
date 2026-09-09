@@ -326,6 +326,19 @@ body {
   line-height: 1.6;
 }
 
+.coach-privacy-summary {
+  background: #f7fbf8;
+  border-left: 4px solid #2f7d58;
+  border-radius: 4px;
+  color: #263b31;
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.85rem;
+}
+
+.coach-privacy-summary strong {
+  color: #1f5f41;
+}
+
 .coach-account-cta {
   align-items: center;
   background: #f8fbff;
