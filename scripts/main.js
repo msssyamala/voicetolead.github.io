@@ -1561,7 +1561,7 @@ function initSingleSpeechCoachRecorder(recorder) {
         const privateFeedbackUrl = guestAccessToken
           ? `${feedbackUrl}#guest=${encodeURIComponent(guestAccessToken)}`
           : feedbackUrl;
-        status.innerHTML = `Submitted successfully. Keep this private feedback link safe. Feedback is being prepared. <a href="${privateFeedbackUrl}">View feedback</a>`;
+        status.innerHTML = `Submitted successfully. Submission ID: <strong>${submissionId}</strong>. Feedback is being prepared. Keep this private link safe: <a href="${privateFeedbackUrl}">View feedback</a>.`;
       }
     } catch (error) {
       submitButton.disabled = false;
