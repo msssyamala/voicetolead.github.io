@@ -241,8 +241,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     try {
       const headers = {};
-      const { data } = await supabase.auth.getSession();
-      const accountAccessToken = data && data.session ? data.session.access_token : null;
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accountAccessToken = sessionData && sessionData.session
+        ? sessionData.session.access_token
+        : null;
       const guestAccessToken = window.sessionStorage.getItem(`voiceToLeadFeedbackToken:${cleanId}`);
 
       if (accountAccessToken) {
@@ -256,13 +258,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const response = await fetch(`${apiBase}/speech-submissions/${encodeURIComponent(cleanId)}`, {
         headers,
       });
-      const data = await response.json().catch(() => ({}));
+      const responseData = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(data.error || 'Could not load feedback.');
+        throw new Error(responseData.error || 'Could not load feedback.');
       }
 
-      renderFeedback(data.submission);
+      renderFeedback(responseData.submission);
     } catch (error) {
       setStatus(`Could not load feedback: ${error.message} Open the private link from your submission, or sign in to your account.`);
       results.hidden = true;
