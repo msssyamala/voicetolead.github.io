@@ -1,9 +1,11 @@
-const TRANSCRIPTION_MODEL = "gpt-4o-mini-transcribe";
+const TRANSCRIPTION_MODEL = "gpt-transcribe";
 const FEEDBACK_MODEL = "gpt-4o-mini";
-const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
+const MAX_MEDIA_BYTES = 24 * 1024 * 1024;
 const GUEST_ACCESS_DAYS = 30;
 const CONSENT_VERSION = "2026-09-08";
-const ALLOWED_VIDEO_TYPES = [
+const ALLOWED_MEDIA_TYPES = [
+  "audio/webm",
+  "audio/mp4",
   "video/webm",
   "video/mp4",
 ];
@@ -310,8 +312,8 @@ async function createSubmission(request, env, corsHeaders, ctx) {
   try {
     const contentLength = Number(request.headers.get("Content-Length") || 0);
 
-    if (contentLength && contentLength > MAX_VIDEO_BYTES) {
-      return json({ error: "Video file is too large." }, 413, corsHeaders);
+    if (contentLength && contentLength > MAX_MEDIA_BYTES) {
+      return json({ error: "Audio file is too large." }, 413, corsHeaders);
     }
 
     const formData = await request.formData();
@@ -366,14 +368,14 @@ async function createSubmission(request, env, corsHeaders, ctx) {
       return json({ error: "Missing video file" }, 400, corsHeaders);
     }
 
-    if (video.size > MAX_VIDEO_BYTES) {
-      return json({ error: "Video file is too large." }, 413, corsHeaders);
+    if (video.size > MAX_MEDIA_BYTES) {
+      return json({ error: "Audio file is too large." }, 413, corsHeaders);
     }
 
     const videoMetadata = await getVideoMetadata(video);
 
     if (!videoMetadata) {
-      return json({ error: "Unsupported video type." }, 415, corsHeaders);
+      return json({ error: "Unsupported audio type." }, 415, corsHeaders);
     }
 
     const submissionId = crypto.randomUUID();
@@ -464,27 +466,27 @@ async function createSubmission(request, env, corsHeaders, ctx) {
 function isAllowedVideoType(type) {
   const normalizedType = (type || "").toLowerCase();
 
-  return ALLOWED_VIDEO_TYPES.some((allowedType) =>
+  return ALLOWED_MEDIA_TYPES.some((allowedType) =>
     normalizedType === allowedType || normalizedType.startsWith(`${allowedType};`)
   );
 }
 
 async function getVideoMetadata(video) {
-  const detectedType = await detectVideoType(video);
+  const mimeType = (video.type || "").toLowerCase();
+  const detectedType = await detectVideoType(video, mimeType.startsWith("audio/"));
 
   if (detectedType) {
     return detectedType;
   }
 
   const fileName = (video.name || "").toLowerCase();
-  const mimeType = (video.type || "").toLowerCase();
-
   if (isAllowedVideoType(mimeType)) {
     const isMp4 = mimeType.includes("mp4") || fileName.endsWith(".mp4");
+    const mediaType = mimeType.startsWith("audio/") ? "audio" : "video";
 
     return {
       extension: isMp4 ? "mp4" : "webm",
-      contentType: isMp4 ? "video/mp4" : "video/webm",
+      contentType: `${mediaType}/${isMp4 ? "mp4" : "webm"}`,
     };
   }
 
@@ -563,7 +565,7 @@ function constantTimeEqual(left, right) {
   return difference === 0;
 }
 
-async function detectVideoType(video) {
+async function detectVideoType(video, isAudio = false) {
   const headerBytes = new Uint8Array(await video.slice(0, 16).arrayBuffer());
 
   if (
@@ -574,7 +576,7 @@ async function detectVideoType(video) {
   ) {
     return {
       extension: "webm",
-      contentType: "video/webm",
+      contentType: isAudio ? "audio/webm" : "video/webm",
     };
   }
 
@@ -588,7 +590,7 @@ async function detectVideoType(video) {
   if (boxType === "ftyp") {
     return {
       extension: "mp4",
-      contentType: "video/mp4",
+      contentType: isAudio ? "audio/mp4" : "video/mp4",
     };
   }
 

@@ -79,6 +79,7 @@ function initSingleSpeechCoachRecorder(recorder) {
   const celebrationMessage = recorder.querySelector('[data-celebration-message]');
 
   let mediaRecorder;
+  let uploadRecorder;
   let stream;
   let audioContext;
   let audioAnalyser;
@@ -110,11 +111,16 @@ function initSingleSpeechCoachRecorder(recorder) {
   let eyeContactCueHoldUntil = 0;
   let currentMode = 'feedback';
   let chunks = [];
+  let uploadChunks = [];
   let elapsedSeconds = 0;
   let timerId;
   let recordingBlob;
+  let uploadRecordingBlob;
   let recordingUrl;
   let recordingExtension = 'webm';
+  let uploadRecordingExtension = 'webm';
+  let videoRecorderStopped = false;
+  let uploadRecorderStopped = false;
   let turnstileWidgetId = null;
   const sharedNextSteps = {
     default: 'Next focus: make one clear point and close with a strong final sentence.',
@@ -1257,10 +1263,16 @@ function initSingleSpeechCoachRecorder(recorder) {
     timerId = null;
     elapsedSeconds = 0;
     chunks = [];
+    uploadChunks = [];
     resetRecordingUrl();
     recordingBlob = null;
+    uploadRecordingBlob = null;
     recordingExtension = 'webm';
+    uploadRecordingExtension = 'webm';
     mediaRecorder = null;
+    uploadRecorder = null;
+    videoRecorderStopped = false;
+    uploadRecorderStopped = false;
     stopLiveCoach();
     stopStream();
     resetPracticeMetrics();
@@ -1298,6 +1310,16 @@ function initSingleSpeechCoachRecorder(recorder) {
     return types.find((type) => MediaRecorder.isTypeSupported(type)) || '';
   };
 
+  const getSupportedAudioMimeType = () => {
+    const types = [
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/mp4'
+    ];
+
+    return types.find((type) => MediaRecorder.isTypeSupported(type)) || '';
+  };
+
   const finishRecording = () => {
     clearInterval(timerId);
     timerId = null;
@@ -1310,9 +1332,15 @@ function initSingleSpeechCoachRecorder(recorder) {
     const mimeType = mediaRecorder && mediaRecorder.mimeType ? mediaRecorder.mimeType : 'video/webm';
     const extension = mimeType.includes('mp4') ? 'mp4' : 'webm';
     const blob = new Blob(chunks, { type: mimeType });
+    const uploadMimeType = uploadRecorder && uploadRecorder.mimeType
+      ? uploadRecorder.mimeType
+      : 'audio/webm';
+    const uploadBlob = new Blob(uploadChunks, { type: uploadMimeType });
 
     recordingBlob = blob;
     recordingExtension = extension;
+    uploadRecordingBlob = uploadBlob;
+    uploadRecordingExtension = uploadMimeType.includes('mp4') ? 'mp4' : 'webm';
     resetRecordingUrl();
     recordingUrl = URL.createObjectURL(blob);
     playback.src = recordingUrl;
@@ -1333,7 +1361,7 @@ function initSingleSpeechCoachRecorder(recorder) {
       }
       submitButton.hidden = false;
       renderTurnstileWidget();
-      setStatus('Recording complete. Review it here, then submit it for feedback.');
+      setStatus('Recording complete. Review your video here, then submit it for feedback. Only the audio track will be uploaded.');
     } else {
       submitForm.hidden = true;
       if (resultActions) {
@@ -1371,6 +1399,10 @@ function initSingleSpeechCoachRecorder(recorder) {
 
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
+    }
+
+    if (uploadRecorder && uploadRecorder.state === 'recording') {
+      uploadRecorder.stop();
     }
   };
 
@@ -1433,7 +1465,19 @@ function initSingleSpeechCoachRecorder(recorder) {
         setStatus('Calibrating your microphone... speak normally for a few seconds.');
       } else {
         const mimeType = getSupportedMimeType();
+        const audioMimeType = getSupportedAudioMimeType();
+
+        if (!audioMimeType) {
+          throw new Error('This browser cannot create a supported audio recording.');
+        }
+
         mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+        uploadRecorder = new MediaRecorder(
+          new MediaStream(stream.getAudioTracks()),
+          { mimeType: audioMimeType, audioBitsPerSecond: 128000 }
+        );
+        videoRecorderStopped = false;
+        uploadRecorderStopped = false;
 
         mediaRecorder.addEventListener('dataavailable', (event) => {
           if (event.data && event.data.size > 0) {
@@ -1441,8 +1485,28 @@ function initSingleSpeechCoachRecorder(recorder) {
           }
         });
 
-        mediaRecorder.addEventListener('stop', finishRecording, { once: true });
+        uploadRecorder.addEventListener('dataavailable', (event) => {
+          if (event.data && event.data.size > 0) {
+            uploadChunks.push(event.data);
+          }
+        });
+
+        const finishWhenBothRecordersStop = () => {
+          if (videoRecorderStopped && uploadRecorderStopped) {
+            finishRecording();
+          }
+        };
+
+        mediaRecorder.addEventListener('stop', () => {
+          videoRecorderStopped = true;
+          finishWhenBothRecordersStop();
+        }, { once: true });
+        uploadRecorder.addEventListener('stop', () => {
+          uploadRecorderStopped = true;
+          finishWhenBothRecordersStop();
+        }, { once: true });
         mediaRecorder.start();
+        uploadRecorder.start();
         stopButton.disabled = false;
         setStatus('Recording for AI feedback... it will stop automatically at 1 minute.');
       }
@@ -1481,7 +1545,7 @@ function initSingleSpeechCoachRecorder(recorder) {
       return;
     }
 
-    if (!recordingBlob) {
+    if (!recordingBlob || !uploadRecordingBlob || uploadRecordingBlob.size === 0) {
       setStatus('Please record a video before submitting.');
       return;
     }
@@ -1528,12 +1592,12 @@ function initSingleSpeechCoachRecorder(recorder) {
       }
     }
 
-    formData.append('video', recordingBlob, `speech.${recordingExtension}`);
+    formData.append('video', uploadRecordingBlob, `speech.${uploadRecordingExtension}`);
 
     submitButton.disabled = true;
     resetButton.disabled = true;
     startButton.disabled = true;
-    setStatus('Submitting your recording for feedback...');
+    setStatus('Uploading the audio track for transcription and feedback...');
 
     try {
       const response = await fetch(uploadUrl, {
