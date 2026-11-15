@@ -132,11 +132,63 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
   };
 
+  const getFailureGuidance = (submission) => {
+    const errorMessage = String(submission.error_message || '').trim();
+    const normalizedError = errorMessage.toLowerCase();
+    const failedStage = submission.transcript ? 'feedback generation' : 'transcription';
+    let explanation = 'The processing service returned an unexpected error.';
+
+    if (/insufficient_quota|quota|billing|credit/.test(normalizedError)) {
+      explanation = 'The AI service does not currently have available credits. An administrator needs to review OpenAI billing or usage limits.';
+    } else if (/invalid_api_key|incorrect api key|authentication|unauthorized|\b401\b/.test(normalizedError)) {
+      explanation = 'The AI service credentials are missing, expired, or invalid. An administrator needs to update the OpenAI API key in Cloudflare.';
+    } else if (/rate.?limit|too many requests|\b429\b/.test(normalizedError)) {
+      explanation = 'The AI service is temporarily rate-limited. Please wait a few minutes and try again.';
+    } else if (/video file was not found|recording.*not found/.test(normalizedError)) {
+      explanation = 'The uploaded recording could not be found for processing.';
+    } else if (/unsupported|invalid.*(audio|video|file)|decode|format/.test(normalizedError)) {
+      explanation = 'The recording format could not be processed. Please make a new recording in a current version of Chrome, Edge, or Safari.';
+    } else if (/timeout|timed out|deadline|network|fetch failed/.test(normalizedError)) {
+      explanation = 'The processing service timed out or had a temporary network problem.';
+    }
+
+    return {
+      errorMessage,
+      explanation,
+      failedStage,
+    };
+  };
+
   const renderFeedback = (submission) => {
     const feedback = submission.final_feedback || submission.speech_feedback;
     const drillReview = feedback && feedback.drill_review;
     const drillTitle = (drillReview && drillReview.drill_title) || submission.drill_title;
     const drillRubric = (drillReview && drillReview.rubric) || submission.drill_rubric;
+
+    if (!feedback && submission.status === 'failed') {
+      const failure = getFailureGuidance(submission);
+      const nextStep = submission.transcript
+        ? 'Your transcript was saved, but written feedback was not generated. Contact VoiceToLead with your submission ID so the feedback step can be retried.'
+        : 'The recording could not be transcribed. For privacy, failed raw recordings are deleted; please resolve the service issue and then make a new recording.';
+
+      results.hidden = false;
+      setStatus(`Processing failed during ${failure.failedStage}.`);
+      results.innerHTML = `
+        <section class="feedback-panel feedback-failure">
+          <h2>Feedback could not be completed</h2>
+          <p>${escapeHtml(failure.explanation)}</p>
+          <p>${escapeHtml(nextStep)}</p>
+          ${failure.errorMessage ? `
+            <details>
+              <summary>Technical details</summary>
+              <p>${escapeHtml(failure.errorMessage)}</p>
+            </details>
+          ` : ''}
+          <p><a class="btn-primary" href="index.html#ai-speech-coach">Return to the Speech Coach</a></p>
+        </section>
+      `;
+      return;
+    }
 
     if (!feedback) {
       results.hidden = true;
