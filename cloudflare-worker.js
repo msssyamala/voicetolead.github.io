@@ -189,6 +189,12 @@ export default {
       return createSubmission(request, env, corsHeaders, ctx);
     }
 
+    const feedbackMatch = url.pathname.match(/^\/speech-submissions\/([a-f0-9-]+)\/feedback$/);
+
+    if (feedbackMatch) {
+      return resumeSpeechFeedback(feedbackMatch[1], request, env, corsHeaders);
+    }
+
     if (url.pathname === "/account/profile") {
       return saveAccountProfile(request, env, corsHeaders);
     }
@@ -722,6 +728,53 @@ async function readSubmission(submissionId, request, env, corsHeaders) {
   } catch (error) {
     return json({
       error: "Feedback lookup failed",
+      details: error.message,
+    }, 500, corsHeaders);
+  }
+}
+
+async function resumeSpeechFeedback(submissionId, request, env, corsHeaders) {
+  try {
+    const lookupResponse = await getSubmission(env, submissionId);
+
+    if (!lookupResponse.ok) {
+      const details = await lookupResponse.text();
+      return json({ error: "Could not read submission", details }, 500, corsHeaders);
+    }
+
+    const rows = await lookupResponse.json();
+    const submission = rows[0];
+
+    if (!submission) {
+      return json({ error: "Submission not found" }, 404, corsHeaders);
+    }
+
+    const authenticatedUser = await getAuthenticatedUser(request, env);
+    const isOwner = Boolean(
+      authenticatedUser &&
+      authenticatedUser.id &&
+      submission.owner_user_id === authenticatedUser.id
+    );
+    const guestAccessToken = request.headers.get("X-Submission-Token") || "";
+    const guestAccessAllowed = !submission.owner_user_id &&
+      await verifyGuestAccessToken(submission, guestAccessToken);
+
+    if (!isOwner && !guestAccessAllowed) {
+      return json({ error: "Submission not found or access has expired." }, 404, corsHeaders);
+    }
+
+    if (submission.final_feedback || submission.speech_feedback) {
+      return json({ ok: true, submission }, 200, corsHeaders);
+    }
+
+    if (!submission.transcript) {
+      return json({ error: "The transcript is not ready yet." }, 409, corsHeaders);
+    }
+
+    return generateSpeechFeedback(submissionId, env, corsHeaders);
+  } catch (error) {
+    return json({
+      error: "Could not resume feedback generation",
       details: error.message,
     }, 500, corsHeaders);
   }

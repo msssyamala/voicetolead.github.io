@@ -278,7 +278,22 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
   };
 
-  const loadFeedback = async (submissionId) => {
+  let refreshTimer = null;
+  let refreshAttempts = 0;
+  const maxRefreshAttempts = 30;
+
+  const scheduleRefresh = (submissionId) => {
+    if (refreshAttempts >= maxRefreshAttempts) {
+      setStatus('Processing is taking longer than expected. Select Load feedback to check again.');
+      return;
+    }
+
+    window.clearTimeout(refreshTimer);
+    refreshAttempts += 1;
+    refreshTimer = window.setTimeout(() => loadFeedback(submissionId, true), 4000);
+  };
+
+  const loadFeedback = async (submissionId, isAutomaticRefresh = false) => {
     const cleanId = submissionId.trim();
 
     if (!cleanId) {
@@ -288,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     input.value = cleanId;
-    setStatus('Loading feedback...');
+    setStatus(isAutomaticRefresh ? 'Checking feedback status...' : 'Loading feedback...');
     results.hidden = true;
 
     try {
@@ -316,7 +331,45 @@ document.addEventListener('DOMContentLoaded', function () {
         throw new Error(responseData.error || 'Could not load feedback.');
       }
 
-      renderFeedback(responseData.submission);
+      let submission = responseData.submission;
+      const feedback = submission.final_feedback || submission.speech_feedback;
+
+      if (!feedback && submission.status === 'transcribed') {
+        setStatus('Transcript is ready. Generating your coaching feedback...');
+        const feedbackResponse = await fetch(
+          `${apiBase}/speech-submissions/${encodeURIComponent(cleanId)}/feedback`,
+          {
+            method: 'POST',
+            headers,
+          }
+        );
+        const feedbackData = await feedbackResponse.json().catch(() => ({}));
+
+        if ([404, 405].includes(feedbackResponse.status)) {
+          renderFeedback(submission);
+          scheduleRefresh(cleanId);
+          return;
+        }
+
+        if (!feedbackResponse.ok) {
+          throw new Error(feedbackData.error || 'Could not generate feedback.');
+        }
+
+        submission = feedbackData.submission;
+      }
+
+      renderFeedback(submission);
+
+      if (!submission.final_feedback && !submission.speech_feedback && [
+        'uploaded',
+        'transcribing',
+        'generating_feedback',
+      ].includes(submission.status)) {
+        scheduleRefresh(cleanId);
+      } else {
+        window.clearTimeout(refreshTimer);
+        refreshAttempts = 0;
+      }
     } catch (error) {
       setStatus(`Could not load feedback: ${error.message} Open the private link from your submission, or sign in to your account.`);
       results.hidden = true;
@@ -325,6 +378,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
+    refreshAttempts = 0;
+    window.clearTimeout(refreshTimer);
     loadFeedback(input.value);
   });
 
