@@ -79,9 +79,11 @@ function initSingleSpeechCoachRecorder(recorder) {
   const celebrationMessage = recorder.querySelector('[data-celebration-message]');
 
   let mediaRecorder;
-  let uploadRecorder;
   let stream;
-  let uploadStream;
+  let uploadAudioContext;
+  let uploadAudioSource;
+  let uploadAudioProcessor;
+  let uploadAudioGain;
   let audioContext;
   let audioAnalyser;
   let audioData;
@@ -112,16 +114,15 @@ function initSingleSpeechCoachRecorder(recorder) {
   let eyeContactCueHoldUntil = 0;
   let currentMode = 'feedback';
   let chunks = [];
-  let uploadChunks = [];
+  let uploadAudioSamples = [];
+  let uploadAudioSampleRate = 48000;
   let elapsedSeconds = 0;
   let timerId;
   let recordingBlob;
   let uploadRecordingBlob;
   let recordingUrl;
   let recordingExtension = 'webm';
-  let uploadRecordingExtension = 'webm';
-  let videoRecorderStopped = false;
-  let uploadRecorderStopped = false;
+  let uploadRecordingExtension = 'wav';
   let turnstileWidgetId = null;
   const sharedNextSteps = {
     default: 'Next focus: make one clear point and close with a strong final sentence.',
@@ -577,12 +578,98 @@ function initSingleSpeechCoachRecorder(recorder) {
       stream.getTracks().forEach((track) => track.stop());
       stream = null;
     }
-    if (uploadStream) {
-      uploadStream.getTracks().forEach((track) => track.stop());
-      uploadStream = null;
-    }
     preview.srcObject = null;
     frame.classList.remove('is-previewing');
+  };
+
+  const stopUploadAudioCapture = () => {
+    if (uploadAudioProcessor) {
+      uploadAudioProcessor.disconnect();
+      uploadAudioProcessor.onaudioprocess = null;
+      uploadAudioProcessor = null;
+    }
+    if (uploadAudioSource) {
+      uploadAudioSource.disconnect();
+      uploadAudioSource = null;
+    }
+    if (uploadAudioGain) {
+      uploadAudioGain.disconnect();
+      uploadAudioGain = null;
+    }
+    if (uploadAudioContext) {
+      uploadAudioContext.close().catch(() => null);
+      uploadAudioContext = null;
+    }
+  };
+
+  const encodeWav = (sampleChunks, sampleRate) => {
+    const sampleCount = sampleChunks.reduce((total, chunk) => total + chunk.length, 0);
+    const buffer = new ArrayBuffer(44 + sampleCount * 2);
+    const view = new DataView(buffer);
+    const writeText = (offset, text) => {
+      for (let index = 0; index < text.length; index += 1) {
+        view.setUint8(offset + index, text.charCodeAt(index));
+      }
+    };
+
+    writeText(0, 'RIFF');
+    view.setUint32(4, 36 + sampleCount * 2, true);
+    writeText(8, 'WAVE');
+    writeText(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeText(36, 'data');
+    view.setUint32(40, sampleCount * 2, true);
+
+    let offset = 44;
+    sampleChunks.forEach((chunk) => {
+      for (let index = 0; index < chunk.length; index += 1) {
+        const sample = Math.max(-1, Math.min(1, chunk[index]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+        offset += 2;
+      }
+    });
+
+    return new Blob([buffer], { type: 'audio/wav' });
+  };
+
+  const startUploadAudioCapture = async () => {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass || !stream || stream.getAudioTracks().length === 0) {
+      throw new Error('The microphone did not provide a usable audio track.');
+    }
+
+    uploadAudioSamples = [];
+    uploadAudioContext = new AudioContextClass();
+    await uploadAudioContext.resume();
+    uploadAudioSampleRate = uploadAudioContext.sampleRate;
+    uploadAudioSource = uploadAudioContext.createMediaStreamSource(
+      new MediaStream(stream.getAudioTracks())
+    );
+    uploadAudioProcessor = uploadAudioContext.createScriptProcessor(4096, 1, 1);
+    uploadAudioGain = uploadAudioContext.createGain();
+    uploadAudioGain.gain.value = 0;
+    uploadAudioProcessor.onaudioprocess = (event) => {
+      const samples = event.inputBuffer.getChannelData(0);
+      uploadAudioSamples.push(new Float32Array(samples));
+    };
+    uploadAudioSource.connect(uploadAudioProcessor);
+    uploadAudioProcessor.connect(uploadAudioGain);
+    uploadAudioGain.connect(uploadAudioContext.destination);
+  };
+
+  const finishUploadAudioCapture = () => {
+    if (!uploadRecordingBlob && uploadAudioSamples.length > 0) {
+      uploadRecordingBlob = encodeWav(uploadAudioSamples, uploadAudioSampleRate);
+      uploadRecordingExtension = 'wav';
+    }
+    stopUploadAudioCapture();
   };
 
   const setLiveCoachDisplay = (stateClass, cueMessage, emoji, word) => {
@@ -1268,16 +1355,14 @@ function initSingleSpeechCoachRecorder(recorder) {
     timerId = null;
     elapsedSeconds = 0;
     chunks = [];
-    uploadChunks = [];
+    uploadAudioSamples = [];
+    stopUploadAudioCapture();
     resetRecordingUrl();
     recordingBlob = null;
     uploadRecordingBlob = null;
     recordingExtension = 'webm';
-    uploadRecordingExtension = 'webm';
+    uploadRecordingExtension = 'wav';
     mediaRecorder = null;
-    uploadRecorder = null;
-    videoRecorderStopped = false;
-    uploadRecorderStopped = false;
     stopLiveCoach();
     stopStream();
     resetPracticeMetrics();
@@ -1315,16 +1400,6 @@ function initSingleSpeechCoachRecorder(recorder) {
     return types.find((type) => MediaRecorder.isTypeSupported(type)) || '';
   };
 
-  const getSupportedAudioMimeType = () => {
-    const types = [
-      'audio/webm;codecs=opus',
-      'audio/webm',
-      'audio/mp4'
-    ];
-
-    return types.find((type) => MediaRecorder.isTypeSupported(type)) || '';
-  };
-
   const finishRecording = () => {
     clearInterval(timerId);
     timerId = null;
@@ -1337,15 +1412,9 @@ function initSingleSpeechCoachRecorder(recorder) {
     const mimeType = mediaRecorder && mediaRecorder.mimeType ? mediaRecorder.mimeType : 'video/webm';
     const extension = mimeType.includes('mp4') ? 'mp4' : 'webm';
     const blob = new Blob(chunks, { type: mimeType });
-    const uploadMimeType = uploadRecorder && uploadRecorder.mimeType
-      ? uploadRecorder.mimeType
-      : 'audio/webm';
-    const uploadBlob = new Blob(uploadChunks, { type: uploadMimeType });
 
     recordingBlob = blob;
     recordingExtension = extension;
-    uploadRecordingBlob = uploadBlob;
-    uploadRecordingExtension = uploadMimeType.includes('mp4') ? 'mp4' : 'webm';
     resetRecordingUrl();
     recordingUrl = URL.createObjectURL(blob);
     playback.src = recordingUrl;
@@ -1404,10 +1473,6 @@ function initSingleSpeechCoachRecorder(recorder) {
 
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
-    }
-
-    if (uploadRecorder && uploadRecorder.state === 'recording') {
-      uploadRecorder.stop();
     }
   };
 
@@ -1470,26 +1535,8 @@ function initSingleSpeechCoachRecorder(recorder) {
         setStatus('Calibrating your microphone... speak normally for a few seconds.');
       } else {
         const mimeType = getSupportedMimeType();
-        const audioMimeType = getSupportedAudioMimeType();
-
-        if (!audioMimeType) {
-          throw new Error('This browser cannot create a supported audio recording.');
-        }
-
-        const uploadAudioTracks = stream.getAudioTracks().map((track) => track.clone());
-
-        if (uploadAudioTracks.length === 0) {
-          throw new Error('The microphone did not provide an audio track.');
-        }
-
-        uploadStream = new MediaStream(uploadAudioTracks);
+        await startUploadAudioCapture();
         mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-        uploadRecorder = new MediaRecorder(
-          uploadStream,
-          { mimeType: audioMimeType, audioBitsPerSecond: 128000 }
-        );
-        videoRecorderStopped = false;
-        uploadRecorderStopped = false;
 
         mediaRecorder.addEventListener('dataavailable', (event) => {
           if (event.data && event.data.size > 0) {
@@ -1497,27 +1544,10 @@ function initSingleSpeechCoachRecorder(recorder) {
           }
         });
 
-        uploadRecorder.addEventListener('dataavailable', (event) => {
-          if (event.data && event.data.size > 0) {
-            uploadChunks.push(event.data);
-          }
-        });
-
-        const finishWhenBothRecordersStop = () => {
-          if (videoRecorderStopped && uploadRecorderStopped) {
-            finishRecording();
-          }
-        };
-
         mediaRecorder.addEventListener('stop', () => {
-          videoRecorderStopped = true;
-          finishWhenBothRecordersStop();
+          finishUploadAudioCapture();
+          finishRecording();
         }, { once: true });
-        uploadRecorder.addEventListener('stop', () => {
-          uploadRecorderStopped = true;
-          finishWhenBothRecordersStop();
-        }, { once: true });
-        uploadRecorder.start();
         mediaRecorder.start();
         stopButton.disabled = false;
         setStatus('Recording for AI feedback... it will stop automatically at 1 minute.');

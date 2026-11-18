@@ -4,6 +4,8 @@ const MAX_MEDIA_BYTES = 24 * 1024 * 1024;
 const GUEST_ACCESS_DAYS = 30;
 const CONSENT_VERSION = "2026-09-08";
 const ALLOWED_MEDIA_TYPES = [
+  "audio/wav",
+  "audio/x-wav",
   "audio/webm",
   "audio/mp4",
   "video/webm",
@@ -487,12 +489,13 @@ async function getVideoMetadata(video) {
 
   const fileName = (video.name || "").toLowerCase();
   if (isAllowedVideoType(mimeType)) {
+    const isWav = mimeType.includes("wav") || fileName.endsWith(".wav");
     const isMp4 = mimeType.includes("mp4") || fileName.endsWith(".mp4");
     const mediaType = mimeType.startsWith("audio/") ? "audio" : "video";
 
     return {
-      extension: isMp4 ? "mp4" : "webm",
-      contentType: `${mediaType}/${isMp4 ? "mp4" : "webm"}`,
+      extension: isWav ? "wav" : (isMp4 ? "mp4" : "webm"),
+      contentType: isWav ? "audio/wav" : `${mediaType}/${isMp4 ? "mp4" : "webm"}`,
     };
   }
 
