@@ -148,6 +148,8 @@ document.addEventListener('DOMContentLoaded', function () {
       explanation = 'The uploaded recording could not be found for processing.';
     } else if (/unsupported|invalid.*(audio|video|file)|decode|format/.test(normalizedError)) {
       explanation = 'The recording format could not be processed. Please make a new recording in a current version of Chrome, Edge, or Safari.';
+    } else if (/no speech|no transcript|speech.*not.*detected|silent/.test(normalizedError)) {
+      explanation = 'No clear speech was detected in the uploaded audio. Please make a new recording, speak clearly for at least 10 seconds, and confirm that your microphone is not muted.';
     } else if (/timeout|timed out|deadline|network|fetch failed/.test(normalizedError)) {
       explanation = 'The processing service timed out or had a temporary network problem.';
     }

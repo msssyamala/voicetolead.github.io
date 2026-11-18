@@ -768,7 +768,9 @@ async function resumeSpeechFeedback(submissionId, request, env, corsHeaders) {
     }
 
     if (!submission.transcript) {
-      return json({ error: "The transcript is not ready yet." }, 409, corsHeaders);
+      return json({
+        error: "No speech text was saved for this submission. Please make a new recording and speak clearly for at least 10 seconds.",
+      }, 422, corsHeaders);
     }
 
     return generateSpeechFeedback(submissionId, env, corsHeaders);
@@ -831,7 +833,11 @@ async function transcribeSubmission(submissionId, env, corsHeaders) {
     }
 
     const transcription = await openAiResponse.json();
-    const transcript = transcription.text || "";
+    const transcript = String(transcription.text || "").trim();
+
+    if (!transcript) {
+      throw new Error("No speech was detected in the uploaded audio. Please make a new recording and speak clearly for at least 10 seconds.");
+    }
 
     const updateResponse = await updateSubmission(env, submissionId, {
       status: "transcribed",

@@ -81,6 +81,7 @@ function initSingleSpeechCoachRecorder(recorder) {
   let mediaRecorder;
   let uploadRecorder;
   let stream;
+  let uploadStream;
   let audioContext;
   let audioAnalyser;
   let audioData;
@@ -575,6 +576,10 @@ function initSingleSpeechCoachRecorder(recorder) {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
       stream = null;
+    }
+    if (uploadStream) {
+      uploadStream.getTracks().forEach((track) => track.stop());
+      uploadStream = null;
     }
     preview.srcObject = null;
     frame.classList.remove('is-previewing');
@@ -1471,9 +1476,16 @@ function initSingleSpeechCoachRecorder(recorder) {
           throw new Error('This browser cannot create a supported audio recording.');
         }
 
+        const uploadAudioTracks = stream.getAudioTracks().map((track) => track.clone());
+
+        if (uploadAudioTracks.length === 0) {
+          throw new Error('The microphone did not provide an audio track.');
+        }
+
+        uploadStream = new MediaStream(uploadAudioTracks);
         mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
         uploadRecorder = new MediaRecorder(
-          new MediaStream(stream.getAudioTracks()),
+          uploadStream,
           { mimeType: audioMimeType, audioBitsPerSecond: 128000 }
         );
         videoRecorderStopped = false;
@@ -1505,8 +1517,8 @@ function initSingleSpeechCoachRecorder(recorder) {
           uploadRecorderStopped = true;
           finishWhenBothRecordersStop();
         }, { once: true });
-        mediaRecorder.start();
         uploadRecorder.start();
+        mediaRecorder.start();
         stopButton.disabled = false;
         setStatus('Recording for AI feedback... it will stop automatically at 1 minute.');
       }
