@@ -1,4 +1,4 @@
-const TRANSCRIPTION_MODEL = "gpt-transcribe";
+const TRANSCRIPTION_MODEL = "gpt-4o-mini-transcribe";
 const FEEDBACK_MODEL = "gpt-4o-mini";
 const MAX_MEDIA_BYTES = 24 * 1024 * 1024;
 const GUEST_ACCESS_DAYS = 30;
