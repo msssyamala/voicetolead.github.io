@@ -573,6 +573,7 @@ function initSingleSpeechCoachRecorder(recorder) {
       stream = null;
     }
     preview.srcObject = null;
+    preview.hidden = true;
     frame.classList.remove('is-previewing');
   };
 
